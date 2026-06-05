@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('修改新闻')" />
+	<th:block th:include="include :: summernote-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-news-edit" th:object="${newsArticle}">
+            <input id="articleId" name="articleId" th:field="*{articleId}" type="hidden">
+			<div class="form-group">	
+				<label class="col-sm-2 control-label is-required">新闻标题：</label>
+				<div class="col-sm-10">
+					<input id="title" name="title" th:field="*{title}" class="form-control" type="text" required>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">新闻分类：</label>
+				<div class="col-sm-10">
+					<select name="categoryId" class="form-control m-b" th:with="categories=${@newsCategoryService.selectCategoryList(new T(com.ruoyi.system.domain.NewsCategory))}">
+	                    <option th:each="category : ${categories}" th:text="${category.categoryName}" th:value="${category.categoryId}" th:selected="${category.categoryId == newsArticle.categoryId}"></option>
+	                </select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">封面图片：</label>
+				<div class="col-sm-10">
+					<input id="coverImage" name="coverImage" th:field="*{coverImage}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">新闻摘要：</label>
+				<div class="col-sm-10">
+					<textarea id="summary" name="summary" th:field="*{summary}" class="form-control" rows="3"></textarea>
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-2 control-label">新闻内容：</label>
+				<div class="col-sm-10">
+				    <input id="content" name="content" th:field="*{content}" type="hidden">
+				    <div id="editor" class="summernote"></div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">新闻状态：</label>
+				<div class="col-sm-10">
+				    <div class="radio-box">
+						<input type="radio" id="status0" name="status" value="0" th:checked="*{status == '0'}">
+						<label for="status0">草稿</label>
+					</div>
+					<div class="radio-box">
+						<input type="radio" id="status1" name="status" value="1" th:checked="*{status == '1'}">
+						<label for="status1">已发布</label>
+					</div>
+					<div class="radio-box">
+						<input type="radio" id="status2" name="status" value="2" th:checked="*{status == '2'}">
+						<label for="status2">已下线</label>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: summernote-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "system/news";
+
+	    $(function() {
+		    $('.summernote').summernote({
+		    	placeholder: '请输入新闻内容',
+				height : 300,
+				lang : 'zh-CN',
+				followingToolbar: false,
+				dialogsInBody: true,
+				callbacks: {
+	                onImageUpload: function (files) {
+	                    sendFile(files[0], this);
+	                }
+	            }
+			});
+			var content = $("#content").val();
+		    $('#editor').summernote('code', content);
+	    });
+	    
+	    // 上传文件
+	    function sendFile(file, obj) {
+	        var data = new FormData();
+	        data.append("file", file);
+	        $.ajax({
+	            type: "POST",
+	            url: ctx + "common/upload",
+	            data: data,
+	            cache: false,
+	            contentType: false,
+	            processData: false,
+	            dataType: 'json',
+	            success: function(result) {
+	                if (result.code == web_status.SUCCESS) {
+	                	$(obj).summernote('editor.insertImage', result.url, result.fileName);
+					} else {
+						$.modal.alertError(result.msg);
+					}
+	            },
+	            error: function(error) {
+	                $.modal.alertWarning("图片上传失败。");
+	            }
+	        });
+	    }
+		
+		$("#form-news-edit").validate({
+			focusCleanup: true
+		});
+		
+		function submitHandler() {
+	        if ($.validate.form()) {
+	        	var sHTML = $('.summernote').summernote('code');
+				$("#content").val(sHTML);
+				$.operate.save(prefix + "/edit", $('#form-news-edit').serialize());
+	        }
+	    }
+	</script>
+</body>
+</html>

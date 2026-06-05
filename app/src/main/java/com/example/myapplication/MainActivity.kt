@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager2
     private lateinit var prefManager: PrefManager
-    private val tabTitles = listOf("头条新闻", "体育新闻", "科技新闻")
+    private val tabTitles = listOf("推荐", "科技", "生活", "体育", "娱乐", "财经")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +61,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_search -> {
+                val intent = Intent(this, SearchActivity::class.java)
+                startActivity(intent)
+                true
+            }
             R.id.menu_change_password -> {
                 val intent = Intent(this, ChangePasswordActivity::class.java)
                 startActivity(intent)

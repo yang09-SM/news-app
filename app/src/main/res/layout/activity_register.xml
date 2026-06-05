@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F5F5F5">
+    android:background="@color/bg_color">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -16,70 +16,120 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="24dp"
+            android:gravity="center_horizontal">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 android:layout_marginTop="40dp"
-                android:hint="用户名">
+                android:src="@mipmap/ic_launcher"
+                android:contentDescription="@string/app_name" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etUsername"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="密码"
-                app:passwordToggleEnabled="true">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="确认密码"
-                app:passwordToggleEnabled="true">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etConfirmPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRegister"
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="注册"
-                android:textSize="16sp" />
+                android:text="新闻资讯"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/fg_color" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="创建新账号，开始您的新闻之旅"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="40dp"
+                android:orientation="vertical"
+                android:background="@drawable/login_card_background"
+                android:padding="24dp"
+                android:elevation="4dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="用户名"
+                    app:boxBackgroundColor="@color/muted_color"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:hintTextColor="@color/text_secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:textColor="@color/fg_color" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="密码"
+                    app:passwordToggleEnabled="true"
+                    app:boxBackgroundColor="@color/muted_color"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:hintTextColor="@color/text_secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:textColor="@color/fg_color" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="确认密码"
+                    app:passwordToggleEnabled="true"
+                    app:boxBackgroundColor="@color/muted_color"
+                    app:boxStrokeColor="@color/primary_color"
+                    app:hintTextColor="@color/text_secondary">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etConfirmPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:textColor="@color/fg_color" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRegister"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="24dp"
+                    android:text="注册"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="@color/primary_color"
+                    app:cornerRadius="12dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
@@ -87,7 +137,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="已有账号？"
-                    android:textColor="#666666" />
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary" />
 
                 <TextView
                     android:id="@+id/tvLogin"
@@ -95,6 +146,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="立即登录"
+                    android:textSize="14sp"
                     android:textColor="@color/primary_color"
                     android:textStyle="bold" />
             </LinearLayout>

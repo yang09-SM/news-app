@@ -597,7 +597,7 @@
         </div>
 
 
-        <div id="nav-categories" class="nav-item" data-uuid="news-list-main">
+        <div id="nav-categories" class="nav-item" data-uuid="categories">
 
           <i class="fas fa-th-large text-xl"></i>
 
@@ -862,7 +862,7 @@
         try {
           //为#nav-categories元素添加click事件监听器
           document.getElementById(`nav-categories`).addEventListener('click', function(event) {
-            ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=news-list-main&version=1&pageType=app&w=440&h=956');
+            ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=categories&version=1&pageType=app&w=440&h=956');
           })
         } catch (e) {
           console.error('OpenPage error:', e);

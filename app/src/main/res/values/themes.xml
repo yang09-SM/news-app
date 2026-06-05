@@ -3,10 +3,13 @@
         <item name="colorPrimary">@color/primary_color</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/accent_color</item>
-        <item name="colorSecondaryVariant">@color/accent_color</item>
+        <item name="colorSecondary">@color/secondary_color</item>
+        <item name="colorSecondaryVariant">@color/secondary_color</item>
+        <item name="colorTertiary">@color/tertiary_color</item>
         <item name="colorOnSecondary">@color/white</item>
-        <item name="android:statusBarColor">@color/primary_dark</item>
+        <item name="android:statusBarColor">@color/primary_color</item>
+        <item name="android:windowBackground">@color/bg_color</item>
+        <item name="android:colorBackground">@color/bg_color</item>
     </style>
 
     <style name="Theme.MyApplication" parent="Base.Theme.MyApplication" />

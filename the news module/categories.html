@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>趣何 (GeoPop) - 分类</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#FFFDF5',
+                        fg: '#1E293B',
+                        muted: '#F1F5F9',
+                        accent: '#8B5CF6',
+                        secondary: '#F472B6',
+                        tertiary: '#FBBF24',
+                        quaternary: '#34D399',
+                        bordercol: '#1E293B',
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        display: ['"Outfit"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'pop': '4px 4px 0px 0px #1E293B',
+                        'pop-hover': '6px 6px 0px 0px #1E293B',
+                        'pop-active': '2px 2px 0px 0px #1E293B',
+                        'pop-soft': '4px 4px 0px 0px #cbd5e1',
+                    },
+                    borderRadius: {
+                        'blob': '24px 24px 24px 4px',
+                        'pill': '9999px',
+                    },
+                    borderWidth: {
+                        '3': '3px',
+                    },
+                    transitionTimingFunction: {
+                        'bounce-custom': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .bg-dot-pattern {
+                background-image: radial-gradient(#cbd5e1 2px, transparent 2px);
+                background-size: 24px 24px;
+            }
+            .text-outline {
+                -webkit-text-stroke: 1px #1E293B;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+        }
+        @layer components {
+            .btn-candy {
+                @apply bg-accent text-white font-bold rounded-pill border-2 border-fg shadow-pop hover:shadow-pop-hover hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-pop-active transition-all duration-300 ease-bounce-custom flex items-center justify-center gap-2 px-6 py-3;
+            }
+            .btn-secondary {
+                @apply bg-white text-fg font-bold rounded-pill border-2 border-fg hover:bg-tertiary transition-colors duration-300 px-6 py-3;
+            }
+            .card-sticker {
+                @apply bg-white border-2 border-fg rounded-2xl shadow-pop transition-transform duration-300 ease-bounce-custom hover:-rotate-1 hover:scale-[1.01];
+            }
+            .category-card {
+                @apply bg-white border-2 border-fg rounded-2xl shadow-pop transition-all duration-300 ease-bounce-custom hover:shadow-pop-hover hover:-translate-y-1 cursor-pointer overflow-hidden;
+            }
+            .icon-circle {
+                @apply w-10 h-10 flex items-center justify-center rounded-full border-2 border-fg bg-white shadow-pop-active hover:shadow-pop hover:-translate-y-0.5 transition-all duration-300 cursor-pointer;
+            }
+            .input-geo {
+                @apply bg-white border-2 border-gray-300 rounded-lg w-full px-4 py-3 text-fg placeholder-gray-400 focus:outline-none focus:border-accent focus:shadow-[4px_4px_0px_0px_#8B5CF6] transition-all;
+            }
+            .nav-item {
+                @apply flex flex-col items-center justify-center gap-1 py-2 px-3 transition-all duration-300;
+            }
+            .nav-item-active {
+                @apply text-accent;
+            }
+        }
+        body {
+            background-color: #FFFDF5;
+            color: #1E293B;
+            overflow-x: hidden;
+        }
+        .modal-mask.hidden {
+            display: none;
+        }
+    </style>
+    <style>
+        @keyframes yt_modalFadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        @keyframes yt_modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        ::-webkit-scrollbar {
+            width: 0px;
+        }
+    </style>
+</head>
+<body class="bg-bg">
+    <!-- 顶部导航栏 -->
+    <header class="fixed top-0 left-0 right-0 h-16 bg-bg border-b-2 border-fg z-50">
+        <div class="container mx-auto h-full px-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 rounded-blob bg-accent border-2 border-fg flex items-center justify-center text-white">
+                    <i class="fas fa-globe-americas text-xl"></i>
+                </div>
+                <h1 class="font-display font-extrabold text-2xl text-fg">趣何资讯</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <button type="button" id="search-btn" class="icon-circle">
+                    <i class="fas fa-search text-fg"></i>
+                </button>
+                <button type="button" id="user-menu-btn" class="icon-circle" data-uuid="about_activity">
+                    <i class="fas fa-user text-fg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 搜索弹窗 -->
+    <div id="search-mask" class="modal-mask fixed inset-0 bg-black/50 z-40 hidden">
+        <div class="absolute top-0 left-0 right-0 bg-white p-4 border-b-2 border-fg">
+            <div class="flex gap-3 items-center">
+                <input type="text" placeholder="搜索新闻..." class="input-geo flex-1">
+                <button type="button" id="close-search" class="btn-secondary p-3">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <main class="pt-24 pb-20 px-4 min-h-[calc(100%-88px)]">
+        <!-- 页面标题 -->
+        <div class="mb-8">
+            <h2 class="font-display font-extrabold text-3xl text-fg mb-2">新闻分类</h2>
+            <p class="text-gray-600">选择你感兴趣的新闻分类</p>
+        </div>
+
+        <!-- 分类卡片网格 -->
+        <div class="grid grid-cols-2 gap-4">
+            <!-- 推荐 -->
+            <div class="category-card" data-category="recommend">
+                <div class="p-6 flex flex-col items-center">
+                    <div class="w-16 h-16 rounded-2xl bg-accent border-2 border-fg flex items-center justify-center mb-4">
+                        <i class="fas fa-fire text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-xl text-fg">推荐</h3>
+                </div>
+            </div>
+
+            <!-- 科技 -->
+            <div class="category-card" data-category="tech">
+                <div class="p-6 flex flex-col items-center">
+                    <div class="w-16 h-16 rounded-2xl bg-secondary border-2 border-fg flex items-center justify-center mb-4">
+                        <i class="fas fa-microchip text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-xl text-fg">科技</h3>
+                </div>
+            </div>
+
+            <!-- 生活 -->
+            <div class="category-card" data-category="life">
+                <div class="p-6 flex flex-col items-center">
+                    <div class="w-16 h-16 rounded-2xl bg-tertiary border-2 border-fg flex items-center justify-center mb-4">
+                        <i class="fas fa-heart text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-xl text-fg">生活</h3>
+                </div>
+            </div>
+
+            <!-- 体育 -->
+            <div class="category-card" data-category="sports">
+                <div class="p-6 flex flex-col items-center">
+                    <div class="w-16 h-16 rounded-2xl bg-quaternary border-2 border-fg flex items-center justify-center mb-4">
+                        <i class="fas fa-futbol text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-xl text-fg">体育</h3>
+                </div>
+            </div>
+
+            <!-- 娱乐 -->
+            <div class="category-card" data-category="entertainment">
+                <div class="p-6 flex flex-col items-center">
+                    <div class="w-16 h-16 rounded-2xl bg-accent border-2 border-fg flex items-center justify-center mb-4">
+                        <i class="fas fa-film text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-xl text-fg">娱乐</h3>
+                </div>
+            </div>
+
+            <!-- 财经 -->
+            <div class="category-card" data-category="finance">
+                <div class="p-6 flex flex-col items-center">
+                    <div class="w-16 h-16 rounded-2xl bg-secondary border-2 border-fg flex items-center justify-center mb-4">
+                        <i class="fas fa-chart-line text-white text-2xl"></i>
+                    </div>
+                    <h3 class="font-display font-bold text-xl text-fg">财经</h3>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部导航栏 -->
+    <nav class="fixed bottom-0 left-0 right-0 h-16 bg-white border-t-2 border-fg z-50">
+        <div class="h-full grid grid-cols-4 px-2">
+            <div id="nav-home" class="nav-item" data-uuid="news-list-main">
+                <i class="fas fa-home text-xl"></i>
+                <span class="text-xs font-medium">首页</span>
+            </div>
+            <div id="nav-categories" class="nav-item nav-item-active" data-uuid="categories">
+                <i class="fas fa-th-large text-xl"></i>
+                <span class="text-xs font-medium">分类</span>
+            </div>
+            <div id="nav-favorite" class="nav-item" data-uuid="news-list-main">
+                <i class="far fa-bookmark text-xl"></i>
+                <span class="text-xs font-medium">收藏</span>
+            </div>
+            <div id="nav-profile" class="nav-item" data-uuid="about_activity">
+                <i class="fas fa-user-circle text-xl"></i>
+                <span class="text-xs font-medium">我的</span>
+            </div>
+        </div>
+    </nav>
+
+    <script></script>
+    <script>
+        window.ytHandles = {
+            openPage: function(url) {
+                url += "&v=" + Math.random().toString(36).substring(2);
+                window.open(url, '_self');
+            },
+            show: function(targetId, callback) {
+                const modal = document.getElementById(targetId);
+                if (!modal) { console.error('Modal element not found: targetId'); return; }
+
+                const clearChildrenStyles = function(element) {
+                    if (!element) return;
+                    const children = element.children;
+                    for (let i = 0; i < children.length; i++) {
+                        const child = children[i];
+                        child.classList.remove("hidden");
+                        child.style.display = "";
+                        child.style.visibility = "";
+                        child.style.opacity = "";
+                        child.style.transform = "";
+                        child.style.animation = "";
+                        clearChildrenStyles(child);
+                    }
+                };
+
+                if (modal._hideAnimationEndHandler) {
+                    modal.removeEventListener("animationend", modal._hideAnimationEndHandler);
+                    delete modal._hideAnimationEndHandler;
+                }
+                if (modal._hideTimeout) {
+                    clearTimeout(modal._hideTimeout);
+                    delete modal._hideTimeout;
+                }
+
+                modal.classList.remove("hidden");
+                modal.style.display = "";
+                modal.style.visibility = "";
+                modal.style.opacity = "";
+                modal.style.transform = "";
+                modal.style.animation = "";
+                clearChildrenStyles(modal);
+                void modal.offsetHeight;
+                modal.style.animation = 'yt_modalFadeIn 0.3s ease-out';
+
+                const onAnimationEnd = function() {
+                    modal.style.animation = "";
+                    delete modal._showAnimationEndHandler;
+                };
+                modal._showAnimationEndHandler = onAnimationEnd;
+                modal.addEventListener("animationend", onAnimationEnd, { once: true });
+                if (callback) callback();
+            },
+            hide: function(targetId) {
+                const modal = document.getElementById(targetId);
+                if (!modal) { console.error('Modal element not found: targetId'); return; }
+
+                if (modal._hideTimeout) clearTimeout(modal._hideTimeout);
+                if (modal._showAnimationEndHandler) {
+                    modal.removeEventListener("animationend", modal._showAnimationEndHandler);
+                    delete modal._showAnimationEndHandler;
+                }
+                modal.style.animation = "";
+                void modal.offsetHeight;
+                modal.style.animation = 'yt_modalFadeOut 0.3s ease-out';
+
+                let animationCompleted = false;
+                const onAnimationEnd = function () {
+                    if (animationCompleted) return;
+                    animationCompleted = true;
+                    modal.classList.add("hidden");
+                    modal.style.display = "";
+                    modal.style.visibility = "";
+                    modal.style.opacity = "";
+                    modal.style.animation = "";
+                    modal.style.transform = "";
+                    delete modal._hideAnimationEndHandler;
+                    if (modal._hideTimeout) {
+                        clearTimeout(modal._hideTimeout);
+                        delete modal._hideTimeout;
+                    }
+                };
+
+                modal._hideAnimationEndHandler = onAnimationEnd;
+                modal.addEventListener("animationend", onAnimationEnd, { once: true });
+                modal._hideTimeout = setTimeout(onAnimationEnd, 400);
+            },
+            removeClassNames: function(targetId, classNames) {
+                const target = document.getElementById(targetId);
+                if (!target) { console.error('Modal element not found: ' + targetId); return; }
+                if (!classNames) { console.warn('No class names provided'); return; }
+                const classNamesArray = classNames.split(',') || [];
+                classNamesArray.forEach(className => {
+                    className = className.trim();
+                    if (className) { target.classList.remove(className); }
+                });
+            },
+            addClassNames: function(targetId, classNames) {
+                const target = document.getElementById(targetId);
+                if (!target) { console.error('Modal element not found: ' + targetId); return; }
+                if (!classNames) { console.warn('No class names provided'); return; }
+                const classNamesArray = classNames.split(',') || [];
+                classNamesArray.forEach(className => {
+                    className = className.trim();
+                    if (className) { target.classList.add(className); }
+                });
+            }
+        };
+
+        window.onload = function() {
+            try {
+                document.getElementById('search-btn').addEventListener('click', function(event) {
+                    ytHandles.show('search-mask', null);
+                });
+            } catch (e) {
+                console.error('OpenModal error:', e);
+            }
+
+            try {
+                document.getElementById('close-search').addEventListener('click', function(event) {
+                    ytHandles.hide('search-mask');
+                });
+            } catch (e) {
+                console.error('CloseModal error:', e);
+            }
+
+            try {
+                [...document.querySelectorAll('.category-card')].forEach(function(item) {
+                    item.addEventListener('click', function(event) {
+                        ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=news-list-main&version=1&pageType=app&w=440&h=956');
+                    });
+                });
+            } catch (e) {
+                console.error('OpenPage error:', e);
+            }
+
+            try {
+                document.getElementById('nav-home').addEventListener('click', function(event) {
+                    ytHandles.removeClassNames('nav-home', 'nav-item-active');
+                    ytHandles.removeClassNames('nav-categories', 'nav-item-active');
+                    ytHandles.removeClassNames('nav-favorite', 'nav-item-active');
+                    ytHandles.removeClassNames('nav-profile', 'nav-item-active');
+                });
+            } catch (e) {
+                console.error('removeClass error:', e);
+            }
+
+            try {
+                document.getElementById('nav-home').addEventListener('click', function(event) {
+                    ytHandles.addClassNames('nav-home', 'nav-item-active');
+                });
+            } catch (e) {
+                console.error('addClass error:', e);
+            }
+
+            try {
+                document.getElementById('nav-categories').addEventListener('click', function(event) {
+                    ytHandles.removeClassNames('nav-home', 'nav-item-active');
+                    ytHandles.removeClassNames('nav-categories', 'nav-item-active');
+                    ytHandles.removeClassNames('nav-favorite', 'nav-item-active');
+                    ytHandles.removeClassNames('nav-profile', 'nav-item-active');
+                });
+            } catch (e) {
+                console.error('removeClass error:', e);
+            }
+
+            try {
+                document.getElementById('nav-categories').addEventListener('click', function(event) {
+                    ytHandles.addClassNames('nav-categories', 'nav-item-active');
+                });
+            } catch (e) {
+                console.error('addClass error:', e);
+            }
+
+            try {
+                document.getElementById('nav-favorite').addEventListener('click', function(event) {
+                    ytHandles.removeClassNames('nav-home', 'nav-item-active');
+                    ytHandles.removeClassNames('nav-categories', 'nav-item-active');
+                    ytHandles.removeClassNames('nav-favorite', 'nav-item-active');
+                    ytHandles.removeClassNames('nav-profile', 'nav-item-active');
+                });
+            } catch (e) {
+                console.error('removeClass error:', e);
+            }
+
+            try {
+                document.getElementById('nav-favorite').addEventListener('click', function(event) {
+                    ytHandles.addClassNames('nav-favorite', 'nav-item-active');
+                });
+            } catch (e) {
+                console.error('addClass error:', e);
+            }
+
+            try {
+                document.getElementById('nav-profile').addEventListener('click', function(event) {
+                    ytHandles.removeClassNames('nav-home', 'nav-item-active');
+                    ytHandles.removeClassNames('nav-categories', 'nav-item-active');
+                    ytHandles.removeClassNames('nav-favorite', 'nav-item-active');
+                    ytHandles.removeClassNames('nav-profile', 'nav-item-active');
+                });
+            } catch (e) {
+                console.error('removeClass error:', e);
+            }
+
+            try {
+                document.getElementById('nav-profile').addEventListener('click', function(event) {
+                    ytHandles.addClassNames('nav-profile', 'nav-item-active');
+                });
+            } catch (e) {
+                console.error('addClass error:', e);
+            }
+
+            try {
+                document.getElementById('user-menu-btn').addEventListener('click', function(event) {
+                    ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=about_activity&version=1&pageType=app&w=440&h=956');
+                });
+            } catch (e) {
+                console.error('OpenPage error:', e);
+            }
+
+            try {
+                document.getElementById('nav-home').addEventListener('click', function(event) {
+                    ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=news-list-main&version=1&pageType=app&w=440&h=956');
+                });
+            } catch (e) {
+                console.error('OpenPage error:', e);
+            }
+
+            try {
+                document.getElementById('nav-categories').addEventListener('click', function(event) {
+                    ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=categories&version=1&pageType=app&w=440&h=956');
+                });
+            } catch (e) {
+                console.error('OpenPage error:', e);
+            }
+
+            try {
+                document.getElementById('nav-favorite').addEventListener('click', function(event) {
+                    ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=news-list-main&version=1&pageType=app&w=440&h=956');
+                });
+            } catch (e) {
+                console.error('OpenPage error:', e);
+            }
+
+            try {
+                document.getElementById('nav-profile').addEventListener('click', function(event) {
+                    ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=about_activity&version=1&pageType=app&w=440&h=956');
+                });
+            } catch (e) {
+                console.error('OpenPage error:', e);
+            }
+        };
+    </script>
+</body>
+</html>

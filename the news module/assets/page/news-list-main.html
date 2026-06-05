@@ -283,7 +283,7 @@
      <i class="fas fa-home text-xl"></i> 
      <span class="text-xs font-medium">首页</span> 
     </div> 
-    <div id="nav-categories" class="nav-item" data-uuid="news-list-main"> 
+    <div id="nav-categories" class="nav-item" data-uuid="categories"> 
      <i class="fas fa-th-large text-xl"></i> 
      <span class="text-xs font-medium">分类</span> 
     </div> 
@@ -582,7 +582,7 @@ window.onload = function(){
         try {
           //为#nav-categories元素添加点击事件监听器
           document.getElementById('nav-categories').addEventListener('click',function(event){
-             ytHandles.openPage('news-list-main');
+             ytHandles.openPage('categories');
           })
         } catch (e) {
           console.error('OpenPage error:', e);
