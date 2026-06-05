@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>登录</title> 
+  <script src="./login_activity/resource_4334710000.js"></script> 
+  <link rel="stylesheet" href="./login_activity/all.min.css"> 
+  <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2196F3',
+                        background: '#F5F5F5',
+                        card: '#FFFFFF',
+                        textGray: '#757575'
+                    },
+                    spacing: {
+                        'toolbar': '56px'
+                    }
+                }
+            }
+        };
+    </script> 
+  <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .input-focus {
+                @apply border-primary ring-1 ring-primary;
+            }
+        }
+        .modal-mask.hidden {
+            display: none;
+        }
+    </style>
+  <style>
+    ::-webkit-scrollbar {
+        width: 0px;
+    }
+</style> 
+ </head> 
+ <body class="bg-background min-h-screen"> 
+  <!-- 顶部Toolbar --> 
+  <header class="fixed top-0 left-0 w-full bg-primary h-toolbar flex items-center px-4 z-10"> 
+   <h1 class="text-white text-xl font-medium w-full text-center">登录</h1> 
+  </header> 
+  <!-- 主体内容 --> 
+  <main class="pt-toolbar min-h-full px-6 py-8"> 
+   <div class="bg-card rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] p-8 mb-6"> 
+    <!-- 用户名输入框 --> 
+    <div class="mb-6"> 
+     <label class="block text-gray-700 text-sm font-medium mb-2">用户名</label> 
+     <div class="relative"> 
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400"> <i class="fas fa-user"></i> </span> 
+      <input type="text" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:input-focus transition-all" placeholder="请输入用户名"> 
+     </div> 
+    </div> 
+    <!-- 密码输入框 --> 
+    <div class="mb-8"> 
+     <label class="block text-gray-700 text-sm font-medium mb-2">密码</label> 
+     <div class="relative"> 
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400"> <i class="fas fa-lock"></i> </span> 
+      <input type="password" class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:input-focus transition-all" placeholder="请输入密码"> 
+      <button type="button" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400" id="togglePassword"> <i class="fas fa-eye"></i> </button> 
+     </div> 
+    </div> 
+    <!-- 登录按钮 --> 
+    <button type="button" id="loginBtn" class="w-full bg-primary text-white py-3 rounded-lg font-medium text-base hover:bg-primary/90 transition-all shadow-md"> 登录 </button> 
+   </div> 
+   <!-- 注册提示 --> 
+   <div class="text-center"> 
+    <span class="text-textGray text-sm">还没有账号？</span> 
+    <a href="javascript:void(0);" id="goRegister" data-uuid="register_activity" class="text-primary text-sm font-medium ml-1">立即注册</a> 
+   </div> 
+  </main> 
+  <!-- 交互数据 --> 
+  <!-- 密码显示隐藏切换函数 --> 
+  <script id="togglePasswordVisibility">
+function togglePasswordVisibility(event) {
+    const button = event.currentTarget;
+    const icon = button.querySelector('i');
+    const input = button.parentElement.querySelector('input');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+    </script> 
+  <script>
+var pageUuid = "";
+        window.ytHandles = {
+        openPage: function(url) {
+            // 当前窗口打开url页面
+            window.open(url + '.html', '_self');
+        }
+        };
+window.onload = function(){
+        try {
+          //为#togglePassword元素添加点击事件监听器
+          document.getElementById('togglePassword').addEventListener('click',function(event){
+             togglePasswordVisibility(event);
+          })
+        } catch (e) {
+          console.error('JsHandle error:', e);
+        }
+        try {
+          //为#goRegister元素添加点击事件监听器
+          document.getElementById('goRegister').addEventListener('click',function(event){
+             ytHandles.openPage('register_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+};
+</script>  
+ </body>
+</html>

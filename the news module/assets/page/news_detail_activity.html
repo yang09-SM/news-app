@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>新闻详情</title> 
+  <!-- Google Fonts --> 
+  <link rel="preconnect" href="https://fonts.googleapis.com"> 
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+  <link href="./news_detail_activity/css2" rel="stylesheet"> 
+  <!-- Font Awesome --> 
+  <link href="./news_detail_activity/all.min.css" rel="stylesheet"> 
+  <!-- Tailwind CSS --> 
+  <script src="./news_detail_activity/resource_3422110000.js"></script> 
+  <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#FFFDF5',        // Warm Cream
+                        fg: '#1E293B',        // Slate 800
+                        muted: '#F1F5F9',
+                        accent: '#8B5CF6',    // Vivid Violet
+                        secondary: '#F472B6', // Hot Pink
+                        tertiary: '#FBBF24',  // Amber
+                        quaternary: '#34D399',// Mint
+                        bordercol: '#1E293B', // Dark border for high contrast
+                        primary: '#2196F3',
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        display: ['"Outfit"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'pop': '4px 4px 0px 0px #1E293B',
+                        'pop-hover': '6px 6px 0px 0px #1E293B',
+                        'pop-active': '2px 2px 0px 0px #1E293B',
+                        'pop-soft': '4px 4px 0px 0px #cbd5e1',
+                    },
+                    borderRadius: {
+                        'blob': '24px 24px 24px 4px',
+                        'pill': '9999px',
+                    },
+                    borderWidth: {
+                        '3': '3px',
+                    },
+                    transitionTimingFunction: {
+                        'bounce-custom': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    },
+                    spacing: {
+                        'toolbar': '56px'
+                    }
+                }
+            }
+        }
+    </script> 
+  <style type="text/tailwindcss">
+        @layer utilities {
+            .bg-dot-pattern {
+                background-image: radial-gradient(#cbd5e1 2px, transparent 2px);
+                background-size: 24px 24px;
+            }
+            
+            .text-outline {
+                -webkit-text-stroke: 1px #1E293B;
+            }
+        }
+        @layer components {
+            .btn-candy {
+                @apply bg-accent text-white font-bold rounded-pill border-2 border-fg shadow-pop hover:shadow-pop-hover hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-pop-active transition-all duration-300 ease-bounce-custom flex items-center justify-center gap-2 px-6 py-3;
+            }
+            .btn-secondary {
+                @apply bg-white text-fg font-bold rounded-pill border-2 border-fg hover:bg-tertiary transition-colors duration-300 px-6 py-3;
+            }
+            .card-sticker {
+                @apply bg-white border-2 border-fg rounded-2xl shadow-pop transition-transform duration-300 ease-bounce-custom hover:-rotate-1 hover:scale-[1.01];
+            }
+            .input-geo {
+                @apply bg-white border-2 border-gray-300 rounded-lg w-full px-4 py-3 text-fg placeholder-gray-400 focus:outline-none focus:border-accent focus:shadow-[4px_4px_0px_0px_#8B5CF6] transition-all;
+            }
+            .icon-circle {
+                @apply w-10 h-10 flex items-center justify-center rounded-full border-2 border-fg bg-white shadow-pop-active hover:shadow-pop hover:-translate-y-0.5 transition-all duration-300 cursor-pointer;
+            }
+        }
+        
+        body {
+            background-color: #FFFDF5;
+            color: #1E293B;
+            overflow-x: hidden;
+        }
+        .modal-mask.hidden {
+            display: none;
+        }
+    </style>
+  <style>
+    ::-webkit-scrollbar {
+        width: 0px;
+    }
+</style> 
+ </head> 
+ <body class="font-sans"> 
+  <!-- 顶部Toolbar --> 
+  <header class="fixed top-0 left-0 w-full bg-primary h-toolbar flex items-center px-4 z-10"> 
+   <button id="backBtn" type="button" class="text-white text-xl mr-4"> <i class="fas fa-arrow-left"></i> </button> 
+   <h1 class="text-white text-xl font-medium w-full text-center pr-8">新闻详情</h1> 
+  </header> 
+  <!-- 主体内容区域 --> 
+  <main class="pt-toolbar w-full min-h-[calc(100%-56px)] bg-bg"> 
+   <!-- 新闻内容容器 --> 
+   <div class="w-full bg-white min-h-[calc(100%-56px)] shadow-[0_8px_30px_rgba(0,0,0,0.04)]"> 
+    <!-- 模拟WebView内容区域 --> 
+    <div class="p-6"> 
+     <!-- 新闻封面图片 --> 
+     <div class="w-full rounded-xl overflow-hidden mb-6 shadow-[0_4px_20px_rgba(0,0,0,0.08)]"> 
+      <img src="./news_detail_activity/8fbd1bb5077805bbc46d85e636822bd6.png" alt="新闻封面" class="w-full object-cover"> 
+     </div> 
+     <!-- 新闻标题 --> 
+     <h1 class="text-[clamp(1.5rem,5vw,2.2rem)] font-display font-bold text-fg leading-tight mb-4"> 人工智能技术在医疗领域的突破性应用进展 </h1> 
+     <!-- 新闻信息 --> 
+     <div class="flex items-center gap-4 text-gray-500 text-sm mb-6 pb-4 border-b border-gray-200"> 
+      <span class="flex items-center gap-1"><i class="fas fa-user"></i> 科技日报</span> 
+      <span class="flex items-center gap-1"><i class="fas fa-calendar"></i> 2024-01-15</span> 
+      <span class="flex items-center gap-1"><i class="fas fa-eye"></i> 12,580</span> 
+     </div> 
+     <!-- 新闻正文内容 --> 
+     <div class="prose prose-lg max-w-none text-fg leading-relaxed"> 
+      <p class="mb-4"> 近日，人工智能技术在医疗诊断领域取得了重要突破。研究人员开发出一种新型深度学习算法，能够在早期阶段准确识别多种癌症病变，准确率达到了95%以上，远超传统诊断方法。 </p> 
+      <h2 class="text-xl font-bold text-fg mt-8 mb-4">技术突破带来新希望</h2> 
+      <p class="mb-4"> 这项由国内外多家科研机构联合研发的新技术，通过对数百万份医学影像数据的训练，建立了精准的病变识别模型。与传统方法相比，该技术不仅提高了诊断准确率，还将诊断时间从数小时缩短到几分钟，大大提高了医疗效率。 </p> 
+      <blockquote class="bg-muted border-l-4 border-accent pl-4 py-2 my-6 italic">
+        "人工智能正在改变医疗行业的面貌，它将成为医生最得力的助手，帮助我们挽救更多生命。" —— 项目负责人张教授 
+      </blockquote> 
+      <h2 class="text-xl font-bold text-fg mt-8 mb-4">应用前景广阔</h2> 
+      <p class="mb-4"> 该技术目前已经在多家三甲医院进行临床试验，初步结果显示效果显著。专家预计，这项技术将在未来两年内逐步推广应用到全国各级医疗机构，届时将大幅提高癌症早期筛查的覆盖率和准确率。 </p> 
+      <div class="bg-muted rounded-xl p-4 my-6"> 
+       <h3 class="font-bold text-fg mb-2">核心优势：</h3> 
+       <ul class="list-disc pl-5 space-y-1"> 
+        <li>早期诊断准确率超过95%</li> 
+        <li>诊断速度提升10倍以上</li> 
+        <li>可识别超过20种常见癌症</li> 
+        <li>成本低于传统检测方法30%</li> 
+       </ul> 
+      </div> 
+      <p class="mb-4"> 除了癌症诊断，这项技术还可以应用于X光片、CT、MRI等多种医学影像的辅助诊断，未来发展空间巨大。研究团队表示，下一步将继续优化算法，扩大训练数据集，进一步提高诊断准确率。 </p> 
+      <h2 class="text-xl font-bold text-fg mt-8 mb-4">专家观点</h2> 
+      <p class="mb-4"> 业内专家指出，人工智能与医疗健康的深度融合是未来发展的必然趋势。随着技术的不断进步，AI将在疾病预防、诊断、治疗、康复等各个环节发挥越来越重要的作用，为人类健康事业做出更大贡献。 </p> 
+      <p class="mb-4"> 同时，专家也强调，人工智能只是辅助工具，不能完全替代医生的专业判断。未来的医疗模式将是人机协作，充分发挥各自优势，为患者提供更好的医疗服务。 </p> 
+      <div class="mt-8 pt-6 border-t border-gray-200"> 
+       <p class="text-gray-500 text-sm">本文由科技日报原创，转载请注明出处</p> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+  </main> 
+  <!-- 交互数据 --> 
+  <script>
+var pageUuid = "";
+        window.ytHandles = {
+        //浏览器回退功能
+        back: function() {
+            if (window.history && window.history.length > 1) {
+                window.history.back();
+            } else {
+                console.warn('No history to go back');
+            }
+        }
+        };
+window.onload = function(){
+        try {
+          //为#backBtn元素添加点击事件监听器
+          document.getElementById('backBtn').addEventListener('click',function(event){
+             ytHandles.back();
+          })
+        } catch (e) {
+          console.error('Back error:', e);
+        }
+};
+</script>  
+ </body>
+</html>

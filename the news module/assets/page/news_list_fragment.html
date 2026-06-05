@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>新闻列表</title> 
+  <script src="./news_list_fragment/resource_1130010000.js"></script> 
+  <link rel="stylesheet" href="./news_list_fragment/all.min.css"> 
+  <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2196F3',
+                        background: '#F5F5F5',
+                        card: '#FFFFFF',
+                        textGray: '#757575',
+                    },
+                    spacing: {
+                        'toolbar': '56px',
+                    }
+                }
+            }
+        };
+    </script> 
+  <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .input-focus {
+                @apply border-primary ring-1 ring-primary;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        }
+        .modal-mask.hidden {
+            display: none;
+        }
+    </style>
+  <style>
+    ::-webkit-scrollbar {
+        width: 0px;
+    }
+</style> 
+ </head> 
+ <body class="bg-background"> 
+  <!-- 新闻列表容器 --> 
+  <div class="w-full min-h-[calc(100%-56px)] pt-toolbar pb-4"> 
+   <div class="container mx-auto px-4"> 
+    <!-- 新闻列表 --> 
+    <div class="space-y-4 pt-4"> 
+     <!-- 新闻条目 1 --> 
+     <div class="news-item bg-card rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden cursor-pointer" data-id="1" data-uuid="news_detail_activity" id="news-item-1"> 
+      <div class="flex p-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-md overflow-hidden"> 
+        <img src="./news_list_fragment/89d12e89f5db2f070be080b2fb8c7b05.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 ml-3 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold line-clamp-2 leading-tight"> 人工智能技术取得重大突破，新一代大模型性能提升超过30% </h3> 
+        <div class="mt-2"> 
+         <p class="text-textGray text-[14px]">科技日报</p> 
+         <p class="text-textGray text-[12px] mt-1">2024-01-15 09:30</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 新闻条目 2 --> 
+     <div class="news-item bg-card rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden cursor-pointer" data-id="2" data-uuid="news_detail_activity" id="news-item-2"> 
+      <div class="flex p-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-md overflow-hidden"> 
+        <img src="./news_list_fragment/a0fd86d1ed158af10d2ade1435e2eb86.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 ml-3 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold line-clamp-2 leading-tight"> 全球经济增长预期上调，多国央行维持稳健货币政策 </h3> 
+        <div class="mt-2"> 
+         <p class="text-textGray text-[14px]">财经时报</p> 
+         <p class="text-textGray text-[12px] mt-1">2024-01-14 18:45</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 新闻条目 3 --> 
+     <div class="news-item bg-card rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden cursor-pointer" data-id="3" data-uuid="news_detail_activity" id="news-item-3"> 
+      <div class="flex p-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-md overflow-hidden"> 
+        <img src="./news_list_fragment/de918926cd0ed2a4db7ece19e3a727ff.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 ml-3 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold line-clamp-2 leading-tight"> 新研究发现：坚持这五种生活习惯可显著延长寿命 </h3> 
+        <div class="mt-2"> 
+         <p class="text-textGray text-[14px]">健康周刊</p> 
+         <p class="text-textGray text-[12px] mt-1">2024-01-14 10:20</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 新闻条目 4 --> 
+     <div class="news-item bg-card rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden cursor-pointer" data-id="4" data-uuid="news_detail_activity" id="news-item-4"> 
+      <div class="flex p-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-md overflow-hidden"> 
+        <img src="./news_list_fragment/fb57bdcd4006dfa0f2878299ecef9f54.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 ml-3 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold line-clamp-2 leading-tight"> 国内新能源汽车销量再创新高，同比增长超过50% </h3> 
+        <div class="mt-2"> 
+         <p class="text-textGray text-[14px]">汽车周刊</p> 
+         <p class="text-textGray text-[12px] mt-1">2024-01-13 14:15</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 新闻条目 5 --> 
+     <div class="news-item bg-card rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden cursor-pointer" data-id="5" data-uuid="news_detail_activity" id="news-item-5"> 
+      <div class="flex p-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-md overflow-hidden"> 
+        <img src="./news_list_fragment/864768c273aaa5ca4d3103139a6837ad.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 ml-3 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold line-clamp-2 leading-tight"> 教育部发布新政策，推动义务教育优质均衡发展 </h3> 
+        <div class="mt-2"> 
+         <p class="text-textGray text-[14px]">教育日报</p> 
+         <p class="text-textGray text-[12px] mt-1">2024-01-13 08:00</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 新闻条目 6 --> 
+     <div class="news-item bg-card rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden cursor-pointer" data-id="6" data-uuid="news_detail_activity" id="news-item-6"> 
+      <div class="flex p-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-md overflow-hidden"> 
+        <img src="./news_list_fragment/12e34e49693afcf2ed020e3879b03b39.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 ml-3 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold line-clamp-2 leading-tight"> 中国航天发布新计划，今年将完成多次重大发射任务 </h3> 
+        <div class="mt-2"> 
+         <p class="text-textGray text-[14px]">航天报</p> 
+         <p class="text-textGray text-[12px] mt-1">2024-01-12 16:30</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 加载更多提示 --> 
+     <div class="py-6 text-center"> 
+      <div class="flex items-center justify-center space-x-2"> 
+       <i class="fas fa-circle-notch fa-spin text-textGray"></i> 
+       <span class="text-textGray text-sm">正在加载更多...</span> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+  </div> 
+  <script>
+var pageUuid = "";
+        window.ytHandles = {
+        openPage: function(url) {
+            // 当前窗口打开url页面
+            window.open(url + '.html', '_self');
+        }
+        };
+window.onload = function(){
+        try {
+          //为.news-item元素添加点击事件监听器
+          [...document.querySelectorAll('.news-item')].forEach(function(item){
+            item.addEventListener('click',function(event){
+               ytHandles.openPage('news_detail_activity');
+            })
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-1元素添加点击事件监听器
+          document.getElementById('news-item-1').addEventListener('click',function(event){
+             ytHandles.openPage('news_detail_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-2元素添加点击事件监听器
+          document.getElementById('news-item-2').addEventListener('click',function(event){
+             ytHandles.openPage('news_detail_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-3元素添加点击事件监听器
+          document.getElementById('news-item-3').addEventListener('click',function(event){
+             ytHandles.openPage('news_detail_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-4元素添加点击事件监听器
+          document.getElementById('news-item-4').addEventListener('click',function(event){
+             ytHandles.openPage('news_detail_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-5元素添加点击事件监听器
+          document.getElementById('news-item-5').addEventListener('click',function(event){
+             ytHandles.openPage('news_detail_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-6元素添加点击事件监听器
+          document.getElementById('news-item-6').addEventListener('click',function(event){
+             ytHandles.openPage('news_detail_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+};
+</script>  
+ </body>
+</html>

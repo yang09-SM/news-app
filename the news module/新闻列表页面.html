@@ -1,0 +1,1033 @@
+<html lang="zh-CN">
+
+  <head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>趣何 (GeoPop) - 新闻列表</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              bg: '#FFFDF5', // Warm Cream
+              fg: '#1E293B', // Slate 800
+              muted: '#F1F5F9',
+              accent: '#8B5CF6', // Vivid Violet
+              secondary: '#F472B6', // Hot Pink
+              tertiary: '#FBBF24', // Amber
+              quaternary: '#34D399', // Mint
+              bordercol: '#1E293B', // Dark border for high contrast
+            },
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+              display: ['"Outfit"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+            boxShadow: {
+              'pop': '4px 4px 0px 0px #1E293B',
+              'pop-hover': '6px 6px 0px 0px #1E293B',
+              'pop-active': '2px 2px 0px 0px #1E293B',
+              'pop-soft': '4px 4px 0px 0px #cbd5e1',
+            },
+            borderRadius: {
+              'blob': '24px 24px 24px 4px',
+              'pill': '9999px',
+            },
+            borderWidth: {
+              '3': '3px',
+            },
+            transitionTimingFunction: {
+              'bounce-custom': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }
+          }
+        }
+      }
+    </script>
+    <style type="text/tailwindcss">
+      @layer utilities {
+            .bg-dot-pattern {
+                background-image: radial-gradient(#cbd5e1 2px, transparent 2px);
+                background-size: 24px 24px;
+            }
+            
+            .text-outline {
+                -webkit-text-stroke: 1px #1E293B;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+        }
+        @layer components {
+            .btn-candy {
+                @apply bg-accent text-white font-bold rounded-pill border-2 border-fg shadow-pop hover:shadow-pop-hover hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-pop-active transition-all duration-300 ease-bounce-custom flex items-center justify-center gap-2 px-6 py-3;
+            }
+            .btn-secondary {
+                @apply bg-white text-fg font-bold rounded-pill border-2 border-fg hover:bg-tertiary transition-colors duration-300 px-6 py-3;
+            }
+            .card-sticker {
+                @apply bg-white border-2 border-fg rounded-2xl shadow-pop transition-transform duration-300 ease-bounce-custom hover:-rotate-1 hover:scale-[1.01];
+            }
+            .input-geo {
+                @apply bg-white border-2 border-gray-300 rounded-lg w-full px-4 py-3 text-fg placeholder-gray-400 focus:outline-none focus:border-accent focus:shadow-[4px_4px_0px_0px_#8B5CF6] transition-all;
+            }
+            .icon-circle {
+                @apply w-10 h-10 flex items-center justify-center rounded-full border-2 border-fg bg-white shadow-pop-active hover:shadow-pop hover:-translate-y-0.5 transition-all duration-300 cursor-pointer;
+            }
+        }
+        
+        body {
+            background-color: #FFFDF5;
+            color: #1E293B;
+            overflow-x: hidden;
+        }
+    </style>
+
+    <style>
+      /* 新增动画定义 */
+      @keyframes yt_modalFadeIn {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* 新增动画定义 */
+      @keyframes yt_modalFadeOut {
+        from {
+          opacity: 1;
+        }
+
+        to {
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="font-sans">
+
+
+    <header class="fixed top-0 left-0 w-full bg-bg border-b-2 border-fg h-[64px] flex items-center px-5 z-10">
+
+      <div class="flex items-center justify-between w-full">
+
+        <a href="javascript:void(0);" id="menu-btn" data-uuid="main_activity">
+
+          <div class="icon-circle">
+
+            <i class="fas fa-bars text-fg"></i>
+          </div>
+        </a>
+
+
+        <h1 class="text-2xl font-display font-bold text-fg">
+
+          新闻资讯
+        </h1>
+
+
+        <a href="javascript:void(0);" id="search-btn" data-uuid="news-list">
+
+          <div class="icon-circle">
+
+            <i class="fas fa-search text-fg"></i>
+          </div>
+        </a>
+      </div>
+    </header>
+
+
+    <div class="fixed top-[64px] left-0 w-full bg-bg z-10 py-4">
+
+      <div class="overflow-x-auto scrollbar-hide px-5">
+
+        <div class="flex gap-4 whitespace-nowrap">
+
+          <button type="button" class="px-6 py-3 rounded-pill bg-accent text-white font-bold border-2 border-fg shadow-pop">
+
+            全部
+          </button>
+
+
+          <button type="button" class="px-6 py-3 rounded-pill bg-white text-fg font-bold border-2 border-fg hover:bg-tertiary transition-colors duration-200">
+
+            科技
+          </button>
+
+
+          <button type="button" class="px-6 py-3 rounded-pill bg-white text-fg font-bold border-2 border-fg hover:bg-secondary transition-colors duration-200">
+
+            生活
+          </button>
+
+
+          <button type="button" class="px-6 py-3 rounded-pill bg-white text-fg font-bold border-2 border-fg hover:bg-quaternary transition-colors duration-200">
+
+            财经
+          </button>
+
+
+          <button type="button" class="px-6 py-3 rounded-pill bg-white text-fg font-bold border-2 border-fg hover:bg-tertiary transition-colors duration-200">
+
+            体育
+          </button>
+
+
+          <button type="button" class="px-6 py-3 rounded-pill bg-white text-fg font-bold border-2 border-fg hover:bg-secondary transition-colors duration-200">
+
+            娱乐
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <main class="pt-[136px] pb-24 px-5">
+
+      <div class="space-y-8">
+
+        <article class="card-sticker p-6 overflow-hidden" id="news-item-1" data-uuid="news_detail_activity">
+
+          <div class="flex flex-col gap-4">
+
+            <div class="w-full h-52 rounded-xl overflow-hidden border-2 border-fg">
+
+              <img src="https://design.gemcoder.com/api/searchImage?query=modern technology news background with purple and pink colors, minimalist design&amp;width=600&amp;height=300" alt="新闻图片" class="w-full h-full object-cover">
+            </div>
+
+
+            <div>
+
+              <div class="flex items-center gap-3 mb-3">
+
+                <span class="px-3 py-1 rounded-pill bg-accent text-white text-xs font-bold border border-fg">
+
+                  科技
+                </span>
+
+
+                <span class="text-sm text-gray-500">
+
+                  2小时前
+                </span>
+              </div>
+
+
+              <h2 class="text-xl font-bold text-fg mb-3">
+
+                人工智能技术迎来新突破，大型模型性能提升30%
+              </h2>
+
+
+              <p class="text-gray-600 line-clamp-2 mb-4">
+
+                最新研究表明，新一代人工智能模型在多项基准测试中取得突破性进展，性能比上一代提升了整整30%，为未来应用开辟了更多可能性...
+              </p>
+            </div>
+
+
+            <div class="flex items-center justify-between">
+
+              <div class="flex items-center gap-2">
+
+                <div class="w-8 h-8 rounded-full border border-fg overflow-hidden">
+
+                  <img src="https://design.gemcoder.com/api/searchImage?query=profile avatar of young professional, minimalist design&amp;width=100&amp;height=100" alt="作者头像" class="w-full h-full object-cover">
+                </div>
+
+
+                <span class="text-sm font-medium">
+
+                  科技日报
+                </span>
+              </div>
+
+
+              <div class="flex items-center gap-4 text-gray-500">
+
+                <span class="flex items-center gap-1">
+
+                  <i class="far fa-eye"></i>
+
+
+                  <span>
+
+                    1.2k
+                  </span>
+                </span>
+
+
+                <span class="flex items-center gap-1">
+
+                  <i class="far fa-comment"></i>
+
+
+                  <span>
+
+                    36
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+
+        <article class="card-sticker p-6 overflow-hidden" id="news-item-2" data-uuid="news_detail_activity">
+
+          <div class="flex gap-6">
+
+            <div class="flex-1">
+
+              <div class="flex items-center gap-3 mb-3">
+
+                <span class="px-3 py-1 rounded-pill bg-secondary text-white text-xs font-bold border border-fg">
+
+                  生活
+                </span>
+
+
+                <span class="text-sm text-gray-500">
+
+                  昨天
+                </span>
+              </div>
+
+
+              <h2 class="text-lg font-bold text-fg mb-3 line-clamp-3">
+
+                城市绿色生活方式越来越流行，可持续发展理念深入人心
+              </h2>
+
+
+              <p class="text-gray-600 text-sm line-clamp-2 mb-4">
+
+                越来越多年轻人开始关注环保，选择可持续的生活方式，从日常点滴做起...
+              </p>
+
+
+              <div class="flex items-center justify-between mt-4">
+
+                <div class="flex items-center gap-2">
+
+                  <div class="w-6 h-6 rounded-full border border-fg overflow-hidden">
+
+                    <img src="https://design.gemcoder.com/api/searchImage?query=female journalist profile picture, minimalist design&amp;width=80&amp;height=80" alt="作者头像" class="w-full h-full object-cover">
+                  </div>
+
+
+                  <span class="text-sm">
+
+                    生活周刊
+                  </span>
+                </div>
+
+
+                <div class="flex items-center gap-3 text-gray-500 text-sm">
+
+                  <span class="flex items-center gap-1">
+
+                    <i class="far fa-eye"></i>
+
+
+                    <span>
+
+                      856
+                    </span>
+                  </span>
+
+
+                  <span class="flex items-center gap-1">
+
+                    <i class="far fa-comment"></i>
+
+
+                    <span>
+
+                      24
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="w-32 h-32 rounded-xl overflow-hidden border-2 border-fg flex-shrink-0">
+
+              <img src="https://design.gemcoder.com/api/searchImage?query=green city life with plants and sustainable living, bright colors&amp;width=300&amp;height=300" alt="新闻图片" class="w-full h-full object-cover">
+            </div>
+          </div>
+        </article>
+
+
+        <article class="card-sticker p-6 overflow-hidden" id="news-item-3" data-uuid="news_detail_activity">
+
+          <div class="flex flex-col gap-6">
+
+            <div class="w-full h-52 rounded-xl overflow-hidden border-2 border-fg">
+
+              <img src="https://design.gemcoder.com/api/searchImage?query=stock market trading chart with blue and yellow colors, financial data visualization&amp;width=600&amp;height=300" alt="新闻图片" class="w-full h-full object-cover">
+            </div>
+
+
+            <div>
+
+              <div class="flex items-center gap-3 mb-3">
+
+                <span class="px-3 py-1 rounded-pill bg-tertiary text-white text-xs font-bold border border-fg">
+
+                  财经
+                </span>
+
+
+                <span class="text-sm text-gray-500">
+
+                  3天前
+                </span>
+              </div>
+
+
+              <h2 class="text-xl font-bold text-fg mb-3">
+
+                全球经济复苏迹象明显，投资者信心逐步恢复
+              </h2>
+
+
+              <p class="text-gray-600 line-clamp-2 mb-4">
+
+                最新经济数据显示，全球多个主要经济体都出现了明显的复苏迹象，失业率下降，消费回升，投资者信心正在逐步恢复...
+              </p>
+            </div>
+
+
+            <div class="flex items-center justify-between">
+
+              <div class="flex items-center gap-2">
+
+                <div class="w-8 h-8 rounded-full border border-fg overflow-hidden">
+
+                  <img src="https://design.gemcoder.com/api/searchImage?query=financial news editor profile avatar, professional style&amp;width=100&amp;height=100" alt="作者头像" class="w-full h-full object-cover">
+                </div>
+
+
+                <span class="text-sm font-medium">
+
+                  财经评论
+                </span>
+              </div>
+
+
+              <div class="flex items-center gap-4 text-gray-500">
+
+                <span class="flex items-center gap-1">
+
+                  <i class="far fa-eye"></i>
+
+
+                  <span>
+
+                    2.3k
+                  </span>
+                </span>
+
+
+                <span class="flex items-center gap-1">
+
+                  <i class="far fa-comment"></i>
+
+
+                  <span>
+
+                    89
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+
+        <article class="card-sticker p-6 overflow-hidden" id="news-item-4" data-uuid="news_detail_activity">
+
+          <div class="flex gap-6">
+
+            <div class="flex-1">
+
+              <div class="flex items-center gap-3 mb-3">
+
+                <span class="px-3 py-1 rounded-pill bg-quaternary text-white text-xs font-bold border border-fg">
+
+                  体育
+                </span>
+
+
+                <span class="text-sm text-gray-500">
+
+                  4天前
+                </span>
+              </div>
+
+
+              <h2 class="text-lg font-bold text-fg mb-3 line-clamp-3">
+
+                国家男篮迎来新主教练，新一代球员蓄势待发
+              </h2>
+
+
+              <p class="text-gray-600 text-sm line-clamp-2 mb-4">
+
+                新一届国家队集训名单公布，多位年轻球员入选，新主教练带来全新战术理念...
+              </p>
+
+
+              <div class="flex items-center justify-between mt-4">
+
+                <div class="flex items-center gap-2">
+
+                  <div class="w-6 h-6 rounded-full border border-fg overflow-hidden">
+
+                    <img src="https://design.gemcoder.com/api/searchImage?query=sports reporter profile avatar, professional&amp;width=80&amp;height=80" alt="作者头像" class="w-full h-full object-cover">
+                  </div>
+
+
+                  <span class="text-sm">
+
+                    体育周报
+                  </span>
+                </div>
+
+
+                <div class="flex items-center gap-3 text-gray-500 text-sm">
+
+                  <span class="flex items-center gap-1">
+
+                    <i class="far fa-eye"></i>
+
+
+                    <span>
+
+                      3.1k
+                    </span>
+                  </span>
+
+
+                  <span class="flex items-center gap-1">
+
+                    <i class="far fa-comment"></i>
+
+
+                    <span>
+
+                      152
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="w-32 h-32 rounded-xl overflow-hidden border-2 border-fg flex-shrink-0">
+
+              <img src="https://design.gemcoder.com/api/searchImage?query=professional basketball game court, dramatic lighting&amp;width=300&amp;height=300" alt="新闻图片" class="w-full h-full object-cover">
+            </div>
+          </div>
+        </article>
+
+
+        <article class="card-sticker p-6 overflow-hidden" id="news-item-5" data-uuid="news_detail_activity">
+
+          <div class="flex flex-col gap-6">
+
+            <div class="w-full h-52 rounded-xl overflow-hidden border-2 border-fg">
+
+              <img src="https://design.gemcoder.com/api/searchImage?query=red carpet movie premiere with celebrities, glamorous atmosphere&amp;width=600&amp;height=300" alt="新闻图片" class="w-full h-full object-cover">
+            </div>
+
+
+            <div>
+
+              <div class="flex items-center gap-3 mb-3">
+
+                <span class="px-3 py-1 rounded-pill bg-secondary text-white text-xs font-bold border border-fg">
+
+                  娱乐
+                </span>
+
+
+                <span class="text-sm text-gray-500">
+
+                  一周前
+                </span>
+              </div>
+
+
+              <h2 class="text-xl font-bold text-fg mb-3">
+
+                年度大片即将上映，主创团队分享幕后故事
+              </h2>
+
+
+              <p class="text-gray-600 line-clamp-2 mb-4">
+
+                备受期待的年度大片即将在全国上映，导演和主演们在发布会上分享了许多拍摄过程中的有趣故事和不为人知的细节...
+              </p>
+            </div>
+
+
+            <div class="flex items-center justify-between">
+
+              <div class="flex items-center gap-2">
+
+                <div class="w-8 h-8 rounded-full border border-fg overflow-hidden">
+
+                  <img src="https://design.gemcoder.com/api/searchImage?query=entertainment reporter profile picture, stylish design&amp;width=100&amp;height=100" alt="作者头像" class="w-full h-full object-cover">
+                </div>
+
+
+                <span class="text-sm font-medium">
+
+                  娱乐前线
+                </span>
+              </div>
+
+
+              <div class="flex items-center gap-4 text-gray-500">
+
+                <span class="flex items-center gap-1">
+
+                  <i class="far fa-eye"></i>
+
+
+                  <span>
+
+                    5.7k
+                  </span>
+                </span>
+
+
+                <span class="flex items-center gap-1">
+
+                  <i class="far fa-comment"></i>
+
+
+                  <span>
+
+                    324
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+
+        <div class="py-8 text-center">
+
+          <div class="inline-flex items-center gap-2 text-gray-500">
+
+            <i class="fas fa-spinner fa-spin"></i>
+
+
+            <span>
+
+              正在加载更多新闻...
+            </span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+
+    <nav class="fixed bottom-0 left-0 w-full bg-bg border-t-2 border-fg h-[68px] z-10">
+
+      <div class="grid grid-cols-4 h-full">
+
+        <a href="javascript:void(0);" id="nav-home" data-uuid="main_activity" class="flex flex-col items-center justify-center gap-1">
+
+          <i class="fas fa-home text-xl text-gray-500"></i>
+
+
+          <span class="text-xs text-gray-500">
+
+            首页
+          </span>
+        </a>
+
+
+        <a href="javascript:void(0);" id="nav-news" data-uuid="news-list" class="flex flex-col items-center justify-center gap-1">
+
+          <i class="fas fa-newspaper text-xl text-accent"></i>
+
+
+          <span class="text-xs font-bold text-accent">
+
+            新闻
+          </span>
+        </a>
+
+
+        <a href="javascript:void(0);" id="nav-explore" data-uuid="news-list" class="flex flex-col items-center justify-center gap-1">
+
+          <i class="fas fa-compass text-xl text-gray-500"></i>
+
+
+          <span class="text-xs text-gray-500">
+
+            探索
+          </span>
+        </a>
+
+
+        <a href="javascript:void(0);" id="nav-profile" data-uuid="about_activity" class="flex flex-col items-center justify-center gap-1">
+
+          <i class="fas fa-user text-xl text-gray-500"></i>
+
+
+          <span class="text-xs text-gray-500">
+
+            我的
+          </span>
+        </a>
+      </div>
+    </nav>
+
+
+    <div id="search-mask" class="fixed inset-0 bg-black/50 z-50 hidden">
+
+      <div id="search-modal" class="absolute top-20 left-4 right-4 bg-white rounded-2xl border-2 border-fg shadow-pop p-4">
+
+        <div class="flex items-center justify-between mb-4">
+
+          <h3 class="text-xl font-bold">
+
+            搜索新闻
+          </h3>
+
+
+          <button type="button" id="close-search" class="icon-circle w-8 h-8">
+
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+
+        <div class="mb-4">
+
+          <input type="text" placeholder="输入关键词搜索..." class="input-geo">
+        </div>
+
+
+        <div class="flex flex-wrap gap-2 mb-4">
+
+          <span class="px-3 py-1 rounded-pill bg-muted border border-gray-300 text-sm cursor-pointer hover:bg-accent hover:text-white transition-colors">
+
+            人工智能
+          </span>
+
+
+          <span class="px-3 py-1 rounded-pill bg-muted border border-gray-300 text-sm cursor-pointer hover:bg-accent hover:text-white transition-colors">
+
+            环保生活
+          </span>
+
+
+          <span class="px-3 py-1 rounded-pill bg-muted border border-gray-300 text-sm cursor-pointer hover:bg-accent hover:text-white transition-colors">
+
+            股市
+          </span>
+
+
+          <span class="px-3 py-1 rounded-pill bg-muted border border-gray-300 text-sm cursor-pointer hover:bg-accent hover:text-white transition-colors">
+
+            足球
+          </span>
+
+
+          <span class="px-3 py-1 rounded-pill bg-muted border border-gray-300 text-sm cursor-pointer hover:bg-accent hover:text-white transition-colors">
+
+            电影
+          </span>
+        </div>
+
+
+        <div class="flex gap-3">
+
+          <button type="button" class="btn-secondary flex-1">
+
+            清空
+          </button>
+
+
+          <button type="button" class="btn-candy flex-1">
+
+            搜索
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <style>
+      #search-mask.hidden {
+        display: none;
+      }
+    </style>
+
+    <script></script>
+    <script>
+      window.ytHandles = {
+        openPage: function(url) {
+
+          // 当前窗口打开url页面
+          url += "&v=" + Math.random().toString(36).substring(2);
+          window.open(url, '_self');
+
+        },
+        //显示id为targetId的目标容器
+        show: function(targetId, callback) {
+          const modal = document.getElementById(targetId); //获取targetId的隐藏框元素
+          // 检查targetId的隐藏框元素是否存在
+          if (!modal) {
+            console.error('Modal element not found: targetId');
+            return;
+          }
+
+          // 递归清理子元素的内联样式和hidden类
+          const clearChildrenStyles = function(element) {
+            if (!element) return;
+            const children = element.children;
+            for (let i = 0; i < children.length; i++) {
+              const child = children[i];
+              // 清理hidden类
+              child.classList.remove("hidden");
+              // 清理内联样式
+              child.style.display = "";
+              child.style.visibility = "";
+              child.style.opacity = "";
+              child.style.transform = "";
+              child.style.animation = "";
+              // 递归处理子元素的子元素
+              clearChildrenStyles(child);
+            }
+          };
+          // 1. 清理该元素之前的状态和监听器
+          if (modal._hideAnimationEndHandler) {
+            modal.removeEventListener("animationend", modal._hideAnimationEndHandler);
+            delete modal._hideAnimationEndHandler;
+          }
+          if (modal._hideTimeout) {
+            clearTimeout(modal._hideTimeout);
+            delete modal._hideTimeout;
+          }
+          // 2. 移除目标元素的隐藏类并重置内联样式
+          modal.classList.remove("hidden");
+          modal.style.display = ""; // 清空内联隐藏，让 CSS 的 flex 自动接管
+          modal.style.visibility = "";
+          modal.style.opacity = "";
+          modal.style.transform = "";
+          modal.style.animation = "";
+          // 3. 递归清理所有子元素的内联样式和hidden类
+          clearChildrenStyles(modal);
+          // 4. 强制重绘以确保样式应用
+          void modal.offsetHeight;
+          // 5. 执行显示动画
+          modal.style.animation = 'yt_modalFadeIn 0.3s ease-out';
+          // 6. 动画结束后清理动画样式
+          const onAnimationEnd = function() {
+            modal.style.animation = "";
+            delete modal._showAnimationEndHandler;
+          };
+          modal._showAnimationEndHandler = onAnimationEnd;
+          modal.addEventListener("animationend", onAnimationEnd, {
+            once: true
+          });
+          if (callback) callback();
+
+        },
+        //关闭id为targetId的目标容器
+        hide: function(targetId) {
+          const modal = document.getElementById(targetId); //获取targetId的元素
+          // 检查targetId元素是否存在
+          if (!modal) {
+            console.error('Modal element not found: targetId');
+            return;
+          }
+
+          //1. 准备隐藏前先清理旧动画和监听器
+          if (modal._hideTimeout) clearTimeout(modal._hideTimeout);
+          if (modal._showAnimationEndHandler) {
+            modal.removeEventListener("animationend", modal._showAnimationEndHandler);
+            delete modal._showAnimationEndHandler;
+          }
+          modal.style.animation = "";
+          // 2. 强制重绘以确保样式应用
+          void modal.offsetHeight;
+          // 3. 启动淡出动画
+          modal.style.animation = 'yt_modalFadeOut 0.3s ease-out';
+          let animationCompleted = false;
+          const onAnimationEnd = function() {
+            if (animationCompleted) return;
+            animationCompleted = true;
+            // 4. 动画结束后，添加隐藏类并清空所有内联干扰样式
+            modal.classList.add("hidden");
+            modal.style.display = "";
+            modal.style.visibility = "";
+            modal.style.opacity = "";
+            modal.style.animation = "";
+            modal.style.transform = "";
+            // 清理引用
+            delete modal._hideAnimationEndHandler;
+            if (modal._hideTimeout) {
+              clearTimeout(modal._hideTimeout);
+              delete modal._hideTimeout;
+            }
+          };
+          // 5. 使用事件监听 + 定时器双重保险，确保清理逻辑一定会执行
+          modal._hideAnimationEndHandler = onAnimationEnd;
+          modal.addEventListener("animationend", onAnimationEnd, {
+            once: true
+          });
+          modal._hideTimeout = setTimeout(onAnimationEnd, 400); // 略长于动画时间
+
+        }
+      };
+
+      window.onload = function() {
+        try {
+          //为#menu-btn元素添加click事件监听器
+          document.getElementById(`menu-btn`).addEventListener('click', function(event) {
+            ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=main_activity&version=1&pageType=app&w=440&h=956');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#search-btn元素添加click事件监听器
+          document.getElementById(`search-btn`).addEventListener('click', function(event) {
+            ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=news-list&version=1&pageType=app&w=440&h=956');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-1元素添加click事件监听器
+          document.getElementById(`news-item-1`).addEventListener('click', function(event) {
+            ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=news_detail_activity&version=1&pageType=app&w=440&h=956');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-2元素添加click事件监听器
+          document.getElementById(`news-item-2`).addEventListener('click', function(event) {
+            ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=news_detail_activity&version=1&pageType=app&w=440&h=956');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-3元素添加click事件监听器
+          document.getElementById(`news-item-3`).addEventListener('click', function(event) {
+            ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=news_detail_activity&version=1&pageType=app&w=440&h=956');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-4元素添加click事件监听器
+          document.getElementById(`news-item-4`).addEventListener('click', function(event) {
+            ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=news_detail_activity&version=1&pageType=app&w=440&h=956');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-5元素添加click事件监听器
+          document.getElementById(`news-item-5`).addEventListener('click', function(event) {
+            ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=news_detail_activity&version=1&pageType=app&w=440&h=956');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#nav-home元素添加click事件监听器
+          document.getElementById(`nav-home`).addEventListener('click', function(event) {
+            ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=main_activity&version=1&pageType=app&w=440&h=956');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#nav-news元素添加click事件监听器
+          document.getElementById(`nav-news`).addEventListener('click', function(event) {
+            ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=news-list&version=1&pageType=app&w=440&h=956');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#nav-explore元素添加click事件监听器
+          document.getElementById(`nav-explore`).addEventListener('click', function(event) {
+            ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=news-list&version=1&pageType=app&w=440&h=956');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#nav-profile元素添加click事件监听器
+          document.getElementById(`nav-profile`).addEventListener('click', function(event) {
+            ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=about_activity&version=1&pageType=app&w=440&h=956');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#search-btn元素添加click事件监听器
+          document.getElementById(`search-btn`).addEventListener('click', function(event) {
+            ytHandles.show('search-modal');
+            ytHandles.show('search-mask');
+          })
+        } catch (e) {
+          console.error('OpenModal error:', e);
+        }
+        try {
+          //为#close-search元素添加click事件监听器
+          document.getElementById(`close-search`).addEventListener('click', function(event) {
+            ytHandles.hide('search-modal');
+            ytHandles.hide('search-mask');
+          })
+        } catch (e) {
+          console.error('CloseModal error:', e);
+        }
+        try {
+          //为#search-mask元素添加click事件监听器
+          document.getElementById(`search-mask`).addEventListener('click', function(event) {
+            ytHandles.hide('search-modal');
+            ytHandles.hide('search-mask');
+          })
+        } catch (e) {
+          console.error('CloseModal error:', e);
+        }
+      }
+    </script>
+
+  </body>
+
+</html>

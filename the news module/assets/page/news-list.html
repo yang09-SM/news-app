@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>趣何 (GeoPop) - 新闻列表</title> 
+  <!-- Google Fonts --> 
+  <link rel="preconnect" href="https://fonts.googleapis.com"> 
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+  <link href="./news-list/css2" rel="stylesheet"> 
+  <!-- Font Awesome --> 
+  <link href="./news-list/all.min.css" rel="stylesheet"> 
+  <!-- Tailwind CSS --> 
+  <script src="./news-list/resource_8589910000.js"></script> 
+  <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#FFFDF5',        // Warm Cream
+                        fg: '#1E293B',        // Slate 800
+                        muted: '#F1F5F9',
+                        accent: '#8B5CF6',    // Vivid Violet
+                        secondary: '#F472B6', // Hot Pink
+                        tertiary: '#FBBF24',  // Amber
+                        quaternary: '#34D399',// Mint
+                        bordercol: '#1E293B', // Dark border for high contrast
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        display: ['"Outfit"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'pop': '4px 4px 0px 0px #1E293B',
+                        'pop-hover': '6px 6px 0px 0px #1E293B',
+                        'pop-active': '2px 2px 0px 0px #1E293B',
+                        'pop-soft': '4px 4px 0px 0px #cbd5e1',
+                    },
+                    borderRadius: {
+                        'blob': '24px 24px 24px 4px',
+                        'pill': '9999px',
+                    },
+                    borderWidth: {
+                        '3': '3px',
+                    },
+                    transitionTimingFunction: {
+                        'bounce-custom': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    }
+                }
+            }
+        }
+    </script> 
+  <style type="text/tailwindcss">
+        @layer utilities {
+            .bg-dot-pattern {
+                background-image: radial-gradient(#cbd5e1 2px, transparent 2px);
+                background-size: 24px 24px;
+            }
+            
+            .text-outline {
+                -webkit-text-stroke: 1px #1E293B;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+        }
+        @layer components {
+            .btn-candy {
+                @apply bg-accent text-white font-bold rounded-pill border-2 border-fg shadow-pop hover:shadow-pop-hover hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-pop-active transition-all duration-300 ease-bounce-custom flex items-center justify-center gap-2 px-6 py-3;
+            }
+            .btn-secondary {
+                @apply bg-white text-fg font-bold rounded-pill border-2 border-fg hover:bg-tertiary transition-colors duration-300 px-6 py-3;
+            }
+            .card-sticker {
+                @apply bg-white border-2 border-fg rounded-2xl shadow-pop transition-transform duration-300 ease-bounce-custom hover:-rotate-1 hover:scale-[1.01];
+            }
+            .input-geo {
+                @apply bg-white border-2 border-gray-300 rounded-lg w-full px-4 py-3 text-fg placeholder-gray-400 focus:outline-none focus:border-accent focus:shadow-[4px_4px_0px_0px_#8B5CF6] transition-all;
+            }
+            .icon-circle {
+                @apply w-10 h-10 flex items-center justify-center rounded-full border-2 border-fg bg-white shadow-pop-active hover:shadow-pop hover:-translate-y-0.5 transition-all duration-300 cursor-pointer;
+            }
+        }
+        
+        body {
+            background-color: #FFFDF5;
+            color: #1E293B;
+            overflow-x: hidden;
+        }
+    </style> 
+  <style>
+            /* 新增动画定义 */
+            @keyframes yt_modalFadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+
+
+            /* 新增动画定义 */
+            @keyframes yt_modalFadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+</style>
+  <style>
+    ::-webkit-scrollbar {
+        width: 0px;
+    }
+</style> 
+ </head> 
+ <body class="font-sans"> 
+  <!-- 顶部导航栏 --> 
+  <header class="fixed top-0 left-0 w-full bg-bg border-b-2 border-fg h-[56px] flex items-center px-4 z-10"> 
+   <div class="flex items-center justify-between w-full"> 
+    <a href="javascript:void(0);" id="menu-btn" data-uuid="main_activity"> 
+     <div class="icon-circle"> 
+      <i class="fas fa-bars text-fg"></i> 
+     </div> </a> 
+    <h1 class="text-2xl font-display font-bold text-fg">新闻资讯</h1> 
+    <a href="javascript:void(0);" id="search-btn" data-uuid="news-list"> 
+     <div class="icon-circle"> 
+      <i class="fas fa-search text-fg"></i> 
+     </div> </a> 
+   </div> 
+  </header> 
+  <!-- 分类标签横向滚动 --> 
+  <div class="fixed top-[56px] left-0 w-full bg-bg z-10 py-3"> 
+   <div class="overflow-x-auto scrollbar-hide px-4"> 
+    <div class="flex gap-3 whitespace-nowrap"> 
+     <button type="button" class="px-5 py-2 rounded-pill bg-accent text-white font-bold border-2 border-fg shadow-pop">全部</button> 
+     <button type="button" class="px-5 py-2 rounded-pill bg-white text-fg font-bold border-2 border-fg hover:bg-tertiary transition-colors duration-200">科技</button> 
+     <button type="button" class="px-5 py-2 rounded-pill bg-white text-fg font-bold border-2 border-fg hover:bg-secondary transition-colors duration-200">生活</button> 
+     <button type="button" class="px-5 py-2 rounded-pill bg-white text-fg font-bold border-2 border-fg hover:bg-quaternary transition-colors duration-200">财经</button> 
+     <button type="button" class="px-5 py-2 rounded-pill bg-white text-fg font-bold border-2 border-fg hover:bg-tertiary transition-colors duration-200">体育</button> 
+     <button type="button" class="px-5 py-2 rounded-pill bg-white text-fg font-bold border-2 border-fg hover:bg-secondary transition-colors duration-200">娱乐</button> 
+    </div> 
+   </div> 
+  </div> 
+  <!-- 主内容区域 --> 
+  <main class="pt-[112px] pb-20 px-4"> 
+   <!-- 新闻列表 --> 
+   <div class="space-y-6"> 
+    <!-- 新闻卡片 1 --> 
+    <article class="card-sticker p-4 overflow-hidden" id="news-item-1" data-uuid="news_detail_activity"> 
+     <div class="flex flex-col gap-4"> 
+      <div class="w-full h-48 rounded-xl overflow-hidden border-2 border-fg"> 
+       <img src="./news-list/2122857eb09fe100661cb1c35dda6088.png" alt="新闻图片" class="w-full h-full object-cover"> 
+      </div> 
+      <div> 
+       <div class="flex items-center gap-2 mb-2"> 
+        <span class="px-3 py-1 rounded-pill bg-accent text-white text-xs font-bold border border-fg">科技</span> 
+        <span class="text-sm text-gray-500">2小时前</span> 
+       </div> 
+       <h2 class="text-xl font-bold text-fg mb-2">人工智能技术迎来新突破，大型模型性能提升30%</h2> 
+       <p class="text-gray-600 line-clamp-2">最新研究表明，新一代人工智能模型在多项基准测试中取得突破性进展，性能比上一代提升了整整30%，为未来应用开辟了更多可能性...</p> 
+      </div> 
+      <div class="flex items-center justify-between"> 
+       <div class="flex items-center gap-2"> 
+        <div class="w-8 h-8 rounded-full border border-fg overflow-hidden"> 
+         <img src="./news-list/d68d3de12d194428a85cea65824d6a1f.png" alt="作者头像" class="w-full h-full object-cover"> 
+        </div> 
+        <span class="text-sm font-medium">科技日报</span> 
+       </div> 
+       <div class="flex items-center gap-4 text-gray-500"> 
+        <span class="flex items-center gap-1"><i class="far fa-eye"></i> 1.2k</span> 
+        <span class="flex items-center gap-1"><i class="far fa-comment"></i> 36</span> 
+       </div> 
+      </div> 
+     </div> 
+    </article> 
+    <!-- 新闻卡片 2 --> 
+    <article class="card-sticker p-4 overflow-hidden" id="news-item-2" data-uuid="news_detail_activity"> 
+     <div class="flex gap-4"> 
+      <div class="flex-1"> 
+       <div class="flex items-center gap-2 mb-2"> 
+        <span class="px-3 py-1 rounded-pill bg-secondary text-white text-xs font-bold border border-fg">生活</span> 
+        <span class="text-sm text-gray-500">昨天</span> 
+       </div> 
+       <h2 class="text-lg font-bold text-fg mb-2 line-clamp-3">城市绿色生活方式越来越流行，可持续发展理念深入人心</h2> 
+       <p class="text-gray-600 text-sm line-clamp-2">越来越多年轻人开始关注环保，选择可持续的生活方式，从日常点滴做起...</p> 
+       <div class="flex items-center justify-between mt-3"> 
+        <div class="flex items-center gap-2"> 
+         <div class="w-6 h-6 rounded-full border border-fg overflow-hidden"> 
+          <img src="./news-list/99056d95c689140dca9d3c5db24d8e6c.png" alt="作者头像" class="w-full h-full object-cover"> 
+         </div> 
+         <span class="text-sm">生活周刊</span> 
+        </div> 
+        <div class="flex items-center gap-3 text-gray-500 text-sm"> 
+         <span class="flex items-center gap-1"><i class="far fa-eye"></i> 856</span> 
+         <span class="flex items-center gap-1"><i class="far fa-comment"></i> 24</span> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="w-28 h-28 rounded-xl overflow-hidden border-2 border-fg flex-shrink-0"> 
+       <img src="./news-list/c98ff1ab1622ad17216811d9a7b8408d.png" alt="新闻图片" class="w-full h-full object-cover"> 
+      </div> 
+     </div> 
+    </article> 
+    <!-- 新闻卡片 3 --> 
+    <article class="card-sticker p-4 overflow-hidden" id="news-item-3" data-uuid="news_detail_activity"> 
+     <div class="flex flex-col gap-4"> 
+      <div class="w-full h-48 rounded-xl overflow-hidden border-2 border-fg"> 
+       <img src="./news-list/037a90939faaf231a4fcdccfa46001f3.png" alt="新闻图片" class="w-full h-full object-cover"> 
+      </div> 
+      <div> 
+       <div class="flex items-center gap-2 mb-2"> 
+        <span class="px-3 py-1 rounded-pill bg-tertiary text-white text-xs font-bold border border-fg">财经</span> 
+        <span class="text-sm text-gray-500">3天前</span> 
+       </div> 
+       <h2 class="text-xl font-bold text-fg mb-2">全球经济复苏迹象明显，投资者信心逐步恢复</h2> 
+       <p class="text-gray-600 line-clamp-2">最新经济数据显示，全球多个主要经济体都出现了明显的复苏迹象，失业率下降，消费回升，投资者信心正在逐步恢复...</p> 
+      </div> 
+      <div class="flex items-center justify-between"> 
+       <div class="flex items-center gap-2"> 
+        <div class="w-8 h-8 rounded-full border border-fg overflow-hidden"> 
+         <img src="./news-list/5c15672939f5364cfe8910c21aa48957.png" alt="作者头像" class="w-full h-full object-cover"> 
+        </div> 
+        <span class="text-sm font-medium">财经评论</span> 
+       </div> 
+       <div class="flex items-center gap-4 text-gray-500"> 
+        <span class="flex items-center gap-1"><i class="far fa-eye"></i> 2.3k</span> 
+        <span class="flex items-center gap-1"><i class="far fa-comment"></i> 89</span> 
+       </div> 
+      </div> 
+     </div> 
+    </article> 
+    <!-- 新闻卡片 4 --> 
+    <article class="card-sticker p-4 overflow-hidden" id="news-item-4" data-uuid="news_detail_activity"> 
+     <div class="flex gap-4"> 
+      <div class="flex-1"> 
+       <div class="flex items-center gap-2 mb-2"> 
+        <span class="px-3 py-1 rounded-pill bg-quaternary text-white text-xs font-bold border border-fg">体育</span> 
+        <span class="text-sm text-gray-500">4天前</span> 
+       </div> 
+       <h2 class="text-lg font-bold text-fg mb-2 line-clamp-3">国家男篮迎来新主教练，新一代球员蓄势待发</h2> 
+       <p class="text-gray-600 text-sm line-clamp-2">新一届国家队集训名单公布，多位年轻球员入选，新主教练带来全新战术理念...</p> 
+       <div class="flex items-center justify-between mt-3"> 
+        <div class="flex items-center gap-2"> 
+         <div class="w-6 h-6 rounded-full border border-fg overflow-hidden"> 
+          <img src="./news-list/85559a131f1e44b5ea24b589f11b095d.png" alt="作者头像" class="w-full h-full object-cover"> 
+         </div> 
+         <span class="text-sm">体育周报</span> 
+        </div> 
+        <div class="flex items-center gap-3 text-gray-500 text-sm"> 
+         <span class="flex items-center gap-1"><i class="far fa-eye"></i> 3.1k</span> 
+         <span class="flex items-center gap-1"><i class="far fa-comment"></i> 152</span> 
+        </div> 
+       </div> 
+      </div> 
+      <div class="w-28 h-28 rounded-xl overflow-hidden border-2 border-fg flex-shrink-0"> 
+       <img src="./news-list/ba92afc7aa72b4178e822f6e8ff0d86f.png" alt="新闻图片" class="w-full h-full object-cover"> 
+      </div> 
+     </div> 
+    </article> 
+    <!-- 新闻卡片 5 --> 
+    <article class="card-sticker p-4 overflow-hidden" id="news-item-5" data-uuid="news_detail_activity"> 
+     <div class="flex flex-col gap-4"> 
+      <div class="w-full h-48 rounded-xl overflow-hidden border-2 border-fg"> 
+       <img src="./news-list/4ac14be4225dff99bd70a2ab005ef99c.png" alt="新闻图片" class="w-full h-full object-cover"> 
+      </div> 
+      <div> 
+       <div class="flex items-center gap-2 mb-2"> 
+        <span class="px-3 py-1 rounded-pill bg-secondary text-white text-xs font-bold border border-fg">娱乐</span> 
+        <span class="text-sm text-gray-500">一周前</span> 
+       </div> 
+       <h2 class="text-xl font-bold text-fg mb-2">年度大片即将上映，主创团队分享幕后故事</h2> 
+       <p class="text-gray-600 line-clamp-2">备受期待的年度大片即将在全国上映，导演和主演们在发布会上分享了许多拍摄过程中的有趣故事和不为人知的细节...</p> 
+      </div> 
+      <div class="flex items-center justify-between"> 
+       <div class="flex items-center gap-2"> 
+        <div class="w-8 h-8 rounded-full border border-fg overflow-hidden"> 
+         <img src="./news-list/20fc7252b80b1e8f556074524967cfbc.png" alt="作者头像" class="w-full h-full object-cover"> 
+        </div> 
+        <span class="text-sm font-medium">娱乐前线</span> 
+       </div> 
+       <div class="flex items-center gap-4 text-gray-500"> 
+        <span class="flex items-center gap-1"><i class="far fa-eye"></i> 5.7k</span> 
+        <span class="flex items-center gap-1"><i class="far fa-comment"></i> 324</span> 
+       </div> 
+      </div> 
+     </div> 
+    </article> 
+    <!-- 加载更多提示 --> 
+    <div class="py-8 text-center"> 
+     <div class="inline-flex items-center gap-2 text-gray-500"> 
+      <i class="fas fa-spinner fa-spin"></i> 
+      <span>正在加载更多新闻...</span> 
+     </div> 
+    </div> 
+   </div> 
+  </main> 
+  <!-- 底部导航栏 --> 
+  <nav class="fixed bottom-0 left-0 w-full bg-bg border-t-2 border-fg h-[60px] z-10"> 
+   <div class="grid grid-cols-4 h-full"> 
+    <a href="javascript:void(0);" id="nav-home" data-uuid="main_activity" class="flex flex-col items-center justify-center gap-1"> <i class="fas fa-home text-xl text-gray-500"></i> <span class="text-xs text-gray-500">首页</span> </a> 
+    <a href="javascript:void(0);" id="nav-news" data-uuid="news-list" class="flex flex-col items-center justify-center gap-1"> <i class="fas fa-newspaper text-xl text-accent"></i> <span class="text-xs font-bold text-accent">新闻</span> </a> 
+    <a href="javascript:void(0);" id="nav-explore" data-uuid="news-list" class="flex flex-col items-center justify-center gap-1"> <i class="fas fa-compass text-xl text-gray-500"></i> <span class="text-xs text-gray-500">探索</span> </a> 
+    <a href="javascript:void(0);" id="nav-profile" data-uuid="about_activity" class="flex flex-col items-center justify-center gap-1"> <i class="fas fa-user text-xl text-gray-500"></i> <span class="text-xs text-gray-500">我的</span> </a> 
+   </div> 
+  </nav> 
+  <!-- 搜索弹窗蒙版 --> 
+  <div id="search-mask" class="fixed inset-0 bg-black/50 z-50 hidden"> 
+   <div id="search-modal" class="absolute top-20 left-4 right-4 bg-white rounded-2xl border-2 border-fg shadow-pop p-4"> 
+    <div class="flex items-center justify-between mb-4"> 
+     <h3 class="text-xl font-bold">搜索新闻</h3> 
+     <button type="button" id="close-search" class="icon-circle w-8 h-8"> <i class="fas fa-times"></i> </button> 
+    </div> 
+    <div class="mb-4"> 
+     <input type="text" placeholder="输入关键词搜索..." class="input-geo"> 
+    </div> 
+    <div class="flex flex-wrap gap-2 mb-4"> 
+     <span class="px-3 py-1 rounded-pill bg-muted border border-gray-300 text-sm cursor-pointer hover:bg-accent hover:text-white transition-colors">人工智能</span> 
+     <span class="px-3 py-1 rounded-pill bg-muted border border-gray-300 text-sm cursor-pointer hover:bg-accent hover:text-white transition-colors">环保生活</span> 
+     <span class="px-3 py-1 rounded-pill bg-muted border border-gray-300 text-sm cursor-pointer hover:bg-accent hover:text-white transition-colors">股市</span> 
+     <span class="px-3 py-1 rounded-pill bg-muted border border-gray-300 text-sm cursor-pointer hover:bg-accent hover:text-white transition-colors">足球</span> 
+     <span class="px-3 py-1 rounded-pill bg-muted border border-gray-300 text-sm cursor-pointer hover:bg-accent hover:text-white transition-colors">电影</span> 
+    </div> 
+    <div class="flex gap-3"> 
+     <button type="button" class="btn-secondary flex-1">清空</button> 
+     <button type="button" class="btn-candy flex-1">搜索</button> 
+    </div> 
+   </div> 
+  </div> 
+  <style>
+        #search-mask.hidden {
+            display: none;
+        }
+    </style> 
+  <script>
+var pageUuid = "";
+        window.ytHandles = {
+        openPage: function(url) {
+            // 当前窗口打开url页面
+            window.open(url + '.html', '_self');
+        },
+        //关闭id为targetId的目标容器
+        hide: function(targetId) {
+            const modal = document.getElementById(targetId);//获取targetId的元素
+            // 检查targetId元素是否存在
+            if (!modal) {console.error('Modal element not found: targetId');return;}
+            //1. 准备隐藏前先清理旧动画和监听器
+            if (modal._hideTimeout) clearTimeout(modal._hideTimeout);
+            if (modal._showAnimationEndHandler) {
+                modal.removeEventListener("animationend", modal._showAnimationEndHandler);
+                delete modal._showAnimationEndHandler;
+            }
+            modal.style.animation = "";
+            // 2. 强制重绘以确保样式应用
+            void modal.offsetHeight;
+            // 3. 启动淡出动画
+            modal.style.animation = 'yt_modalFadeOut 0.3s ease-out';
+            let animationCompleted = false;
+            const onAnimationEnd = function () {
+              if (animationCompleted) return;
+              animationCompleted = true;
+              // 4. 动画结束后，添加隐藏类并清空所有内联干扰样式
+              modal.classList.add("hidden");
+              modal.style.display = "";
+              modal.style.visibility = "";
+              modal.style.opacity = "";
+              modal.style.animation = "";
+              modal.style.transform = "";
+              // 清理引用
+              delete modal._hideAnimationEndHandler;
+              if (modal._hideTimeout) {
+                clearTimeout(modal._hideTimeout);
+                delete modal._hideTimeout;
+              }
+            };
+            // 5. 使用事件监听 + 定时器双重保险，确保清理逻辑一定会执行
+            modal._hideAnimationEndHandler = onAnimationEnd;
+            modal.addEventListener("animationend", onAnimationEnd, { once: true });
+            modal._hideTimeout = setTimeout(onAnimationEnd, 400); // 略长于动画时间
+        },
+        //显示id为targetId的目标容器
+        show: function(targetId, callback) {
+            const modal = document.getElementById(targetId);//获取targetId的隐藏框元素
+            // 检查targetId的隐藏框元素是否存在
+            if (!modal) {console.error('Modal element not found: targetId');return;}
+            // 递归清理子元素的内联样式和hidden类
+            const clearChildrenStyles = function(element) {
+                if (!element) return;
+                const children = element.children;
+                for (let i = 0; i < children.length; i++) {
+                    const child = children[i];
+                    // 清理hidden类
+                    child.classList.remove("hidden");
+                    // 清理内联样式
+                    child.style.display = "";
+                    child.style.visibility = "";
+                    child.style.opacity = "";
+                    child.style.transform = "";
+                    child.style.animation = "";
+                    // 递归处理子元素的子元素
+                    clearChildrenStyles(child);
+                }
+            };
+            // 1. 清理该元素之前的状态和监听器
+            if (modal._hideAnimationEndHandler) {
+                modal.removeEventListener("animationend", modal._hideAnimationEndHandler);
+                delete modal._hideAnimationEndHandler;
+            }
+            if (modal._hideTimeout){
+                clearTimeout(modal._hideTimeout);
+                delete modal._hideTimeout;
+            }
+             // 2. 移除目标元素的隐藏类并重置内联样式
+            modal.classList.remove("hidden");
+            modal.style.display = ""; // 清空内联隐藏，让 CSS 的 flex 自动接管
+            modal.style.visibility = "";
+            modal.style.opacity = "";
+            modal.style.transform = "";
+            modal.style.animation = "";
+            // 3. 递归清理所有子元素的内联样式和hidden类
+            clearChildrenStyles(modal);
+            // 4. 强制重绘以确保样式应用
+            void modal.offsetHeight;
+            // 5. 执行显示动画
+            modal.style.animation = 'yt_modalFadeIn 0.3s ease-out';
+            // 6. 动画结束后清理动画样式
+            const onAnimationEnd = function() {
+                modal.style.animation = "";
+                delete modal._showAnimationEndHandler;
+            };
+            modal._showAnimationEndHandler = onAnimationEnd;
+            modal.addEventListener("animationend", onAnimationEnd, { once: true });
+            if (callback) callback();
+        }
+        };
+window.onload = function(){
+        try {
+          //为#search-btn元素添加点击事件监听器
+          document.getElementById('search-btn').addEventListener('click',function(event){
+             ytHandles.show('search-modal', null);
+          ytHandles.show('search-mask', null);
+          })
+        } catch (e) {
+          console.error('OpenModal error:', e);
+        }
+        try {
+          //为#close-search元素添加点击事件监听器
+          document.getElementById('close-search').addEventListener('click',function(event){
+             ytHandles.hide('search-modal');
+          ytHandles.hide('search-mask');
+          })
+        } catch (e) {
+          console.error('CloseModal error:', e);
+        }
+        try {
+          //为#search-mask元素添加点击事件监听器
+          document.getElementById('search-mask').addEventListener('click',function(event){
+             ytHandles.hide('search-modal');
+          ytHandles.hide('search-mask');
+          })
+        } catch (e) {
+          console.error('CloseModal error:', e);
+        }
+        try {
+          //为#menu-btn元素添加点击事件监听器
+          document.getElementById('menu-btn').addEventListener('click',function(event){
+             ytHandles.openPage('main_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#search-btn元素添加点击事件监听器
+          document.getElementById('search-btn').addEventListener('click',function(event){
+             ytHandles.openPage('news-list');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-1元素添加点击事件监听器
+          document.getElementById('news-item-1').addEventListener('click',function(event){
+             ytHandles.openPage('news_detail_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-2元素添加点击事件监听器
+          document.getElementById('news-item-2').addEventListener('click',function(event){
+             ytHandles.openPage('news_detail_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-3元素添加点击事件监听器
+          document.getElementById('news-item-3').addEventListener('click',function(event){
+             ytHandles.openPage('news_detail_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-4元素添加点击事件监听器
+          document.getElementById('news-item-4').addEventListener('click',function(event){
+             ytHandles.openPage('news_detail_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#news-item-5元素添加点击事件监听器
+          document.getElementById('news-item-5').addEventListener('click',function(event){
+             ytHandles.openPage('news_detail_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#nav-home元素添加点击事件监听器
+          document.getElementById('nav-home').addEventListener('click',function(event){
+             ytHandles.openPage('main_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#nav-news元素添加点击事件监听器
+          document.getElementById('nav-news').addEventListener('click',function(event){
+             ytHandles.openPage('news-list');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#nav-explore元素添加点击事件监听器
+          document.getElementById('nav-explore').addEventListener('click',function(event){
+             ytHandles.openPage('news-list');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#nav-profile元素添加点击事件监听器
+          document.getElementById('nav-profile').addEventListener('click',function(event){
+             ytHandles.openPage('about_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+};
+</script>  
+ </body>
+</html>

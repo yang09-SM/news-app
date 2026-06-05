@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>主页面-新闻列表</title> 
+  <script src="./main_activity/resource_690210000.js"></script> 
+  <link rel="stylesheet" href="./main_activity/all.min.css"> 
+  <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .input-focus {
+                @apply border-primary ring-1 ring-primary;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+        }
+        .modal-mask.hidden {
+            display: none;
+        }
+        .dropdown-menu.hidden {
+            display: none;
+        }
+    </style> 
+  <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2196F3',
+                        background: '#F5F5F5',
+                        card: '#FFFFFF',
+                        textGray: '#757575',
+                        primaryLight: '#E3F2FD'
+                    },
+                    spacing: {
+                        'toolbar': '56px',
+                        'tablayout': '48px'
+                    },
+                    boxShadow: {
+                        'card': '0 8px 30px rgba(0,0,0,0.04)',
+                        'dropdown': '0 4px 20px rgba(0,0,0,0.15)'
+                    }
+                }
+            }
+        };
+    </script> 
+  <style>
+            /* 新增动画定义 */
+            @keyframes yt_modalFadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+
+
+            /* 新增动画定义 */
+            @keyframes yt_modalFadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+</style>
+  <style>
+    ::-webkit-scrollbar {
+        width: 0px;
+    }
+</style> 
+ </head> 
+ <body class="bg-background min-h-screen"> 
+  <!-- 顶部Toolbar --> 
+  <header class="fixed top-0 left-0 w-full bg-primary h-toolbar flex items-center px-4 z-20"> 
+   <div class="w-full flex items-center justify-between"> 
+    <h1 class="text-white text-xl font-medium">新闻资讯</h1> 
+    <button type="button" id="menu-button" class="text-white text-xl p-2"> <i class="fas fa-ellipsis-v"></i> </button> 
+   </div> 
+  </header> 
+  <!-- 下拉菜单 --> 
+  <div id="dropdown-menu" class="dropdown-menu hidden fixed top-toolbar right-4 bg-card rounded-lg shadow-dropdown w-48 z-30 py-2"> 
+   <a href="javascript:void(0);" id="menu-change-password" data-uuid="change_password_activity" class="block px-4 py-3 text-gray-800 hover:bg-background transition-colors"> <i class="fas fa-key mr-2 text-primary"></i>修改密码 </a> 
+   <a href="javascript:void(0);" id="menu-about" data-uuid="about_activity" class="block px-4 py-3 text-gray-800 hover:bg-background transition-colors"> <i class="fas fa-info-circle mr-2 text-primary"></i>关于 </a> 
+   <div class="border-t border-gray-100 my-1"></div> 
+   <a href="javascript:void(0);" id="menu-logout" class="block px-4 py-3 text-red-500 hover:bg-background transition-colors"> <i class="fas fa-sign-out-alt mr-2"></i>退出登录 </a> 
+  </div> 
+  <!-- 标签切换区域 --> 
+  <div class="fixed top-toolbar left-0 w-full bg-primary h-tablayout z-10"> 
+   <div class="flex overflow-x-auto scrollbar-hide px-2 h-full items-center gap-2"> 
+    <button type="button" class="tab-btn active px-5 py-1.5 rounded-full text-white bg-primary/20 text-sm font-medium transition-all" data-tab="headline"> 头条新闻 </button> 
+    <button type="button" class="tab-btn px-5 py-1.5 rounded-full text-white/80 hover:bg-primary/10 text-sm font-medium transition-all" data-tab="sports"> 体育新闻 </button> 
+    <button type="button" class="tab-btn px-5 py-1.5 rounded-full text-white/80 hover:bg-primary/10 text-sm font-medium transition-all" data-tab="tech"> 科技新闻 </button> 
+   </div> 
+  </div> 
+  <!-- 主体内容区域 --> 
+  <main class="pt-[calc(56px+48px)] pb-4 px-4"> 
+   <!-- 头条新闻 --> 
+   <div id="tab-headline" class="tab-content block"> 
+    <!-- 新闻列表 --> 
+    <div class="space-y-4 mt-4"> 
+     <!-- 新闻条目 1 --> 
+     <div class="news-item bg-card rounded-xl shadow-card overflow-hidden cursor-pointer" data-news-id="1"> 
+      <div class="flex p-3 gap-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-lg overflow-hidden"> 
+        <img src="./main_activity/26e7bddf90203edc2ffd910ed70c79a2.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold text-gray-800 line-clamp-2 leading-snug"> 国家科技创新大会在北京召开，多项重大科技成果发布引关注 </h3> 
+        <div class="space-y-1"> 
+         <p class="text-textGray text-[14px]">人民日报</p> 
+         <p class="text-textGray text-[12px]">今天 09:30</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 新闻条目 2 --> 
+     <div class="news-item bg-card rounded-xl shadow-card overflow-hidden cursor-pointer" data-news-id="2"> 
+      <div class="flex p-3 gap-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-lg overflow-hidden"> 
+        <img src="./main_activity/08a0b27c1205b720363a97704b29abec.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold text-gray-800 line-clamp-2 leading-snug"> 全国多地景区迎来旅游旺季，生态旅游成新热点 </h3> 
+        <div class="space-y-1"> 
+         <p class="text-textGray text-[14px]">新华社</p> 
+         <p class="text-textGray text-[12px]">今天 08:15</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 新闻条目 3 --> 
+     <div class="news-item bg-card rounded-xl shadow-card overflow-hidden cursor-pointer" data-news-id="3"> 
+      <div class="flex p-3 gap-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-lg overflow-hidden"> 
+        <img src="./main_activity/3812b82882c549486182343ccfa922aa.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold text-gray-800 line-clamp-2 leading-snug"> 第二季度经济数据公布，我国经济保持稳定增长态势 </h3> 
+        <div class="space-y-1"> 
+         <p class="text-textGray text-[14px]">经济日报</p> 
+         <p class="text-textGray text-[12px]">昨天 18:45</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 新闻条目 4 --> 
+     <div class="news-item bg-card rounded-xl shadow-card overflow-hidden cursor-pointer" data-news-id="4"> 
+      <div class="flex p-3 gap-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-lg overflow-hidden"> 
+        <img src="./main_activity/80612b1952811f4ffa9f8b582886ac58.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold text-gray-800 line-clamp-2 leading-snug"> 2024年高考录取工作正式启动，招生政策新变化详解 </h3> 
+        <div class="space-y-1"> 
+         <p class="text-textGray text-[14px]">教育部官网</p> 
+         <p class="text-textGray text-[12px]">昨天 15:20</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 新闻条目 5 --> 
+     <div class="news-item bg-card rounded-xl shadow-card overflow-hidden cursor-pointer" data-news-id="5"> 
+      <div class="flex p-3 gap-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-lg overflow-hidden"> 
+        <img src="./main_activity/d5b75b94b2f4271ff7e56a8e64089cf3.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold text-gray-800 line-clamp-2 leading-snug"> 新能源汽车销量再创新高，技术突破推动产业升级 </h3> 
+        <div class="space-y-1"> 
+         <p class="text-textGray text-[14px]">汽车周报</p> 
+         <p class="text-textGray text-[12px]">昨天 10:05</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <!-- 体育新闻 --> 
+   <div id="tab-sports" class="tab-content hidden"> 
+    <div class="space-y-4 mt-4"> 
+     <!-- 新闻条目 1 --> 
+     <div class="news-item bg-card rounded-xl shadow-card overflow-hidden cursor-pointer" data-news-id="6"> 
+      <div class="flex p-3 gap-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-lg overflow-hidden"> 
+        <img src="./main_activity/036a04111fb91be67f28d10b272932e6.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold text-gray-800 line-clamp-2 leading-snug"> 世界杯预选赛：中国队主场迎战韩国队，首发阵容公布 </h3> 
+        <div class="space-y-1"> 
+         <p class="text-textGray text-[14px]">体坛周报</p> 
+         <p class="text-textGray text-[12px]">今天 10:20</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 新闻条目 2 --> 
+     <div class="news-item bg-card rounded-xl shadow-card overflow-hidden cursor-pointer" data-news-id="7"> 
+      <div class="flex p-3 gap-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-lg overflow-hidden"> 
+        <img src="./main_activity/dc47ff1ef0e67bfa3a275a06fb1d7687.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold text-gray-800 line-clamp-2 leading-snug"> CBA夏季联赛开战，多支年轻队伍崭露头角 </h3> 
+        <div class="space-y-1"> 
+         <p class="text-textGray text-[14px]">篮球先锋报</p> 
+         <p class="text-textGray text-[12px]">昨天 20:30</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 新闻条目 3 --> 
+     <div class="news-item bg-card rounded-xl shadow-card overflow-hidden cursor-pointer" data-news-id="8"> 
+      <div class="flex p-3 gap-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-lg overflow-hidden"> 
+        <img src="./main_activity/bf77333f0c8010b385a8dfdff65ed094.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold text-gray-800 line-clamp-2 leading-snug"> 巴黎奥运会倒计时，中国代表团备战情况最新进展 </h3> 
+        <div class="space-y-1"> 
+         <p class="text-textGray text-[14px]">中国体育报</p> 
+         <p class="text-textGray text-[12px]">昨天 16:10</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <!-- 科技新闻 --> 
+   <div id="tab-tech" class="tab-content hidden"> 
+    <div class="space-y-4 mt-4"> 
+     <!-- 新闻条目 1 --> 
+     <div class="news-item bg-card rounded-xl shadow-card overflow-hidden cursor-pointer" data-news-id="9"> 
+      <div class="flex p-3 gap-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-lg overflow-hidden"> 
+        <img src="./main_activity/a9327faaae8f527c03f3c1e838f0489d.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold text-gray-800 line-clamp-2 leading-snug"> 新一代人工智能大模型发布，性能提升超30% </h3> 
+        <div class="space-y-1"> 
+         <p class="text-textGray text-[14px]">科技日报</p> 
+         <p class="text-textGray text-[12px]">今天 08:45</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 新闻条目 2 --> 
+     <div class="news-item bg-card rounded-xl shadow-card overflow-hidden cursor-pointer" data-news-id="10"> 
+      <div class="flex p-3 gap-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-lg overflow-hidden"> 
+        <img src="./main_activity/276b42eb88bbb63811b80c63d596203e.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold text-gray-800 line-clamp-2 leading-snug"> 国产5G芯片取得重大突破，下半年将投入量产 </h3> 
+        <div class="space-y-1"> 
+         <p class="text-textGray text-[14px]">数字时代</p> 
+         <p class="text-textGray text-[12px]">昨天 14:25</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 新闻条目 3 --> 
+     <div class="news-item bg-card rounded-xl shadow-card overflow-hidden cursor-pointer" data-news-id="11"> 
+      <div class="flex p-3 gap-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-lg overflow-hidden"> 
+        <img src="./main_activity/5b62b560a5e091531460421ded7b05b9.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold text-gray-800 line-clamp-2 leading-snug"> 中国空间站成功对接新货运飞船，实验项目进展顺利 </h3> 
+        <div class="space-y-1"> 
+         <p class="text-textGray text-[14px]">航天科技</p> 
+         <p class="text-textGray text-[12px]">昨天 09:15</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+     <!-- 新闻条目 4 --> 
+     <div class="news-item bg-card rounded-xl shadow-card overflow-hidden cursor-pointer" data-news-id="12"> 
+      <div class="flex p-3 gap-3"> 
+       <div class="w-[100px] h-[100px] flex-shrink-0 rounded-lg overflow-hidden"> 
+        <img src="./main_activity/500x500.png" alt="新闻图片" class="w-full h-full object-cover"> 
+       </div> 
+       <div class="flex-1 flex flex-col justify-between"> 
+        <h3 class="text-[16px] font-bold text-gray-800 line-clamp-2 leading-snug"> 量子计算研究获重要进展，成功破解传统加密算法 </h3> 
+        <div class="space-y-1"> 
+         <p class="text-textGray text-[14px]">科学网</p> 
+         <p class="text-textGray text-[12px]">3天前</p> 
+        </div> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+   <!-- 加载更多提示 --> 
+   <div class="py-6 text-center text-textGray text-sm"> 
+    <i class="fas fa-spinner fa-spin mr-2"></i>正在加载更多... 
+   </div> 
+  </main> 
+  <!-- 退出登录确认弹窗 --> 
+  <div id="logout-mask" class="modal-mask hidden fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-4"> 
+   <div id="logout-modal" class="bg-card rounded-xl w-full max-w-sm overflow-hidden"> 
+    <div class="p-5"> 
+     <h3 class="text-lg font-bold text-gray-800 mb-2">退出登录</h3> 
+     <p class="text-gray-600 mb-6">确定要退出当前账号吗？</p> 
+     <div class="flex gap-3"> 
+      <button type="button" id="cancel-logout" class="flex-1 py-3 rounded-lg border border-gray-300 text-gray-700 font-medium">取消</button> 
+      <button type="button" id="confirm-logout" class="flex-1 py-3 rounded-lg bg-primary text-white font-medium">确认退出</button> 
+     </div> 
+    </div> 
+   </div> 
+  </div> 
+  <script id="switchTab">
+function switchTab(event) {
+    // 移除所有标签激活状态
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-primary/20');
+        btn.classList.add('text-white/80');
+    });
+    
+    // 隐藏所有内容
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.add('hidden');
+        content.classList.remove('block');
+    });
+    
+    // 激活当前标签
+    const targetTab = event.currentTarget.getAttribute('data-tab');
+    event.currentTarget.classList.add('active', 'bg-primary/20');
+    event.currentTarget.classList.remove('text-white/80');
+    
+    // 显示对应内容
+    document.getElementById('tab-' + targetTab).classList.remove('hidden');
+    document.getElementById('tab-' + targetTab).classList.add('block');
+}
+    </script> 
+  <script id="toggleDropdown">
+function toggleDropdown(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('dropdown-menu');
+    menu.classList.toggle('hidden');
+}
+// 点击页面其他地方关闭菜单
+document.addEventListener('click', function() {
+    const menu = document.getElementById('dropdown-menu');
+    if (!menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+    }
+});
+    </script> 
+  <script id="confirm-logout">
+function confirm-logout(event) {
+    // 实际登出逻辑由后续处理，这里只关闭弹窗
+    document.getElementById('logout-mask').classList.add('hidden');
+    document.getElementById('logout-modal').classList.add('hidden');
+}
+    </script> 
+  <script>
+var pageUuid = "";
+        window.ytHandles = {
+        openPage: function(url) {
+            // 当前窗口打开url页面
+            window.open(url + '.html', '_self');
+        },
+        //关闭id为targetId的目标容器
+        hide: function(targetId) {
+            const modal = document.getElementById(targetId);//获取targetId的元素
+            // 检查targetId元素是否存在
+            if (!modal) {console.error('Modal element not found: targetId');return;}
+            //1. 准备隐藏前先清理旧动画和监听器
+            if (modal._hideTimeout) clearTimeout(modal._hideTimeout);
+            if (modal._showAnimationEndHandler) {
+                modal.removeEventListener("animationend", modal._showAnimationEndHandler);
+                delete modal._showAnimationEndHandler;
+            }
+            modal.style.animation = "";
+            // 2. 强制重绘以确保样式应用
+            void modal.offsetHeight;
+            // 3. 启动淡出动画
+            modal.style.animation = 'yt_modalFadeOut 0.3s ease-out';
+            let animationCompleted = false;
+            const onAnimationEnd = function () {
+              if (animationCompleted) return;
+              animationCompleted = true;
+              // 4. 动画结束后，添加隐藏类并清空所有内联干扰样式
+              modal.classList.add("hidden");
+              modal.style.display = "";
+              modal.style.visibility = "";
+              modal.style.opacity = "";
+              modal.style.animation = "";
+              modal.style.transform = "";
+              // 清理引用
+              delete modal._hideAnimationEndHandler;
+              if (modal._hideTimeout) {
+                clearTimeout(modal._hideTimeout);
+                delete modal._hideTimeout;
+              }
+            };
+            // 5. 使用事件监听 + 定时器双重保险，确保清理逻辑一定会执行
+            modal._hideAnimationEndHandler = onAnimationEnd;
+            modal.addEventListener("animationend", onAnimationEnd, { once: true });
+            modal._hideTimeout = setTimeout(onAnimationEnd, 400); // 略长于动画时间
+        },
+        //显示id为targetId的目标容器
+        show: function(targetId, callback) {
+            const modal = document.getElementById(targetId);//获取targetId的隐藏框元素
+            // 检查targetId的隐藏框元素是否存在
+            if (!modal) {console.error('Modal element not found: targetId');return;}
+            // 递归清理子元素的内联样式和hidden类
+            const clearChildrenStyles = function(element) {
+                if (!element) return;
+                const children = element.children;
+                for (let i = 0; i < children.length; i++) {
+                    const child = children[i];
+                    // 清理hidden类
+                    child.classList.remove("hidden");
+                    // 清理内联样式
+                    child.style.display = "";
+                    child.style.visibility = "";
+                    child.style.opacity = "";
+                    child.style.transform = "";
+                    child.style.animation = "";
+                    // 递归处理子元素的子元素
+                    clearChildrenStyles(child);
+                }
+            };
+            // 1. 清理该元素之前的状态和监听器
+            if (modal._hideAnimationEndHandler) {
+                modal.removeEventListener("animationend", modal._hideAnimationEndHandler);
+                delete modal._hideAnimationEndHandler;
+            }
+            if (modal._hideTimeout){
+                clearTimeout(modal._hideTimeout);
+                delete modal._hideTimeout;
+            }
+             // 2. 移除目标元素的隐藏类并重置内联样式
+            modal.classList.remove("hidden");
+            modal.style.display = ""; // 清空内联隐藏，让 CSS 的 flex 自动接管
+            modal.style.visibility = "";
+            modal.style.opacity = "";
+            modal.style.transform = "";
+            modal.style.animation = "";
+            // 3. 递归清理所有子元素的内联样式和hidden类
+            clearChildrenStyles(modal);
+            // 4. 强制重绘以确保样式应用
+            void modal.offsetHeight;
+            // 5. 执行显示动画
+            modal.style.animation = 'yt_modalFadeIn 0.3s ease-out';
+            // 6. 动画结束后清理动画样式
+            const onAnimationEnd = function() {
+                modal.style.animation = "";
+                delete modal._showAnimationEndHandler;
+            };
+            modal._showAnimationEndHandler = onAnimationEnd;
+            modal.addEventListener("animationend", onAnimationEnd, { once: true });
+            if (callback) callback();
+        }
+        };
+window.onload = function(){
+        try {
+          //为.tab-btn元素添加点击事件监听器
+          [...document.querySelectorAll('.tab-btn')].forEach(function(item){
+            item.addEventListener('click',function(event){
+               switchTab(event);
+            })
+          })
+        } catch (e) {
+          console.error('JsHandle error:', e);
+        }
+        try {
+          //为#menu-button元素添加点击事件监听器
+          document.getElementById('menu-button').addEventListener('click',function(event){
+             toggleDropdown(event);
+          })
+        } catch (e) {
+          console.error('JsHandle error:', e);
+        }
+        try {
+          //为#menu-logout元素添加点击事件监听器
+          document.getElementById('menu-logout').addEventListener('click',function(event){
+             ytHandles.show('logout-mask', null);
+          ytHandles.show('logout-modal', null);
+          })
+        } catch (e) {
+          console.error('OpenModal error:', e);
+        }
+        try {
+          //为#cancel-logout元素添加点击事件监听器
+          document.getElementById('cancel-logout').addEventListener('click',function(event){
+             ytHandles.hide('logout-mask');
+          ytHandles.hide('logout-modal');
+          })
+        } catch (e) {
+          console.error('CloseModal error:', e);
+        }
+        try {
+          //为#logout-mask元素添加点击事件监听器
+          document.getElementById('logout-mask').addEventListener('click',function(event){
+             ytHandles.hide('logout-mask');
+          ytHandles.hide('logout-modal');
+          })
+        } catch (e) {
+          console.error('CloseModal error:', e);
+        }
+        try {
+          //为.news-item元素添加点击事件监听器
+          [...document.querySelectorAll('.news-item')].forEach(function(item){
+            item.addEventListener('click',function(event){
+               ytHandles.openPage('news_detail_activity');
+            })
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#menu-change-password元素添加点击事件监听器
+          document.getElementById('menu-change-password').addEventListener('click',function(event){
+             ytHandles.openPage('change_password_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#menu-about元素添加点击事件监听器
+          document.getElementById('menu-about').addEventListener('click',function(event){
+             ytHandles.openPage('about_activity');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+};
+</script>  
+ </body>
+</html>

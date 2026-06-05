@@ -1,0 +1,889 @@
+<html lang="zh-CN">
+
+  <head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>趣何 (GeoPop) - 新闻详情</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              bg: '#FFFDF5', // Warm Cream
+              fg: '#1E293B', // Slate 800
+              muted: '#F1F5F9',
+              accent: '#8B5CF6', // Vivid Violet
+              secondary: '#F472B6', // Hot Pink
+              tertiary: '#FBBF24', // Amber
+              quaternary: '#34D399', // Mint
+              bordercol: '#1E293B', // Dark border for high contrast
+            },
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+              display: ['"Outfit"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            },
+            boxShadow: {
+              'pop': '4px 4px 0px 0px #1E293B',
+              'pop-hover': '6px 6px 0px 0px #1E293B',
+              'pop-active': '2px 2px 0px 0px #1E293B',
+              'pop-soft': '4px 4px 0px 0px #cbd5e1',
+            },
+            borderRadius: {
+              'blob': '24px 24px 24px 4px',
+              'pill': '9999px',
+            },
+            borderWidth: {
+              '3': '3px',
+            },
+            transitionTimingFunction: {
+              'bounce-custom': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+            }
+          }
+        }
+      }
+    </script>
+    <style type="text/tailwindcss">
+      @layer utilities {
+            .bg-dot-pattern {
+                background-image: radial-gradient(#cbd5e1 2px, transparent 2px);
+                background-size: 24px 24px;
+            }
+            
+            .text-outline {
+                -webkit-text-stroke: 1px #1E293B;
+            }
+        }
+        @layer components {
+            .btn-candy {
+                @apply bg-accent text-white font-bold rounded-pill border-2 border-fg shadow-pop hover:shadow-pop-hover hover:-translate-y-0.5 active:translate-y-0.5 active:shadow-pop-active transition-all duration-300 ease-bounce-custom flex items-center justify-center gap-2 px-6 py-3;
+            }
+            .btn-secondary {
+                @apply bg-white text-fg font-bold rounded-pill border-2 border-fg hover:bg-tertiary transition-colors duration-300 px-6 py-3;
+            }
+            .card-sticker {
+                @apply bg-white border-2 border-fg rounded-2xl shadow-pop transition-transform duration-300 ease-bounce-custom hover:-rotate-1 hover:scale-[1.01];
+            }
+            .input-geo {
+                @apply bg-white border-2 border-gray-300 rounded-lg w-full px-4 py-3 text-fg placeholder-gray-400 focus:outline-none focus:border-accent focus:shadow-[4px_4px_0px_0px_#8B5CF6] transition-all;
+            }
+            .icon-circle {
+                @apply w-10 h-10 flex items-center justify-center rounded-full border-2 border-fg bg-white shadow-pop-active hover:shadow-pop hover:-translate-y-0.5 transition-all duration-300 cursor-pointer;
+            }
+        }
+        
+        body {
+            background-color: #FFFDF5;
+            color: #1E293B;
+            overflow-x: hidden;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+
+    <style>
+      /* 新增动画定义 */
+      @keyframes yt_modalFadeIn {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* 新增动画定义 */
+      @keyframes yt_modalFadeOut {
+        from {
+          opacity: 1;
+        }
+
+        to {
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="font-sans">
+
+
+    <header class="fixed top-0 left-0 w-full bg-bg border-b-2 border-fg h-14 z-10">
+
+      <div class="container mx-auto h-full flex items-center justify-between px-4">
+
+        <button type="button" id="backBtn" class="icon-circle" data-uuid="main_activity">
+
+          <i class="fas fa-arrow-left text-fg"></i>
+        </button>
+
+
+        <h1 class="text-xl font-display font-bold text-fg">
+
+          新闻详情
+        </h1>
+
+
+        <button type="button" id="shareBtn" class="icon-circle">
+
+          <i class="fas fa-share-alt text-fg"></i>
+        </button>
+      </div>
+    </header>
+
+
+    <main class="pt-14 pb-20 px-4">
+
+      <div class="mt-6 rounded-blob overflow-hidden border-2 border-fg shadow-pop">
+
+        <img src="https://design.gemcoder.com/api/searchImage?query=modern cityscape news header image with blue and purple gradient background, professional news photography, bright and clean&amp;width=800&amp;height=400" alt="新闻封面" class="w-full h-auto object-cover">
+      </div>
+
+
+      <div class="mt-6">
+
+        <span class="inline-block bg-accent text-white px-4 py-1 rounded-pill font-bold text-sm border border-fg shadow-pop-active">
+
+          科技创新
+        </span>
+      </div>
+
+
+      <h1 class="mt-4 text-[clamp(1.5rem,5vw,2.5rem)] font-display font-extrabold text-fg leading-tight">
+
+
+        人工智能技术如何改变我们的日常生活与工作方式
+
+      </h1>
+
+
+      <div class="mt-4 flex items-center justify-between py-3 border-b-2 border-gray-200">
+
+        <div class="flex items-center gap-3">
+
+          <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-fg shadow-pop">
+
+            <img src="https://design.gemcoder.com/api/searchImage?query=professional male portrait, young journalist, professional headshot, clean background&amp;width=100&amp;height=100" alt="作者头像" class="w-full h-full object-cover">
+          </div>
+
+
+          <div>
+
+            <p class="font-bold text-fg">
+
+              科技日报
+            </p>
+
+
+            <p class="text-sm text-gray-500">
+
+              2024年1月15日
+            </p>
+          </div>
+        </div>
+
+
+        <div class="flex items-center gap-4 text-gray-500">
+
+          <span class="flex items-center gap-1">
+
+            <i class="far fa-eye"></i>
+
+
+            <span>
+
+              2.5k
+            </span>
+          </span>
+
+
+          <span class="flex items-center gap-1">
+
+            <i class="far fa-comment"></i>
+
+
+            <span>
+
+              48
+            </span>
+          </span>
+        </div>
+      </div>
+
+
+      <article class="mt-6 space-y-4 text-lg leading-relaxed text-fg">
+
+        <p>
+
+
+          近年来，人工智能技术的飞速发展正在深刻改变着我们的生活方式。从智能手机中的语音助手到自动驾驶汽车，从个性化推荐系统到医疗诊断，人工智能的应用已经渗透到我们日常生活的方方面面。
+
+        </p>
+
+
+        <div class="my-6 card-sticker p-4">
+
+          <img src="https://design.gemcoder.com/api/searchImage?query=AI robot working with computer in modern office, bright lighting, futuristic technology concept&amp;width=800&amp;height=450" alt="人工智能办公场景" class="w-full rounded-xl mb-4">
+
+
+          <p class="text-sm text-gray-500 italic text-center">
+
+            人工智能正在重塑办公环境
+          </p>
+        </div>
+
+
+        <h2 class="text-2xl font-display font-bold mt-8 mb-4 text-accent">
+
+          人工智能带来的变革
+        </h2>
+
+
+        <p>
+
+
+          在工作场景中，人工智能已经成为不可或缺的助手。智能文档处理、自动代码生成、数据分析预测等功能大大提高了工作效率，让人们能够从重复性劳动中解放出来，专注于更具创造性的工作。
+
+        </p>
+
+
+        <p>
+
+
+          在日常生活中，智能家居系统让我们的生活更加便捷。通过语音指令控制家电、智能调温节能、安全监测等功能，为我们创造了更加舒适的居住环境。
+
+        </p>
+
+
+        <blockquote class="my-6 pl-4 border-l-4 border-accent italic text-gray-600">
+
+          <span>
+
+
+            "人工智能不是要替代人类，而是要增强人类的能力，让我们能够做到以前不可能做到的事情。"
+
+          </span>
+
+
+          <footer class="text-right mt-2 text-sm font-bold">
+
+            — 科技领域专家访谈
+          </footer>
+        </blockquote>
+
+
+        <h2 class="text-2xl font-display font-bold mt-8 mb-4 text-accent">
+
+          未来发展展望
+        </h2>
+
+
+        <p>
+
+
+          随着技术的不断进步，人工智能将在更多领域发挥重要作用。医疗健康、教育、交通、环境保护等领域都将迎来人工智能带来的革命性变化。
+
+        </p>
+
+
+        <div class="my-6 grid grid-cols-2 gap-4">
+
+          <div class="card-sticker p-4 text-center">
+
+            <i class="fas fa-heartbeat text-4xl text-quaternary mb-2"></i>
+
+
+            <h3 class="font-bold">
+
+              医疗健康
+            </h3>
+
+
+            <p class="text-sm text-gray-500">
+
+              智能辅助诊断
+            </p>
+          </div>
+
+
+          <div class="card-sticker p-4 text-center">
+
+            <i class="fas fa-graduation-cap text-4xl text-tertiary mb-2"></i>
+
+
+            <h3 class="font-bold">
+
+              个性化教育
+            </h3>
+
+
+            <p class="text-sm text-gray-500">
+
+              定制学习方案
+            </p>
+          </div>
+        </div>
+
+
+        <p>
+
+
+          然而，人工智能的发展也带来了一些需要我们认真思考的问题，比如数据隐私、就业结构变化、算法公平性等。我们需要在享受技术带来便利的同时，建立健全相应的规范和伦理准则，确保人工智能技术朝着有利于人类的方向发展。
+
+        </p>
+
+
+        <p>
+
+
+          总而言之，人工智能技术的发展是不可逆转的趋势。它既带来了前所未有的机遇，也提出了新的挑战。只有通过全社会的共同努力，我们才能真正用好人工智能这一强大工具，为人类创造更加美好的未来。
+
+        </p>
+      </article>
+
+
+      <div class="mt-10">
+
+        <h2 class="text-2xl font-display font-bold mb-6 flex items-center gap-2">
+
+          <span class="w-3 h-8 bg-accent rounded-blob"></span>
+
+
+          <span>
+
+
+            相关推荐
+
+          </span>
+        </h2>
+
+
+        <div class="space-y-4">
+
+          <div class="card-sticker p-4 flex gap-4 items-center">
+
+            <div class="w-24 h-24 rounded-blob overflow-hidden flex-shrink-0 border border-fg">
+
+              <img src="https://design.gemcoder.com/api/searchImage?query=5G technology network, digital communication, blue background&amp;width=200&amp;height=200" alt="相关新闻图片" class="w-full h-full object-cover">
+            </div>
+
+
+            <div class="flex-1">
+
+              <h3 class="font-bold text-fg mb-1 line-clamp-2">
+
+                5G技术普及加速数字化转型进程
+              </h3>
+
+
+              <p class="text-sm text-gray-500">
+
+                2024年1月12日
+              </p>
+            </div>
+          </div>
+
+
+          <div class="card-sticker p-4 flex gap-4 items-center">
+
+            <div class="w-24 h-24 rounded-blob overflow-hidden flex-shrink-0 border border-fg">
+
+              <img src="https://design.gemcoder.com/api/searchImage?query=renewable energy solar panels, green technology, landscape&amp;width=200&amp;height=200" alt="相关新闻图片" class="w-full h-full object-cover">
+            </div>
+
+
+            <div class="flex-1">
+
+              <h3 class="font-bold text-fg mb-1 line-clamp-2">
+
+                可再生能源技术突破：清洁能源迎来新时代
+              </h3>
+
+
+              <p class="text-sm text-gray-500">
+
+                2024年1月10日
+              </p>
+            </div>
+          </div>
+
+
+          <div class="card-sticker p-4 flex gap-4 items-center">
+
+            <div class="w-24 h-24 rounded-blob overflow-hidden flex-shrink-0 border border-fg">
+
+              <img src="https://design.gemcoder.com/api/searchImage?query=space exploration rocket launch, blue sky, technology&amp;width=200&amp;height=200" alt="相关新闻图片" class="w-full h-full object-cover">
+            </div>
+
+
+            <div class="flex-1">
+
+              <h3 class="font-bold text-fg mb-1 line-clamp-2">
+
+                商业航天发展最新进展盘点
+              </h3>
+
+
+              <p class="text-sm text-gray-500">
+
+                2024年1月8日
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="mt-10 mb-8">
+
+        <h2 class="text-2xl font-display font-bold mb-6 flex items-center gap-2">
+
+          <span class="w-3 h-8 bg-secondary rounded-blob"></span>
+
+
+          <span>
+
+
+            读者评论
+
+          </span>
+        </h2>
+
+
+        <div class="card-sticker p-4 mb-6">
+
+          <textarea class="input-geo h-24 resize-none" placeholder="写下你的看法..."></textarea>
+
+
+          <div class="mt-4 text-right">
+
+            <button type="button" class="btn-candy inline-flex">
+
+              <i class="fas fa-paper-plane"></i>
+
+
+              <span>
+
+
+                发表评论
+
+              </span>
+            </button>
+          </div>
+        </div>
+
+
+        <div class="space-y-4">
+
+          <div class="card-sticker p-4">
+
+            <div class="flex items-center gap-3 mb-3">
+
+              <div class="w-10 h-10 rounded-full overflow-hidden border border-fg">
+
+                <img src="https://design.gemcoder.com/api/searchImage?query=user profile photo portrait, asian male&amp;width=100&amp;height=100" alt="用户头像" class="w-full h-full object-cover">
+              </div>
+
+
+              <div>
+
+                <p class="font-bold text-fg">
+
+                  张小明
+                </p>
+
+
+                <p class="text-xs text-gray-500">
+
+                  昨天 14:30
+                </p>
+              </div>
+            </div>
+
+
+            <p class="text-fg">
+
+              写得非常好！人工智能确实改变了我们的生活，我现在工作中已经离不开AI助手了。期待看到更多关于AI伦理方面的讨论。
+            </p>
+
+
+            <div class="mt-3 flex items-center gap-4 text-sm text-gray-500">
+
+              <button type="button" class="flex items-center gap-1 hover:text-accent transition-colors">
+
+                <i class="far fa-thumbs-up"></i>
+
+
+                <span>
+
+                  点赞 (24)
+
+                </span>
+              </button>
+
+
+              <button type="button" class="flex items-center gap-1 hover:text-accent transition-colors">
+
+                <i class="far fa-comment"></i>
+
+
+                <span>
+
+                  回复
+
+                </span>
+              </button>
+            </div>
+          </div>
+
+
+          <div class="card-sticker p-4">
+
+            <div class="flex items-center gap-3 mb-3">
+
+              <div class="w-10 h-10 rounded-full overflow-hidden border border-fg">
+
+                <img src="https://design.gemcoder.com/api/searchImage?query=user profile photo portrait, young asian female&amp;width=100&amp;height=100" alt="用户头像" class="w-full h-full object-cover">
+              </div>
+
+
+              <div>
+
+                <p class="font-bold text-fg">
+
+                  李华
+                </p>
+
+
+                <p class="text-xs text-gray-500">
+
+                  昨天 10:15
+                </p>
+              </div>
+            </div>
+
+
+            <p class="text-fg">
+
+              很认同作者的观点，AI应该服务于人，而不是替代人。希望未来能有更多普惠性的AI技术让每个人都受益。
+            </p>
+
+
+            <div class="mt-3 flex items-center gap-4 text-sm text-gray-500">
+
+              <button type="button" class="flex items-center gap-1 hover:text-accent transition-colors">
+
+                <i class="far fa-thumbs-up"></i>
+
+
+                <span>
+
+                  点赞 (18)
+
+                </span>
+              </button>
+
+
+              <button type="button" class="flex items-center gap-1 hover:text-accent transition-colors">
+
+                <i class="far fa-comment"></i>
+
+
+                <span>
+
+                  回复
+
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+        <button type="button" class="mt-6 w-full btn-secondary">
+
+
+          加载更多评论
+
+        </button>
+      </div>
+    </main>
+
+
+    <div id="shareMask" class="fixed inset-0 bg-black/60 z-50 flex items-end hidden">
+
+      <div id="shareModal" class="w-full bg-bg rounded-t-3xl border-t-2 border-fg p-6 pb-10">
+
+        <h3 class="text-xl font-display font-bold mb-4 text-center">
+
+          分享到
+        </h3>
+
+
+        <div class="grid grid-cols-4 gap-4 mb-6">
+
+          <div class="flex flex-col items-center gap-2">
+
+            <div class="w-14 h-14 rounded-full bg-green-500 border-2 border-fg flex items-center justify-center text-white text-2xl shadow-pop">
+
+              <i class="fab fa-weixin"></i>
+            </div>
+
+
+            <span class="text-sm">
+
+              微信
+            </span>
+          </div>
+
+
+          <div class="flex flex-col items-center gap-2">
+
+            <div class="w-14 h-14 rounded-full bg-blue-500 border-2 border-fg flex items-center justify-center text-white text-2xl shadow-pop">
+
+              <i class="fab fa-qq"></i>
+            </div>
+
+
+            <span class="text-sm">
+
+              QQ
+            </span>
+          </div>
+
+
+          <div class="flex flex-col items-center gap-2">
+
+            <div class="w-14 h-14 rounded-full bg-red-500 border-2 border-fg flex items-center justify-center text-white text-2xl shadow-pop">
+
+              <i class="fab fa-weibo"></i>
+            </div>
+
+
+            <span class="text-sm">
+
+              微博
+            </span>
+          </div>
+
+
+          <div class="flex flex-col items-center gap-2">
+
+            <div class="w-14 h-14 rounded-full bg-gray-100 border-2 border-fg flex items-center justify-center text-fg text-2xl shadow-pop">
+
+              <i class="fas fa-link"></i>
+            </div>
+
+
+            <span class="text-sm">
+
+              复制链接
+            </span>
+          </div>
+        </div>
+
+
+        <button type="button" id="closeShareBtn" class="btn-candy w-full">
+
+          取消
+        </button>
+      </div>
+    </div>
+
+    <script></script>
+    <script>
+      window.ytHandles = {
+        openPage: function(url) {
+
+          // 当前窗口打开url页面
+          url += "&v=" + Math.random().toString(36).substring(2);
+          window.open(url, '_self');
+
+        },
+        //显示id为targetId的目标容器
+        show: function(targetId, callback) {
+          const modal = document.getElementById(targetId); //获取targetId的隐藏框元素
+          // 检查targetId的隐藏框元素是否存在
+          if (!modal) {
+            console.error('Modal element not found: targetId');
+            return;
+          }
+
+          // 递归清理子元素的内联样式和hidden类
+          const clearChildrenStyles = function(element) {
+            if (!element) return;
+            const children = element.children;
+            for (let i = 0; i < children.length; i++) {
+              const child = children[i];
+              // 清理hidden类
+              child.classList.remove("hidden");
+              // 清理内联样式
+              child.style.display = "";
+              child.style.visibility = "";
+              child.style.opacity = "";
+              child.style.transform = "";
+              child.style.animation = "";
+              // 递归处理子元素的子元素
+              clearChildrenStyles(child);
+            }
+          };
+          // 1. 清理该元素之前的状态和监听器
+          if (modal._hideAnimationEndHandler) {
+            modal.removeEventListener("animationend", modal._hideAnimationEndHandler);
+            delete modal._hideAnimationEndHandler;
+          }
+          if (modal._hideTimeout) {
+            clearTimeout(modal._hideTimeout);
+            delete modal._hideTimeout;
+          }
+          // 2. 移除目标元素的隐藏类并重置内联样式
+          modal.classList.remove("hidden");
+          modal.style.display = ""; // 清空内联隐藏，让 CSS 的 flex 自动接管
+          modal.style.visibility = "";
+          modal.style.opacity = "";
+          modal.style.transform = "";
+          modal.style.animation = "";
+          // 3. 递归清理所有子元素的内联样式和hidden类
+          clearChildrenStyles(modal);
+          // 4. 强制重绘以确保样式应用
+          void modal.offsetHeight;
+          // 5. 执行显示动画
+          modal.style.animation = 'yt_modalFadeIn 0.3s ease-out';
+          // 6. 动画结束后清理动画样式
+          const onAnimationEnd = function() {
+            modal.style.animation = "";
+            delete modal._showAnimationEndHandler;
+          };
+          modal._showAnimationEndHandler = onAnimationEnd;
+          modal.addEventListener("animationend", onAnimationEnd, {
+            once: true
+          });
+          if (callback) callback();
+
+        },
+        //关闭id为targetId的目标容器
+        hide: function(targetId) {
+          const modal = document.getElementById(targetId); //获取targetId的元素
+          // 检查targetId元素是否存在
+          if (!modal) {
+            console.error('Modal element not found: targetId');
+            return;
+          }
+
+          //1. 准备隐藏前先清理旧动画和监听器
+          if (modal._hideTimeout) clearTimeout(modal._hideTimeout);
+          if (modal._showAnimationEndHandler) {
+            modal.removeEventListener("animationend", modal._showAnimationEndHandler);
+            delete modal._showAnimationEndHandler;
+          }
+          modal.style.animation = "";
+          // 2. 强制重绘以确保样式应用
+          void modal.offsetHeight;
+          // 3. 启动淡出动画
+          modal.style.animation = 'yt_modalFadeOut 0.3s ease-out';
+          let animationCompleted = false;
+          const onAnimationEnd = function() {
+            if (animationCompleted) return;
+            animationCompleted = true;
+            // 4. 动画结束后，添加隐藏类并清空所有内联干扰样式
+            modal.classList.add("hidden");
+            modal.style.display = "";
+            modal.style.visibility = "";
+            modal.style.opacity = "";
+            modal.style.animation = "";
+            modal.style.transform = "";
+            // 清理引用
+            delete modal._hideAnimationEndHandler;
+            if (modal._hideTimeout) {
+              clearTimeout(modal._hideTimeout);
+              delete modal._hideTimeout;
+            }
+          };
+          // 5. 使用事件监听 + 定时器双重保险，确保清理逻辑一定会执行
+          modal._hideAnimationEndHandler = onAnimationEnd;
+          modal.addEventListener("animationend", onAnimationEnd, {
+            once: true
+          });
+          modal._hideTimeout = setTimeout(onAnimationEnd, 400); // 略长于动画时间
+
+        },
+        //浏览器回退功能
+        back: function() {
+
+          // 检测浏览器是否有历史记录
+          if (window.history && window.history.length > 1) {
+            // 浏览器回退到上一页
+            window.history.back();
+          } else {
+            console.warn('No history to go back');
+          }
+
+        }
+      };
+
+      window.onload = function() {
+        try {
+          //为#backBtn元素添加click事件监听器
+          document.getElementById(`backBtn`).addEventListener('click', function(event) {
+            ytHandles.openPage('/viewUIHtmlPreview.html?appuuid=2062719538549489664&uuid=main_activity&version=1&pageType=app&w=440&h=956');
+          })
+        } catch (e) {
+          console.error('OpenPage error:', e);
+        }
+        try {
+          //为#shareBtn元素添加click事件监听器
+          document.getElementById(`shareBtn`).addEventListener('click', function(event) {
+            ytHandles.show('shareMask');
+            ytHandles.show('shareModal');
+          })
+        } catch (e) {
+          console.error('OpenModal error:', e);
+        }
+        try {
+          //为#closeShareBtn元素添加click事件监听器
+          document.getElementById(`closeShareBtn`).addEventListener('click', function(event) {
+            ytHandles.hide('shareMask');
+            ytHandles.hide('shareModal');
+          })
+        } catch (e) {
+          console.error('CloseModal error:', e);
+        }
+        try {
+          //为#shareMask元素添加click事件监听器
+          document.getElementById(`shareMask`).addEventListener('click', function(event) {
+            ytHandles.hide('shareMask');
+            ytHandles.hide('shareModal');
+          })
+        } catch (e) {
+          console.error('CloseModal error:', e);
+        }
+        try {
+          //为#backBtn元素添加click事件监听器
+          document.getElementById(`backBtn`).addEventListener('click', function(event) {
+            ytHandles.back();
+          })
+        } catch (e) {
+          console.error('Back error:', e);
+        }
+      }
+    </script>
+
+  </body>
+
+</html>
