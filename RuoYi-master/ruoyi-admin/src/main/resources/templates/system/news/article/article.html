@@ -17,7 +17,7 @@
 								发布人员：<input type="text" name="createBy"/>
 							</li>
 							<li>
-								新闻分类：<select name="categoryId" th:with="categories=${@newsCategoryService.selectCategoryList(new T(com.ruoyi.system.domain.NewsCategory))}">
+								新闻分类：<select name="categoryId">
 									<option value="">所有</option>
 									<option th:each="category : ${categories}" th:text="${category.categoryName}" th:value="${category.categoryId}"></option>
 								</select>
@@ -40,13 +40,13 @@
 			</div>
 			
 	        <div class="btn-group-sm" id="toolbar" role="group">
-		        <a class="btn btn-success" onclick="$.operate.addFull()" shiro:hasPermission="system:news:add">
+		        <a class="btn btn-success" onclick="$.operate.addFull()" shiro:hasPermission="news:article:add">
 		            <i class="fa fa-plus"></i> 新增
 		        </a>
-		        <a class="btn btn-primary single disabled" onclick="$.operate.editFull()" shiro:hasPermission="system:news:edit">
+		        <a class="btn btn-primary single disabled" onclick="$.operate.editFull()" shiro:hasPermission="news:article:edit">
 		            <i class="fa fa-edit"></i> 修改
 		        </a>
-		        <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="system:news:remove">
+		        <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="news:article:remove">
 		            <i class="fa fa-remove"></i> 删除
 		        </a>
 	        </div>
@@ -60,7 +60,7 @@
     <script th:inline="javascript">
         var editFlag = [[${@permission.hasPermi('news:article:edit')}]];
         var removeFlag = [[${@permission.hasPermi('news:article:remove')}]];
-        var categories = [[${@newsCategoryService.selectCategoryList(new T(com.ruoyi.system.domain.NewsCategory))}]];
+        var categories = [[${categories}]];
         var prefix = ctx + "system/news/article";
 
         $(function() {

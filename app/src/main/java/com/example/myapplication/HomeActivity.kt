@@ -16,6 +16,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var prefManager: PrefManager
 
     private val homeFragment = HomeNewsFragment()
+    private val hotPushFragment = HotPushFragment()
     private val categoriesFragment = CategoriesFragment()
     private val favoritesFragment = FavoritesFragment()
     private val profileFragment = ProfileFragment()
@@ -68,6 +69,10 @@ class HomeActivity : AppCompatActivity() {
                     switchFragment(homeFragment)
                     true
                 }
+                R.id.nav_hot_push -> {
+                    switchFragment(hotPushFragment)
+                    true
+                }
                 R.id.nav_categories -> {
                     switchFragment(categoriesFragment)
                     true
@@ -89,6 +94,10 @@ class HomeActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
             .commit()
+    }
+
+    fun switchToHotPushFragment() {
+        bottomNavigationView.selectedItemId = R.id.nav_hot_push
     }
 
     private fun navigateToLogin() {

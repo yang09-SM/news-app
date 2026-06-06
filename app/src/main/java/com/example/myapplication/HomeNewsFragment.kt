@@ -169,6 +169,9 @@ class HomeNewsFragment : Fragment() {
         val intent = Intent(requireContext(), NewsDetailActivity::class.java)
         intent.putExtra("news_url", newsItem.url)
         intent.putExtra("news_title", newsItem.title)
+        intent.putExtra("news_pic", newsItem.pic)
+        intent.putExtra("news_category", newsItem.category)
+        intent.putExtra("news_id", newsItem.title.hashCode().toString())
         startActivity(intent)
     }
 }

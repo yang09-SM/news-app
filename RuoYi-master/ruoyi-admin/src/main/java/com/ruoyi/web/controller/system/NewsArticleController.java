@@ -17,7 +17,9 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.system.domain.NewsArticle;
+import com.ruoyi.system.domain.NewsCategory;
 import com.ruoyi.system.service.INewsArticleService;
+import com.ruoyi.system.service.INewsCategoryService;
 
 @Controller
 @RequestMapping("/system/news/article")
@@ -27,11 +29,15 @@ public class NewsArticleController extends BaseController
 
     @Autowired
     private INewsArticleService newsArticleService;
+    
+    @Autowired
+    private INewsCategoryService newsCategoryService;
 
     @RequiresPermissions("news:article:view")
     @GetMapping()
-    public String news()
+    public String news(ModelMap mmap)
     {
+        mmap.put("categories", newsCategoryService.selectCategoryList(new NewsCategory()));
         return prefix + "/article";
     }
 
@@ -47,8 +53,9 @@ public class NewsArticleController extends BaseController
 
     @RequiresPermissions("news:article:add")
     @GetMapping("/add")
-    public String add()
+    public String add(ModelMap mmap)
     {
+        mmap.put("categories", newsCategoryService.selectCategoryList(new NewsCategory()));
         return prefix + "/add";
     }
 
@@ -67,6 +74,7 @@ public class NewsArticleController extends BaseController
     public String edit(@PathVariable("articleId") Long articleId, ModelMap mmap)
     {
         mmap.put("newsArticle", newsArticleService.selectNewsArticleById(articleId));
+        mmap.put("categories", newsCategoryService.selectCategoryList(new NewsCategory()));
         return prefix + "/edit";
     }
 

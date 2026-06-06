@@ -58,6 +58,58 @@
         <activity
             android:name=".SearchActivity"
             android:exported="false" />
+        <activity
+            android:name=".BrowsingHistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AchievementsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PointsMallActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ExchangeRecordsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GroupListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MessageListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MessageDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CashRewardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ActivityCenterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ActivityDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CreationCenterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditCreationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MyReportsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SubmitReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FavoritesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PointsCenterActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

@@ -92,6 +92,7 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         prefManager = PrefManager(requireContext())
+        prefManager.initializeMockData()
 
         initViews(view)
         updateUI()
@@ -164,51 +165,63 @@ class ProfileFragment : Fragment() {
         updateCheckInButton()
 
         favoritesMenuItem.setOnClickListener {
-            Toast.makeText(requireContext(), "我的收藏功能开发中...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), FavoritesActivity::class.java)
+            startActivity(intent)
         }
 
         historyMenuItem.setOnClickListener {
-            Toast.makeText(requireContext(), "浏览历史功能开发中...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), BrowsingHistoryActivity::class.java)
+            startActivity(intent)
         }
 
         hotRecommendMenuItem.setOnClickListener {
-            Toast.makeText(requireContext(), "热推功能开发中...", Toast.LENGTH_SHORT).show()
+            val activity = requireActivity() as? HomeActivity
+            activity?.switchToHotPushFragment()
         }
 
         messageMenuItem.setOnClickListener {
-            Toast.makeText(requireContext(), "消息功能开发中...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), MessageListActivity::class.java)
+            startActivity(intent)
         }
 
         cashRewardMenuItem.setOnClickListener {
-            Toast.makeText(requireContext(), "现金奖励功能开发中...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), CashRewardActivity::class.java)
+            startActivity(intent)
         }
 
         pointsCenterMenuItem.setOnClickListener {
-            Toast.makeText(requireContext(), "积分中心功能开发中...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), PointsCenterActivity::class.java)
+            startActivity(intent)
         }
 
         pointsShopMenuItem.setOnClickListener {
-            Toast.makeText(requireContext(), "积分商城功能开发中...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), PointsMallActivity::class.java)
+            startActivity(intent)
         }
 
         achievementMenuItem.setOnClickListener {
-            Toast.makeText(requireContext(), "成就勋章功能开发中...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), AchievementsActivity::class.java)
+            startActivity(intent)
         }
 
         groupChatMenuItem.setOnClickListener {
-            Toast.makeText(requireContext(), "群聊功能开发中...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), GroupListActivity::class.java)
+            startActivity(intent)
         }
 
         activityCenterMenuItem.setOnClickListener {
-            Toast.makeText(requireContext(), "活动中心功能开发中...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), ActivityCenterActivity::class.java)
+            startActivity(intent)
         }
 
         creationCenterMenuItem.setOnClickListener {
-            Toast.makeText(requireContext(), "创作中心功能开发中...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), CreationCenterActivity::class.java)
+            startActivity(intent)
         }
 
         myReportMenuItem.setOnClickListener {
-            Toast.makeText(requireContext(), "我的报料功能开发中...", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), MyReportsActivity::class.java)
+            startActivity(intent)
         }
 
         changePasswordView.setOnClickListener {
