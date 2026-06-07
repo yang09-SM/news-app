@@ -19,6 +19,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -51,6 +52,8 @@ class ProfileFragment : Fragment() {
     private lateinit var myReportMenuItem: View
     private lateinit var changePasswordView: View
     private lateinit var aboutView: View
+    private lateinit var darkModeMenuItem: View
+    private lateinit var darkModeValueText: TextView
     private lateinit var logoutView: Button
     private lateinit var loginButton: Button
     private lateinit var checkInButton: Button
@@ -124,6 +127,8 @@ class ProfileFragment : Fragment() {
         myReportMenuItem = view.findViewById(R.id.myReportMenuItem)
         changePasswordView = view.findViewById(R.id.changePasswordView)
         aboutView = view.findViewById(R.id.aboutView)
+        darkModeMenuItem = view.findViewById(R.id.darkModeMenuItem)
+        darkModeValueText = view.findViewById(R.id.darkModeValueText)
         logoutView = view.findViewById(R.id.logoutView)
         loginButton = view.findViewById(R.id.loginButton)
         checkInButton = view.findViewById(R.id.checkInButton)
@@ -232,6 +237,11 @@ class ProfileFragment : Fragment() {
         aboutView.setOnClickListener {
             val intent = Intent(requireContext(), AboutActivity::class.java)
             startActivity(intent)
+        }
+
+        updateDarkModeDisplay()
+        darkModeMenuItem.setOnClickListener {
+            showNightModeDialog()
         }
 
         checkInButton.setOnClickListener {
@@ -463,5 +473,43 @@ class ProfileFragment : Fragment() {
         }
         avatarImageView.visibility = View.GONE
         avatarInitial.visibility = View.VISIBLE
+    }
+
+    private fun updateDarkModeDisplay() {
+        val mode = prefManager.getNightMode()
+        darkModeValueText.text = when (mode) {
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> "跟随系统"
+            AppCompatDelegate.MODE_NIGHT_NO -> "浅色模式"
+            AppCompatDelegate.MODE_NIGHT_YES -> "深色模式"
+            else -> "跟随系统"
+        }
+    }
+
+    private fun showNightModeDialog() {
+        val currentMode = prefManager.getNightMode()
+        val checkedItem = when (currentMode) {
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> 0
+            AppCompatDelegate.MODE_NIGHT_NO -> 1
+            AppCompatDelegate.MODE_NIGHT_YES -> 2
+            else -> 0
+        }
+        val options = arrayOf("跟随系统", "浅色模式", "深色模式")
+        AlertDialog.Builder(requireContext())
+            .setTitle("深色模式")
+            .setSingleChoiceItems(options, checkedItem) { dialog, which ->
+                val selectedMode = when (which) {
+                    0 -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    1 -> AppCompatDelegate.MODE_NIGHT_NO
+                    2 -> AppCompatDelegate.MODE_NIGHT_YES
+                    else -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                }
+                AppCompatDelegate.setDefaultNightMode(selectedMode)
+                prefManager.saveNightMode(selectedMode)
+                darkModeValueText.text = options[which]
+                dialog.dismiss()
+                requireActivity().recreate()
+            }
+            .setNegativeButton("取消", null)
+            .show()
     }
 }

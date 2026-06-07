@@ -18,6 +18,12 @@ class NewsAdapter(
     private val onItemClickListener: (NewsItem) -> Unit
 ) : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
 
+    private var onItemLongClickListener: ((Int) -> Unit)? = null
+
+    fun setOnItemLongClickListener(listener: (Int) -> Unit) {
+        onItemLongClickListener = listener
+    }
+
     companion object {
         private const val VIEW_TYPE_1 = 1
         private const val VIEW_TYPE_2 = 2
@@ -56,6 +62,13 @@ class NewsAdapter(
 
             itemView.setOnClickListener {
                 onItemClickListener(newsItem)
+            }
+
+            itemView.setOnLongClickListener {
+                onItemLongClickListener?.let {
+                    it(adapterPosition)
+                    true
+                } ?: false
             }
         }
     }

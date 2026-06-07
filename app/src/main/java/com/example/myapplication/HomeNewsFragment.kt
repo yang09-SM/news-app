@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.gson.Gson
 
 class HomeNewsFragment : Fragment() {
@@ -19,6 +20,7 @@ class HomeNewsFragment : Fragment() {
     private lateinit var categoryScrollView: HorizontalScrollView
     private lateinit var categoryContainer: LinearLayout
     private lateinit var recyclerView: RecyclerView
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var newsAdapter: NewsAdapter
     private val newsList = mutableListOf<NewsItem>()
     private var currentCategory = "推荐"
@@ -56,6 +58,14 @@ class HomeNewsFragment : Fragment() {
         categoryScrollView = view.findViewById(R.id.categoryScrollView)
         categoryContainer = view.findViewById(R.id.categoryContainer)
         recyclerView = view.findViewById(R.id.newsRecyclerView)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefresh)
+
+        swipeRefreshLayout.apply {
+            setColorSchemeResources(R.color.primary_color)
+            setOnRefreshListener {
+                clearAndLoadNews()
+            }
+        }
     }
 
     private fun setupCategoryTabs() {
@@ -150,12 +160,14 @@ class HomeNewsFragment : Fragment() {
                         e.printStackTrace()
                     }
                     isLoading = false
+                    swipeRefreshLayout.isRefreshing = false
                 }
             }
 
             override fun onError(error: String) {
                 activity?.runOnUiThread {
                     isLoading = false
+                    swipeRefreshLayout.isRefreshing = false
                 }
             }
         })

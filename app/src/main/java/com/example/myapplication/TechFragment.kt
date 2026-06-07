@@ -8,11 +8,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.gson.Gson
 
 class TechFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var newsAdapter: NewsAdapter
     private val newsList = mutableListOf<NewsItem>()
     private var currentStart = 0
@@ -31,8 +33,19 @@ class TechFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView = view.findViewById(R.id.news_recycler_view)
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefresh)
         newsAdapter = NewsAdapter(newsList) { newsItem ->
             openNewsDetail(newsItem)
+        }
+
+        swipeRefreshLayout.apply {
+            setColorSchemeResources(R.color.primary_color)
+            setOnRefreshListener {
+                currentStart = 0
+                newsList.clear()
+                newsAdapter.notifyDataSetChanged()
+                loadNews()
+            }
         }
 
         recyclerView.apply {
@@ -72,12 +85,14 @@ class TechFragment : Fragment() {
                         e.printStackTrace()
                     }
                     isLoading = false
+                    swipeRefreshLayout.isRefreshing = false
                 }
             }
 
             override fun onError(error: String) {
                 activity?.runOnUiThread {
                     isLoading = false
+                    swipeRefreshLayout.isRefreshing = false
                 }
             }
         })

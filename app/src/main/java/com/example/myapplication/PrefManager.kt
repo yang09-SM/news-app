@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -36,6 +37,8 @@ class PrefManager(private val context: Context) {
         private const val KEY_CREATIONS = "creations"
         private const val KEY_REPORTS = "reports"
         private const val KEY_DATA_INITIALIZED = "data_initialized"
+        private const val KEY_FAVORITES = "favorites"
+        private const val KEY_NIGHT_MODE = "night_mode"
     }
 
     fun saveLoginState(isLoggedIn: Boolean, username: String, userId: String) {
@@ -474,8 +477,51 @@ class PrefManager(private val context: Context) {
         saveReports(reports)
     }
 
+    fun saveFavorites(favorites: List<FavoriteItem>) {
+        val json = gson.toJson(favorites)
+        prefs.edit().putString(KEY_FAVORITES, json).apply()
+    }
+
+    fun getFavorites(): List<FavoriteItem> {
+        val json = prefs.getString(KEY_FAVORITES, null)
+        return if (json != null) {
+            val type = object : TypeToken<List<FavoriteItem>>() {}.type
+            gson.fromJson(json, type)
+        } else {
+            emptyList()
+        }
+    }
+
+    fun addFavorite(item: FavoriteItem) {
+        val favorites = getFavorites().toMutableList()
+        favorites.removeAll { it.newsId == item.newsId }
+        favorites.add(0, item)
+        saveFavorites(favorites)
+    }
+
+    fun removeFavorite(newsId: String) {
+        val favorites = getFavorites().filter { it.newsId != newsId }
+        saveFavorites(favorites)
+    }
+
+    fun isFavorited(newsId: String): Boolean {
+        return getFavorites().any { it.newsId == newsId }
+    }
+
+    fun clearFavorites() {
+        saveFavorites(emptyList())
+    }
+
     fun isDataInitialized(): Boolean {
         return prefs.getBoolean(KEY_DATA_INITIALIZED, false)
+    }
+
+    fun saveNightMode(mode: Int) {
+        prefs.edit().putInt(KEY_NIGHT_MODE, mode).apply()
+    }
+
+    fun getNightMode(): Int {
+        return prefs.getInt(KEY_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     }
 
     fun initializeMockData() {
