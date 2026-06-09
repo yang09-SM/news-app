@@ -8,12 +8,22 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/action_push_notify"
-        android:icon="@android:drawable/star_big_on"
+        android:icon="@android:drawable/ic_menu_info_details"
         android:title="推送提醒"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_share"
         android:icon="@android:drawable/ic_menu_share"
         android:title="分享"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_report"
+        android:icon="@android:drawable/ic_menu_report_image"
+        android:title="举报"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_download"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="下载"
         app:showAsAction="never" />
 </menu>

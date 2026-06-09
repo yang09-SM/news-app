@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<th:block th:include="include :: header('主题列表')" />
+</head>
+<body class="gray-bg">
+    <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="topic-form">
+					<div class="select-list">
+						<ul>
+							<li>主题名称：<input type="text" name="topicName"/></li>
+							<li>主题编码：<input type="text" name="topicCode"/></li>
+							<li>状态：<select name="status" th:with="type=${@dict.getType('sys_normal_disable')}"><option value="">所有</option><option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option></select></li>
+							<li><a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a><a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a></li>
+						</ul>
+					</div>
+				</form>
+			</div>
+	        <div class="btn-group-sm" id="toolbar" role="group">
+		        <a class="btn btn-success" onclick="$.operate.addFull()" shiro:hasPermission="news:topic:add"><i class="fa fa-plus"></i> 新增</a>
+		        <a class="btn btn-primary single disabled" onclick="$.operate.editFull()" shiro:hasPermission="news:topic:edit"><i class="fa fa-edit"></i> 修改</a>
+		        <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="news:topic:remove"><i class="fa fa-remove"></i> 删除</a>
+	        </div>
+	        <div class="col-sm-12 select-table table-striped"><table id="bootstrap-table"></table></div>
+    	</div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('news:topic:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('news:topic:remove')}]];
+        var datas = [[${@dict.getType('sys_normal_disable')}]];
+        var prefix = ctx + "system/news/topic";
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                modalName: "主题",
+                columns: [{ checkbox: true },
+                    { field : 'topicId', title : '主题ID' },
+                    { field: 'topicName', title: '主题名称' },
+                    { field: 'topicCode', title: '主题编码' },
+                    { field : 'newsCount', title : '新闻数量' },
+                    { field : 'discussionCount', title : '讨论数量' },
+                    { field : 'orderNum', title : '排序' },
+                    { field: 'status', title: '状态', align: 'center', formatter: function(value, row, index) { return $.table.selectDictLabel(datas, value); } },
+                    { field: 'createTime', title: '创建时间', sortable: true },
+                    { title: '操作', align: 'center', formatter: function(value, row, index) { var actions = []; actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.editFull(\'' + row.topicId + '\')"><i class="fa fa-edit"></i>编辑</a> '); actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.topicId + '\')"><i class="fa fa-remove"></i>删除</a>'); return actions.join(''); } }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

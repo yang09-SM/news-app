@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('修改活动')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-activity-edit" th:object="${activity}">
+            <input id="activityId" name="activityId" th:field="*{activityId}"  type="hidden">
+			<div class="form-group">
+				<label class="col-sm-2 control-label is-required">活动名称：</label>
+				<div class="col-sm-10">
+					<input id="activityName" name="activityName" th:field="*{activityName}" class="form-control" type="text" required>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label is-required">活动编码：</label>
+				<div class="col-sm-10">
+					<input id="activityCode" name="activityCode" th:field="*{activityCode}" class="form-control" type="text" required>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">活动封面：</label>
+				<div class="col-sm-10">
+					<input id="activityCover" name="activityCover" th:field="*{activityCover}" class="form-control" type="text">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">活动描述：</label>
+				<div class="col-sm-10">
+					<textarea id="activityDesc" name="activityDesc" th:field="*{activityDesc}" class="form-control"></textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label is-required">开始时间：</label>
+				<div class="col-sm-10">
+					<input id="startTime" name="startTime" th:field="*{startTime}" class="form-control" type="text" required>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label is-required">结束时间：</label>
+				<div class="col-sm-10">
+					<input id="endTime" name="endTime" th:field="*{endTime}" class="form-control" type="text" required>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label is-required">活动类型：</label>
+				<div class="col-sm-10">
+					<select id="activityType" name="activityType" class="form-control m-b" th:with="type=${@dict.getType('news_activity_type')}">
+						<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{activityType}"></option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">积分奖励：</label>
+				<div class="col-sm-10">
+					<input id="pointReward" name="pointReward" th:field="*{pointReward}" class="form-control" type="number">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">现金奖励：</label>
+				<div class="col-sm-10">
+					<input id="cashReward" name="cashReward" th:field="*{cashReward}" class="form-control" type="number" step="0.01">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">最大参与人数：</label>
+				<div class="col-sm-10">
+					<input id="maxParticipants" name="maxParticipants" th:field="*{maxParticipants}" class="form-control" type="number">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">状态：</label>
+				<div class="col-sm-10">
+				    <div class="radio-box" th:each="dict : ${@dict.getType('sys_normal_disable')}">
+						<input type="radio" th:id="${dict.dictCode}" name="status" th:value="${dict.dictValue}" th:field="*{status}">
+						<label th:for="${dict.dictCode}" th:text="${dict.dictLabel}"></label>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "system/news/activity";
+
+		$("#form-activity-edit").validate({
+			focusCleanup: true
+		});
+
+		function submitHandler() {
+	        if ($.validate.form()) {
+				$.operate.save(prefix + "/edit", $('#form-activity-edit').serialize());
+	        }
+	    }
+	</script>
+</body>
+</html>

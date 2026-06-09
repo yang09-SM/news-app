@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.AuthorMapper">
+
+    <resultMap type="Author" id="AuthorResult">
+        <result property="authorId"      column="author_id"      />
+        <result property="authorName"    column="author_name"    />
+        <result property="avatar"        column="avatar"          />
+        <result property="bio"           column="bio"             />
+        <result property="followerCount" column="follower_count" />
+        <result property="articleCount"  column="article_count"  />
+        <result property="status"        column="status"          />
+        <result property="delFlag"       column="del_flag"       />
+        <result property="createBy"      column="create_by"      />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"      column="update_by"      />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"        column="remark"         />
+    </resultMap>
+
+    <sql id="selectAuthorVo">
+        select author_id, author_name, avatar, bio, follower_count, article_count, status, del_flag, create_by, create_time, update_by, update_time, remark
+		from author
+    </sql>
+
+    <select id="selectAuthorById" parameterType="Long" resultMap="AuthorResult">
+        <include refid="selectAuthorVo"/>
+        where author_id = #{authorId}
+    </select>
+
+    <select id="selectAuthorList" parameterType="Author" resultMap="AuthorResult">
+        <include refid="selectAuthorVo"/>
+        <where>
+			del_flag = '0'
+			<if test="authorName != null and authorName != ''">
+				AND author_name like concat('%', #{authorName}, '%')
+			</if>
+			<if test="status != null and status != ''">
+				AND status = #{status}
+			</if>
+		</where>
+		order by create_time desc
+    </select>
+
+    <insert id="insertAuthor" parameterType="Author">
+        insert into author (
+			<if test="authorName != null and authorName != ''">author_name, </if>
+			<if test="avatar != null and avatar != ''">avatar, </if>
+			<if test="bio != null and bio != ''">bio, </if>
+			<if test="followerCount != null">follower_count, </if>
+			<if test="articleCount != null">article_count, </if>
+			<if test="status != null and status != ''">status, </if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+ 		)values(
+			<if test="authorName != null and authorName != ''">#{authorName}, </if>
+			<if test="avatar != null and avatar != ''">#{avatar}, </if>
+			<if test="bio != null and bio != ''">#{bio}, </if>
+			<if test="followerCount != null">#{followerCount}, </if>
+			<if test="articleCount != null">#{articleCount}, </if>
+			<if test="status != null and status != ''">#{status}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+
+    <update id="updateAuthor" parameterType="Author">
+        update author
+        <set>
+            <if test="authorName != null and authorName != ''">author_name = #{authorName}, </if>
+            <if test="avatar != null and avatar != ''">avatar = #{avatar}, </if>
+            <if test="bio != null and bio != ''">bio = #{bio}, </if>
+            <if test="followerCount != null">follower_count = #{followerCount}, </if>
+            <if test="articleCount != null">article_count = #{articleCount}, </if>
+            <if test="status != null and status != ''">status = #{status}, </if>
+            <if test="remark != null">remark = #{remark}, </if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </set>
+        where author_id = #{authorId}
+    </update>
+
+    <delete id="deleteAuthorByIds" parameterType="String">
+        delete from author where author_id in
+        <foreach item="authorId" collection="array" open="(" separator="," close=")">
+            #{authorId}
+        </foreach>
+    </delete>
+
+</mapper>

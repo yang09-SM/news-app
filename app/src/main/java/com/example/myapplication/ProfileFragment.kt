@@ -62,6 +62,9 @@ class ProfileFragment : Fragment() {
     private lateinit var followersCountTextView: TextView
     private lateinit var friendsCountTextView: TextView
     private lateinit var likesCountTextView: TextView
+    private lateinit var editProfileMenuItem: View
+    private lateinit var offlineReadingMenuItem: View
+    private lateinit var subscriptionMenuItem: View
     
     private var tempImageUri: Uri? = null
     
@@ -137,6 +140,9 @@ class ProfileFragment : Fragment() {
         followersCountTextView = view.findViewById(R.id.followersCountTextView)
         friendsCountTextView = view.findViewById(R.id.friendsCountTextView)
         likesCountTextView = view.findViewById(R.id.likesCountTextView)
+        editProfileMenuItem = view.findViewById(R.id.editProfileMenuItem)
+        offlineReadingMenuItem = view.findViewById(R.id.offlineReadingMenuItem)
+        subscriptionMenuItem = view.findViewById(R.id.subscriptionMenuItem)
         
         avatarContainer.setOnClickListener {
             showAvatarPickerDialog()
@@ -156,7 +162,8 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupLoggedInViews() {
-        val username = prefManager.getUsername() ?: "用户"
+        val nickname = prefManager.getNickname()
+        val username = if (nickname.isNotEmpty()) nickname else (prefManager.getUsername() ?: "用户")
         usernameTextView.text = username
         
         val initial = if (username.isNotEmpty()) username.first().uppercase() else "U"
@@ -169,6 +176,9 @@ class ProfileFragment : Fragment() {
         updateUserStatsDisplay()
         updateCheckInButton()
 
+        // 从服务端同步用户数据
+        syncUserProfileFromServer()
+
         favoritesMenuItem.setOnClickListener {
             val intent = Intent(requireContext(), FavoritesActivity::class.java)
             startActivity(intent)
@@ -176,6 +186,16 @@ class ProfileFragment : Fragment() {
 
         historyMenuItem.setOnClickListener {
             val intent = Intent(requireContext(), BrowsingHistoryActivity::class.java)
+            startActivity(intent)
+        }
+
+        offlineReadingMenuItem.setOnClickListener {
+            val intent = Intent(requireContext(), OfflineReadingActivity::class.java)
+            startActivity(intent)
+        }
+
+        subscriptionMenuItem.setOnClickListener {
+            val intent = Intent(requireContext(), SubscriptionActivity::class.java)
             startActivity(intent)
         }
 
@@ -250,6 +270,11 @@ class ProfileFragment : Fragment() {
 
         logoutView.setOnClickListener {
             showLogoutConfirmDialog()
+        }
+        
+        editProfileMenuItem.setOnClickListener {
+            val intent = Intent(requireContext(), EditProfileActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -511,5 +536,52 @@ class ProfileFragment : Fragment() {
             }
             .setNegativeButton("取消", null)
             .show()
+    }
+
+    /**
+     * 从服务端同步用户资料数据
+     */
+    private fun syncUserProfileFromServer() {
+        val userId = prefManager.getUserId().toLongOrNull()
+        if (userId == null || !prefManager.isLoggedIn()) return
+
+        ApiClient.getInstance(requireContext()).getUserProfile(userId, object : ApiClient.ApiCallback {
+            override fun onSuccess(response: String) {
+                try {
+                    val json = org.json.JSONObject(response)
+                    val code = json.optInt("code", -1)
+                    if (code == 200) {
+                        val data = json.optJSONObject("data")
+                        if (data != null) {
+                            // 同步用户统计数据到本地
+                            val following = data.optInt("followingCount", -1)
+                            val followers = data.optInt("followersCount", -1)
+                            val points = data.optInt("points", -1)
+                            val nickname = data.optString("nickname", "")
+                            val bio = data.optString("bio", "")
+
+                            if (following >= 0) prefManager.saveFollowingCount(following)
+                            if (followers >= 0) prefManager.saveFollowersCount(followers)
+                            if (points >= 0) prefManager.savePoints(points)
+                            if (nickname.isNotEmpty()) prefManager.saveNickname(nickname)
+                            if (bio.isNotEmpty()) prefManager.saveUserBio(bio)
+
+                            // 更新UI
+                            activity?.runOnUiThread {
+                                updateUserStatsDisplay()
+                                updatePointsDisplay()
+                                usernameTextView.text = if (nickname.isNotEmpty()) nickname else prefManager.getUsername()
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    // 解析失败，使用本地数据
+                }
+            }
+
+            override fun onError(error: String) {
+                // 网络错误，使用本地数据
+            }
+        })
     }
 }

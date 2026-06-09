@@ -18,8 +18,12 @@ data class NewsItem(
     @SerializedName("title") val title: String,
     @SerializedName("time") val time: String,
     @SerializedName("src") val src: String,
-    @SerializedName("category") val category: String,
+    @SerializedName("category") var category: String,
     @SerializedName("url") val url: String,
     @SerializedName("pic") val pic: String,
-    @SerializedName("content") val content: String?
+    @SerializedName("content") val content: String?,
+    @SerializedName("type") val type: String = "text", // "text", "video", "audio"
+    @SerializedName("videoUrl") val videoUrl: String? = null,
+    @SerializedName("audioUrl") val audioUrl: String? = null,
+    @SerializedName("duration") val duration: String? = null
 )

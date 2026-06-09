@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserMessageMapper">
+
+    <resultMap type="UserMessage" id="UserMessageResult">
+        <result property="messageId"    column="message_id"    />
+        <result property="userId"       column="user_id"       />
+        <result property="senderId"     column="sender_id"     />
+        <result property="messageType"   column="message_type"  />
+        <result property="title"        column="title"         />
+        <result property="content"      column="content"       />
+        <result property="relatedId"    column="related_id"     />
+        <result property="relatedType"  column="related_type"  />
+        <result property="isRead"       column="is_read"       />
+        <result property="readTime"     column="read_time"     />
+        <result property="delFlag"       column="del_flag"      />
+        <result property="createBy"      column="create_by"      />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"      column="update_by"      />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"        column="remark"         />
+    </resultMap>
+
+    <sql id="selectMessageVo">
+        select message_id, user_id, sender_id, message_type, title, content, related_id, related_type, is_read, read_time, del_flag, create_by, create_time, update_by, update_time, remark
+		from user_message
+    </sql>
+
+    <select id="selectMessageById" parameterType="Long" resultMap="UserMessageResult">
+        <include refid="selectMessageVo"/>
+        where message_id = #{messageId}
+    </select>
+
+    <select id="selectMessageList" parameterType="UserMessage" resultMap="UserMessageResult">
+        <include refid="selectMessageVo"/>
+        <where>
+			del_flag = '0'
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="messageType != null and messageType != ''">
+				AND message_type = #{messageType}
+			</if>
+			<if test="isRead != null and isRead != ''">
+				AND is_read = #{isRead}
+			</if>
+		</where>
+		order by create_time desc
+    </select>
+
+    <insert id="insertMessage" parameterType="UserMessage">
+        insert into user_message (
+			<if test="userId != null">user_id, </if>
+			<if test="senderId != null">sender_id, </if>
+			<if test="messageType != null and messageType != ''">message_type, </if>
+			<if test="title != null and title != ''">title, </if>
+			<if test="content != null and content != ''">content, </if>
+			<if test="relatedId != null">related_id, </if>
+			<if test="relatedType != null and relatedType != ''">related_type, </if>
+			<if test="isRead != null and isRead != ''">is_read, </if>
+			<if test="readTime != null">read_time, </if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+ 		)values(
+			<if test="userId != null">#{userId}, </if>
+			<if test="senderId != null">#{senderId}, </if>
+			<if test="messageType != null and messageType != ''">#{messageType}, </if>
+			<if test="title != null and title != ''">#{title}, </if>
+			<if test="content != null and content != ''">#{content}, </if>
+			<if test="relatedId != null">#{relatedId}, </if>
+			<if test="relatedType != null and relatedType != ''">#{relatedType}, </if>
+			<if test="isRead != null and isRead != ''">#{isRead}, </if>
+			<if test="readTime != null">#{readTime}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+
+    <update id="updateMessage" parameterType="UserMessage">
+        update user_message
+        <set>
+            <if test="userId != null">user_id = #{userId}, </if>
+            <if test="senderId != null">sender_id = #{senderId}, </if>
+            <if test="messageType != null and messageType != ''">message_type = #{messageType}, </if>
+            <if test="title != null and title != ''">title = #{title}, </if>
+            <if test="content != null and content != ''">content = #{content}, </if>
+            <if test="relatedId != null">related_id = #{relatedId}, </if>
+            <if test="relatedType != null and relatedType != ''">related_type = #{relatedType}, </if>
+            <if test="isRead != null and isRead != ''">is_read = #{isRead}, </if>
+            <if test="readTime != null">read_time = #{readTime}, </if>
+            <if test="remark != null">remark = #{remark}, </if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </set>
+        where message_id = #{messageId}
+    </update>
+
+    <delete id="deleteMessageByIds" parameterType="String">
+        delete from user_message where message_id in
+        <foreach item="messageId" collection="array" open="(" separator="," close=")">
+            #{messageId}
+        </foreach>
+    </delete>
+
+</mapper>

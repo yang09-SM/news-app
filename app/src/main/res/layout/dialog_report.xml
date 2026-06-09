@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="请选择举报原因"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <RadioGroup
+        android:id="@+id/reportReasonGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/reasonFake"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="虚假信息"
+            android:padding="12dp" />
+
+        <RadioButton
+            android:id="@+id/reasonPorn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="色情低俗"
+            android:padding="12dp" />
+
+        <RadioButton
+            android:id="@+id/reasonViolent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="暴力血腥"
+            android:padding="12dp" />
+
+        <RadioButton
+            android:id="@+id/reasonIllegal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="违法内容"
+            android:padding="12dp" />
+
+        <RadioButton
+            android:id="@+id/reasonOther"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="其他"
+            android:padding="12dp" />
+
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/reportDescription"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:hint="请补充说明（选填）"
+        android:padding="12dp"
+        android:background="@drawable/comment_input_background"
+        android:layout_marginTop="16dp"
+        android:gravity="top|start" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/cancelReport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="取消"
+            android:layout_marginEnd="8dp"
+            style="?android:attr/buttonBarButtonStyle" />
+
+        <Button
+            android:id="@+id/submitReport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="提交"
+            android:backgroundTint="@color/primary_color" />
+
+    </LinearLayout>
+
+</LinearLayout>

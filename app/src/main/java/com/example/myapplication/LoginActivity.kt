@@ -89,13 +89,19 @@ class LoginActivity : AppCompatActivity() {
                         if (success) {
                             val user = jsonObject.optJSONObject("user")
                             val userId = user?.optString("id", "") ?: ""
+                            val token = jsonObject.optString("token", "")
+                            val refreshToken = jsonObject.optString("refreshToken", "")
                             prefManager.saveLoginState(true, username, userId)
+                            if (token.isNotEmpty()) prefManager.saveAuthToken(token)
+                            if (refreshToken.isNotEmpty()) prefManager.saveRefreshToken(refreshToken)
 
-                            Toast.makeText(this@LoginActivity, message, Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this@LoginActivity, HomeActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            startActivity(intent)
-                            finish()
+                            // 检查是否需要数据迁移
+                            if (!prefManager.isDataMigrated()) {
+                                migrateDataToCloud(userId)
+                            } else {
+                                // 已迁移过，直接同步最新数据
+                                syncDataFromCloud(userId)
+                            }
                         } else {
                             Toast.makeText(this@LoginActivity, message, Toast.LENGTH_SHORT).show()
                         }
@@ -132,5 +138,62 @@ class LoginActivity : AppCompatActivity() {
 
     private fun hideLoadingDialog() {
         loadingDialog?.dismiss()
+    }
+
+    private fun migrateDataToCloud(userId: String) {
+        val data = prefManager.getAllDataForMigration()
+        ApiClient.getInstance().syncDataToCloud(userId.toLong(), data, object : ApiClient.ApiCallback {
+            override fun onSuccess(response: String) {
+                runOnUiThread {
+                    prefManager.setDataMigrated(true)
+                    prefManager.setLastSyncTime(System.currentTimeMillis())
+                    Toast.makeText(this@LoginActivity, "数据迁移成功", Toast.LENGTH_SHORT).show()
+                    navigateToHome()
+                }
+            }
+
+            override fun onError(error: String) {
+                runOnUiThread {
+                    // 迁移失败时，仍然使用本地数据继续
+                    Toast.makeText(this@LoginActivity, "数据迁移失败，将继续使用本地数据", Toast.LENGTH_SHORT).show()
+                    navigateToHome()
+                }
+            }
+        })
+    }
+
+    private fun syncDataFromCloud(userId: String) {
+        ApiClient.getInstance().syncDataFromCloud(userId.toLong(), object : ApiClient.ApiCallback {
+            override fun onSuccess(response: String) {
+                runOnUiThread {
+                    try {
+                        val jsonResponse = JSONObject(response)
+                        if (jsonResponse.optBoolean("success", false)) {
+                            val data = jsonResponse.optJSONObject("data")
+                            if (data != null) {
+                                prefManager.loadDataFromCloud(data)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // 解析失败，继续使用本地数据
+                    }
+                    navigateToHome()
+                }
+            }
+
+            override fun onError(error: String) {
+                runOnUiThread {
+                    // 同步失败时，仍然使用本地数据继续
+                    navigateToHome()
+                }
+            }
+        })
+    }
+
+    private fun navigateToHome() {
+        val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }

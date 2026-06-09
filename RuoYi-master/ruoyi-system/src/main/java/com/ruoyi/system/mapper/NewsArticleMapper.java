@@ -18,4 +18,12 @@ public interface NewsArticleMapper
     public List<NewsArticle> selectPublishedNewsList(NewsArticle newsArticle);
 
     public int incrementViewCount(Long articleId);
+
+    public List<NewsArticle> selectHotNewsList();
+
+    public List<NewsArticle> searchNews(String keyword);
+
+    public List<NewsArticle> selectRecommendedNews(Long userId);
+
+    public List<NewsArticle> selectNewsByCategory(Long categoryId);
 }

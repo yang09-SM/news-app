@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ChannelSubscriptionMapper">
+
+    <resultMap type="ChannelSubscription" id="ChannelSubscriptionResult">
+        <result property="subscriptionId" column="subscription_id" />
+        <result property="userId"          column="user_id"          />
+        <result property="channelId"       column="channel_id"       />
+        <result property="subscribeTime"   column="subscribe_time"   />
+        <result property="delFlag"         column="del_flag"         />
+        <result property="createBy"        column="create_by"        />
+        <result property="createTime"      column="create_time"      />
+        <result property="updateBy"        column="update_by"        />
+        <result property="updateTime"      column="update_time"      />
+        <result property="remark"          column="remark"           />
+    </resultMap>
+
+    <sql id="selectSubscriptionVo">
+        select subscription_id, user_id, channel_id, subscribe_time, del_flag, create_by, create_time, update_by, update_time, remark
+		from channel_subscription
+    </sql>
+
+    <select id="selectSubscriptionById" parameterType="Long" resultMap="ChannelSubscriptionResult">
+        <include refid="selectSubscriptionVo"/>
+        where subscription_id = #{subscriptionId}
+    </select>
+
+    <select id="selectSubscriptionList" parameterType="ChannelSubscription" resultMap="ChannelSubscriptionResult">
+        <include refid="selectSubscriptionVo"/>
+        <where>
+			del_flag = '0'
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="channelId != null">
+				AND channel_id = #{channelId}
+			</if>
+		</where>
+		order by subscribe_time desc
+    </select>
+
+    <insert id="insertSubscription" parameterType="ChannelSubscription">
+        insert into channel_subscription (
+			<if test="userId != null">user_id, </if>
+			<if test="channelId != null">channel_id, </if>
+			<if test="subscribeTime != null">subscribe_time, </if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+ 		)values(
+			<if test="userId != null">#{userId}, </if>
+			<if test="channelId != null">#{channelId}, </if>
+			<if test="subscribeTime != null">#{subscribeTime}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+
+    <update id="updateSubscription" parameterType="ChannelSubscription">
+        update channel_subscription
+        <set>
+            <if test="userId != null">user_id = #{userId}, </if>
+            <if test="channelId != null">channel_id = #{channelId}, </if>
+            <if test="subscribeTime != null">subscribe_time = #{subscribeTime}, </if>
+            <if test="remark != null">remark = #{remark}, </if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </set>
+        where subscription_id = #{subscriptionId}
+    </update>
+
+    <delete id="deleteSubscriptionByIds" parameterType="String">
+        delete from channel_subscription where subscription_id in
+        <foreach item="subscriptionId" collection="array" open="(" separator="," close=")">
+            #{subscriptionId}
+        </foreach>
+    </delete>
+
+</mapper>

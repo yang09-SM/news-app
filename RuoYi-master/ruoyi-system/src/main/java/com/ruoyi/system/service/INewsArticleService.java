@@ -20,4 +20,12 @@ public interface INewsArticleService
     public NewsArticle selectNewsArticleDetail(Long articleId);
 
     public int incrementViewCount(Long articleId);
+
+    public List<NewsArticle> selectHotNewsList();
+
+    public List<NewsArticle> searchNews(String keyword);
+
+    public List<NewsArticle> selectRecommendedNews(Long userId);
+
+    public List<NewsArticle> selectNewsByCategory(Long categoryId);
 }

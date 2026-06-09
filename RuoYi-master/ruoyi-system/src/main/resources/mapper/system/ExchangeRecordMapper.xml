@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.ExchangeRecordMapper">
+
+    <resultMap type="ExchangeRecord" id="ExchangeRecordResult">
+        <result property="exchangeId"    column="exchange_id"    />
+        <result property="userId"        column="user_id"        />
+        <result property="productId"     column="product_id"     />
+        <result property="productName"   column="product_name"   />
+        <result property="productImage"  column="product_image"  />
+        <result property="pointsCost"    column="points_cost"    />
+        <result property="exchangeTime"   column="exchange_time"  />
+        <result property="status"        column="status"          />
+        <result property="delFlag"       column="del_flag"       />
+        <result property="createBy"      column="create_by"      />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"      column="update_by"      />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"        column="remark"         />
+    </resultMap>
+
+    <sql id="selectExchangeRecordVo">
+        select exchange_id, user_id, product_id, product_name, product_image, points_cost, exchange_time, status, del_flag, create_by, create_time, update_by, update_time, remark
+		from exchange_record
+    </sql>
+
+    <select id="selectExchangeRecordById" parameterType="Long" resultMap="ExchangeRecordResult">
+        <include refid="selectExchangeRecordVo"/>
+        where exchange_id = #{exchangeId}
+    </select>
+
+    <select id="selectExchangeRecordList" parameterType="ExchangeRecord" resultMap="ExchangeRecordResult">
+        <include refid="selectExchangeRecordVo"/>
+        <where>
+			del_flag = '0'
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="status != null and status != ''">
+				AND status = #{status}
+			</if>
+		</where>
+		order by create_time desc
+    </select>
+
+    <insert id="insertExchangeRecord" parameterType="ExchangeRecord">
+        insert into exchange_record (
+			<if test="userId != null">user_id, </if>
+			<if test="productId != null">product_id, </if>
+			<if test="productName != null and productName != ''">product_name, </if>
+			<if test="productImage != null and productImage != ''">product_image, </if>
+			<if test="pointsCost != null">points_cost, </if>
+			<if test="exchangeTime != null">exchange_time, </if>
+			<if test="status != null and status != ''">status, </if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+ 		)values(
+			<if test="userId != null">#{userId}, </if>
+			<if test="productId != null">#{productId}, </if>
+			<if test="productName != null and productName != ''">#{productName}, </if>
+			<if test="productImage != null and productImage != ''">#{productImage}, </if>
+			<if test="pointsCost != null">#{pointsCost}, </if>
+			<if test="exchangeTime != null">#{exchangeTime}, </if>
+			<if test="status != null and status != ''">#{status}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+
+    <update id="updateExchangeRecord" parameterType="ExchangeRecord">
+        update exchange_record
+        <set>
+            <if test="userId != null">user_id = #{userId}, </if>
+            <if test="productId != null">product_id = #{productId}, </if>
+            <if test="productName != null and productName != ''">product_name = #{productName}, </if>
+            <if test="productImage != null and productImage != ''">product_image = #{productImage}, </if>
+            <if test="pointsCost != null">points_cost = #{pointsCost}, </if>
+            <if test="exchangeTime != null">exchange_time = #{exchangeTime}, </if>
+            <if test="status != null and status != ''">status = #{status}, </if>
+            <if test="remark != null">remark = #{remark}, </if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </set>
+        where exchange_id = #{exchangeId}
+    </update>
+
+    <delete id="deleteExchangeRecordByIds" parameterType="String">
+        delete from exchange_record where exchange_id in
+        <foreach item="exchangeId" collection="array" open="(" separator="," close=")">
+            #{exchangeId}
+        </foreach>
+    </delete>
+
+</mapper>

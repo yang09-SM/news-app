@@ -27,6 +27,25 @@ public class NewsArticle extends BaseEntity
 
     private Long viewCount;
 
+    private Long authorId;
+
+    private String newsType;
+
+    private String videoUrl;
+
+    private String audioUrl;
+
+    private String duration;
+
+    private String source;
+
+    private Long likeCount;
+
+    private Long commentCount;
+
+    /** 删除标志（0代表存在 2代表删除） */
+    private String delFlag;
+
     public Long getArticleId()
     {
         return articleId;
@@ -110,6 +129,96 @@ public class NewsArticle extends BaseEntity
         this.viewCount = viewCount;
     }
 
+    public Long getAuthorId()
+    {
+        return authorId;
+    }
+
+    public void setAuthorId(Long authorId)
+    {
+        this.authorId = authorId;
+    }
+
+    public String getNewsType()
+    {
+        return newsType;
+    }
+
+    public void setNewsType(String newsType)
+    {
+        this.newsType = newsType;
+    }
+
+    public String getVideoUrl()
+    {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl)
+    {
+        this.videoUrl = videoUrl;
+    }
+
+    public String getAudioUrl()
+    {
+        return audioUrl;
+    }
+
+    public void setAudioUrl(String audioUrl)
+    {
+        this.audioUrl = audioUrl;
+    }
+
+    public String getDuration()
+    {
+        return duration;
+    }
+
+    public void setDuration(String duration)
+    {
+        this.duration = duration;
+    }
+
+    public String getSource()
+    {
+        return source;
+    }
+
+    public void setSource(String source)
+    {
+        this.source = source;
+    }
+
+    public Long getLikeCount()
+    {
+        return likeCount;
+    }
+
+    public void setLikeCount(Long likeCount)
+    {
+        this.likeCount = likeCount;
+    }
+
+    public Long getCommentCount()
+    {
+        return commentCount;
+    }
+
+    public void setCommentCount(Long commentCount)
+    {
+        this.commentCount = commentCount;
+    }
+
+    public String getDelFlag()
+    {
+        return delFlag;
+    }
+
+    public void setDelFlag(String delFlag)
+    {
+        this.delFlag = delFlag;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -121,6 +230,15 @@ public class NewsArticle extends BaseEntity
             .append("content", getContent())
             .append("status", getStatus())
             .append("viewCount", getViewCount())
+            .append("authorId", getAuthorId())
+            .append("newsType", getNewsType())
+            .append("videoUrl", getVideoUrl())
+            .append("audioUrl", getAudioUrl())
+            .append("duration", getDuration())
+            .append("source", getSource())
+            .append("likeCount", getLikeCount())
+            .append("commentCount", getCommentCount())
+            .append("delFlag", getDelFlag())
             .append("createBy", getCreateBy())
             .append("createTime", getCreateTime())
             .append("updateBy", getUpdateBy())

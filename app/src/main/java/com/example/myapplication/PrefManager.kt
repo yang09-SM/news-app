@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import org.json.JSONObject
 
 class PrefManager(private val context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -23,14 +24,18 @@ class PrefManager(private val context: Context) {
         private const val KEY_LIKES_COUNT = "likes_count"
         private const val KEY_AVATAR_PATH = "avatar_path"
         private const val KEY_CASH_BALANCE = "cash_balance"
-        
+        private const val KEY_DATA_MIGRATED = "data_migrated"
+        private const val KEY_LAST_SYNC_TIME = "last_sync_time"
+        private const val KEY_AUTH_TOKEN = "auth_token"
+        private const val KEY_REFRESH_TOKEN = "refresh_token"
+
         private const val KEY_BROWSING_HISTORY = "browsing_history"
         private const val KEY_MESSAGES = "messages"
         private const val KEY_HOT_PUSHES = "hot_pushes"
         private const val KEY_PRODUCTS = "products"
         private const val KEY_EXCHANGE_RECORDS = "exchange_records"
         private const val KEY_ACHIEVEMENTS = "achievements"
-        private const val KEY_CASH_REWARD_RECORDS = "cash_reward_records"
+        private const val KEY_CASH_REWARD_RECORDS = "cash_reward_records"       
         private const val KEY_CHAT_MESSAGES = "chat_messages"
         private const val KEY_CHAT_GROUPS = "chat_groups"
         private const val KEY_ACTIVITIES = "activities"
@@ -39,9 +44,25 @@ class PrefManager(private val context: Context) {
         private const val KEY_DATA_INITIALIZED = "data_initialized"
         private const val KEY_FAVORITES = "favorites"
         private const val KEY_NIGHT_MODE = "night_mode"
+        private const val KEY_COMMENTS = "comments"
+        private const val KEY_SEARCH_HISTORY = "search_history"
+        private const val KEY_HOT_SEARCH = "hot_search"
+        private const val KEY_USER_INTERESTS = "user_interests"
+        private const val KEY_SUBSCRIPTIONS = "subscriptions"
+        private const val KEY_FOLLOW_AUTHORS = "follow_authors"
+        private const val KEY_TOPICS = "topics"
+        private const val KEY_DISLIKED_NEWS = "disliked_news"
+        private const val KEY_CHANNELS = "channels"
+        private const val KEY_AUTHORS = "authors"
+        private const val KEY_SUBSCRIBED_CHANNELS = "subscribed_channels"
+        private const val KEY_FOLLOWED_AUTHORS = "followed_authors"
+        private const val KEY_USER_BIO = "user_bio"
+        private const val KEY_NICKNAME = "user_nickname"
+        private const val KEY_CONTENT_REPORTS = "content_reports"
+        private const val KEY_OFFLINE_NEWS = "offline_news"
     }
 
-    fun saveLoginState(isLoggedIn: Boolean, username: String, userId: String) {
+    fun saveLoginState(isLoggedIn: Boolean, username: String, userId: String) { 
         prefs.edit().apply {
             putBoolean(KEY_IS_LOGGED_IN, isLoggedIn)
             putString(KEY_USERNAME, username)
@@ -55,6 +76,8 @@ class PrefManager(private val context: Context) {
             putBoolean(KEY_IS_LOGGED_IN, false)
             putString(KEY_USERNAME, "")
             putString(KEY_USER_ID, "")
+            putString(KEY_AUTH_TOKEN, "")
+            putString(KEY_REFRESH_TOKEN, "")
             apply()
         }
     }
@@ -71,6 +94,22 @@ class PrefManager(private val context: Context) {
         return prefs.getString(KEY_USER_ID, "") ?: ""
     }
 
+    fun isDataMigrated(): Boolean {
+        return prefs.getBoolean(KEY_DATA_MIGRATED, false)
+    }
+
+    fun setDataMigrated(migrated: Boolean) {
+        prefs.edit().putBoolean(KEY_DATA_MIGRATED, migrated).apply()
+    }
+
+    fun getLastSyncTime(): Long {
+        return prefs.getLong(KEY_LAST_SYNC_TIME, 0)
+    }
+
+    fun setLastSyncTime(time: Long) {
+        prefs.edit().putLong(KEY_LAST_SYNC_TIME, time).apply()
+    }
+
     fun savePoints(points: Int) {
         prefs.edit().putInt(KEY_POINTS, points).apply()
     }
@@ -83,7 +122,7 @@ class PrefManager(private val context: Context) {
         prefs.edit().putString(KEY_LAST_CHECKIN_DATE, date).apply()
     }
 
-    fun getLastCheckInDate(): String {
+    fun getCheckInDate(): String {
         return prefs.getString(KEY_LAST_CHECKIN_DATE, "") ?: ""
     }
 
@@ -145,8 +184,92 @@ class PrefManager(private val context: Context) {
         prefs.edit().putString(KEY_AVATAR_PATH, "").apply()
     }
 
+    fun getNickname(): String {
+        return prefs.getString(KEY_NICKNAME, "") ?: ""
+    }
+
+    fun saveNickname(nickname: String) {
+        prefs.edit().putString(KEY_NICKNAME, nickname).apply()
+    }
+
+    fun getUserBio(): String {
+        return prefs.getString(KEY_USER_BIO, "") ?: ""
+    }
+
+    fun saveUserBio(bio: String) {
+        prefs.edit().putString(KEY_USER_BIO, bio).apply()
+    }
+    
+    fun saveContentReports(reports: List<ContentReport>) {
+        val json = gson.toJson(reports)
+        prefs.edit().putString(KEY_CONTENT_REPORTS, json).apply()
+    }
+    
+    fun getContentReports(): List<ContentReport> {
+        val json = prefs.getString(KEY_CONTENT_REPORTS, null)
+        return if (json != null) {
+            val type = object : TypeToken<List<ContentReport>>() {}.type
+            gson.fromJson(json, type)
+        } else {
+            emptyList()
+        }
+    }
+    
+    fun addContentReport(report: ContentReport) {
+        val reports = getContentReports().toMutableList()
+        reports.add(0, report)
+        saveContentReports(reports)
+    }
+    
+    fun getSensitiveWords(): List<String> {
+        return listOf(
+            "违禁词1", "违禁词2", "敏感词1", "敏感词2", 
+            "色情", "暴力", "诈骗", "赌博", "毒品", "枪支"
+        )
+    }
+    
+    fun containsSensitiveWords(text: String): Boolean {
+        val sensitiveWords = getSensitiveWords()
+        val lowerText = text.lowercase()
+        return sensitiveWords.any { lowerText.contains(it.lowercase()) }
+    }
+    
+    fun saveOfflineNews(news: OfflineNewsItem) {
+        val offlineList = getOfflineNews().toMutableList()
+        offlineList.removeAll { it.id == news.id }
+        offlineList.add(0, news)
+        if (offlineList.size > 50) {
+            offlineList.removeAt(offlineList.size - 1)
+        }
+        saveOfflineNewsList(offlineList)
+    }
+    
+    fun saveOfflineNewsList(newsList: List<OfflineNewsItem>) {
+        val json = gson.toJson(newsList)
+        prefs.edit().putString(KEY_OFFLINE_NEWS, json).apply()
+    }
+    
+    fun getOfflineNews(): List<OfflineNewsItem> {
+        val json = prefs.getString(KEY_OFFLINE_NEWS, null)
+        return if (json != null) {
+            val type = object : TypeToken<List<OfflineNewsItem>>() {}.type
+            gson.fromJson(json, type)
+        } else {
+            emptyList()
+        }
+    }
+    
+    fun isNewsDownloaded(newsId: String): Boolean {
+        return getOfflineNews().any { it.id == newsId }
+    }
+    
+    fun removeOfflineNews(newsId: String) {
+        val offlineList = getOfflineNews().filter { it.id != newsId }
+        saveOfflineNewsList(offlineList)
+    }
+
     fun saveCashBalance(balance: Double) {
-        prefs.edit().putFloat(KEY_CASH_BALANCE, balance.toFloat()).apply()
+        prefs.edit().putFloat(KEY_CASH_BALANCE, balance.toFloat()).apply()      
     }
 
     fun getCashBalance(): Double {
@@ -346,7 +469,7 @@ class PrefManager(private val context: Context) {
         }
     }
 
-    fun getChatMessagesByGroup(groupId: String): List<ChatMessage> {
+    fun getChatMessagesByGroup(groupId: String): List<ChatMessage> {      
         return getChatMessages().filter { it.groupId == groupId }
     }
 
@@ -418,7 +541,7 @@ class PrefManager(private val context: Context) {
 
     fun updateActivityRegistration(id: String, isRegistered: Boolean) {
         val activities = getActivities().map {
-            if (it.id == id) it.copy(isRegistered = isRegistered) else it
+            if (it.id == id) it.copy(isRegistered = isRegistered) else it       
         }
         saveActivities(activities)
     }
@@ -512,8 +635,56 @@ class PrefManager(private val context: Context) {
         saveFavorites(emptyList())
     }
 
-    fun isDataInitialized(): Boolean {
-        return prefs.getBoolean(KEY_DATA_INITIALIZED, false)
+    fun saveComments(comments: List<Comment>) {
+        val json = gson.toJson(comments)
+        prefs.edit().putString(KEY_COMMENTS, json).apply()
+    }
+
+    fun getComments(): List<Comment> {
+        val json = prefs.getString(KEY_COMMENTS, null)
+        return if (json != null) {
+            val type = object : TypeToken<List<Comment>>() {}.type
+            gson.fromJson(json, type)
+        } else {
+            emptyList()
+        }
+    }
+
+    fun getCommentsByNewsId(newsId: String): List<Comment> {
+        return getComments().filter { it.newsId == newsId }
+    }
+
+    fun getCommentCountByNewsId(newsId: String): Int {
+        return getCommentsByNewsId(newsId).size
+    }
+
+    fun addComment(comment: Comment) {
+        val comments = getComments().toMutableList()
+        comments.add(0, comment)
+
+        if (comment.parentId != null) {
+            val parentIndex = comments.indexOfFirst { it.id == comment.parentId }
+            if (parentIndex != -1) {
+                val parent = comments[parentIndex]
+                comments[parentIndex] = parent.copy(replyCount = parent.replyCount + 1)
+            }
+        }
+
+        saveComments(comments)
+    }
+
+    fun toggleCommentLike(commentId: String): Comment? {
+        val comments = getComments().toMutableList()
+        val index = comments.indexOfFirst { it.id == commentId }
+        if (index != -1) {
+            val comment = comments[index]
+            val newLikeCount = if (comment.isLiked) comment.likeCount - 1 else comment.likeCount + 1
+            val updatedComment = comment.copy(isLiked = !comment.isLiked, likeCount = newLikeCount)
+            comments[index] = updatedComment
+            saveComments(comments)
+            return updatedComment
+        }
+        return null
     }
 
     fun saveNightMode(mode: Int) {
@@ -524,96 +695,338 @@ class PrefManager(private val context: Context) {
         return prefs.getInt(KEY_NIGHT_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
     }
 
+    fun saveSearchHistory(history: List<String>) {
+        val json = gson.toJson(history)
+        prefs.edit().putString(KEY_SEARCH_HISTORY, json).apply()
+    }
+
+    fun getSearchHistory(): List<String> {
+        val json = prefs.getString(KEY_SEARCH_HISTORY, null)
+        return if (json != null) {
+            val type = object : TypeToken<List<String>>() {}.type
+            gson.fromJson(json, type)
+        } else {
+            emptyList()
+        }
+    }
+
+    fun addSearchHistory(query: String) {
+        val history = getSearchHistory().toMutableList()
+        history.remove(query)
+        history.add(0, query)
+        if (history.size > 10) {
+            history.removeAt(history.size - 1)
+        }
+        saveSearchHistory(history)
+    }
+
+    fun clearSearchHistory() {
+        saveSearchHistory(emptyList())
+    }
+
+    fun saveHotSearch(hotSearch: List<String>) {
+        val json = gson.toJson(hotSearch)
+        prefs.edit().putString(KEY_HOT_SEARCH, json).apply()
+    }
+
+    fun getHotSearch(): List<String> {
+        val json = prefs.getString(KEY_HOT_SEARCH, null)
+        return if (json != null) {
+            val type = object : TypeToken<List<String>>() {}.type
+            gson.fromJson(json, type)
+        } else {
+            emptyList()
+        }
+    }
+
+    fun saveUserInterests(interests: List<String>) {
+        val json = gson.toJson(interests)
+        prefs.edit().putString(KEY_USER_INTERESTS, json).apply()
+    }
+
+    fun getUserInterests(): List<String> {
+        val json = prefs.getString(KEY_USER_INTERESTS, null)
+        return if (json != null) {
+            val type = object : TypeToken<List<String>>() {}.type
+            gson.fromJson(json, type)
+        } else {
+            emptyList()
+        }
+    }
+
+    fun saveTopics(topics: List<Topic>) {
+        val json = gson.toJson(topics)
+        prefs.edit().putString(KEY_TOPICS, json).apply()
+    }
+
+    fun getTopics(): List<Topic> {
+        val json = prefs.getString(KEY_TOPICS, null)
+        return if (json != null) {
+            val type = object : TypeToken<List<Topic>>() {}.type
+            gson.fromJson(json, type)
+        } else {
+            emptyList()
+        }
+    }
+
+    fun getNewsByTopic(topicId: String): List<NewsItem> {
+        return emptyList()
+    }
+
+    fun saveChannels(channels: List<Channel>) {
+        val json = gson.toJson(channels)
+        prefs.edit().putString(KEY_CHANNELS, json).apply()
+    }
+
+    fun getChannels(): List<Channel> {
+        val json = prefs.getString(KEY_CHANNELS, null)
+        return if (json != null) {
+            val type = object : TypeToken<List<Channel>>() {}.type
+            gson.fromJson(json, type)
+        } else {
+            emptyList()
+        }
+    }
+
+    fun toggleChannelSubscription(channelId: String): List<Channel> {
+        val channels = getChannels().toMutableList()
+        val index = channels.indexOfFirst { it.id == channelId }
+        if (index != -1) {
+            channels[index] = channels[index].copy(isSubscribed = !channels[index].isSubscribed)
+            saveChannels(channels)
+        }
+        return channels
+    }
+
+    fun getSubscribedChannels(): List<Channel> {
+        return getChannels().filter { it.isSubscribed }
+    }
+
+    fun saveAuthors(authors: List<Author>) {
+        val json = gson.toJson(authors)
+        prefs.edit().putString(KEY_AUTHORS, json).apply()
+    }
+
+    fun getAuthors(): List<Author> {
+        val json = prefs.getString(KEY_AUTHORS, null)
+        return if (json != null) {
+            val type = object : TypeToken<List<Author>>() {}.type
+            gson.fromJson(json, type)
+        } else {
+            emptyList()
+        }
+    }
+
+    fun toggleAuthorFollow(authorId: String): List<Author> {
+        val authors = getAuthors().toMutableList()
+        val index = authors.indexOfFirst { it.id == authorId }
+        if (index != -1) {
+            authors[index] = authors[index].copy(isFollowed = !authors[index].isFollowed)
+            saveAuthors(authors)
+        }
+        return authors
+    }
+
+    fun getFollowedAuthors(): List<Author> {
+        return getAuthors().filter { it.isFollowed }
+    }
+
+    fun saveDislikedNews(disliked: List<String>) {
+        val json = gson.toJson(disliked)
+        prefs.edit().putString(KEY_DISLIKED_NEWS, json).apply()
+    }
+
+    fun getDislikedNews(): List<String> {
+        val json = prefs.getString(KEY_DISLIKED_NEWS, null)
+        return if (json != null) {
+            val type = object : TypeToken<List<String>>() {}.type
+            gson.fromJson(json, type)
+        } else {
+            emptyList()
+        }
+    }
+
+    fun addDislikedNews(newsId: String) {
+        val disliked = getDislikedNews().toMutableList()
+        if (!disliked.contains(newsId)) {
+            disliked.add(newsId)
+            saveDislikedNews(disliked)
+        }
+    }
+
     fun initializeMockData() {
-        if (isDataInitialized()) return
-        
-        val currentTime = System.currentTimeMillis()
-        
-        val browsingHistory = listOf(
-            BrowsingHistoryItem("1", "n1", "人工智能时代来临", "https://picsum.photos/seed/ai-news/240/180", "科技", "https://example.com/news1", currentTime - 3600000, 120),
-            BrowsingHistoryItem("2", "n2", "2024年经济发展报告", "https://picsum.photos/seed/finance-report/240/180", "财经", "https://example.com/news2", currentTime - 7200000, 180),
-            BrowsingHistoryItem("3", "n3", "世界杯精彩回顾", "https://picsum.photos/seed/world-cup-sports/240/180", "体育", "https://example.com/news3", currentTime - 10800000, 90)
+        val needInitialize = !prefs.getBoolean(KEY_DATA_INITIALIZED, false) || 
+                           getChannels().isEmpty() || 
+                           getAuthors().isEmpty() || 
+                           getTopics().isEmpty()
+
+        if (!needInitialize) {
+            return
+        }
+
+        val topics = listOf(
+            Topic("1", "科技前沿", "探索最新科技动态", "https://example.com/tech.jpg", 128, 56),
+            Topic("2", "财经资讯", "深度解读财经新闻", "https://example.com/finance.jpg", 96, 42),
+            Topic("3", "体育世界", "精彩赛事直播", "https://example.com/sports.jpg", 256, 89),
+            Topic("4", "娱乐八卦", "明星资讯速递", "https://example.com/entertainment.jpg", 312, 124)
         )
-        saveBrowsingHistory(browsingHistory)
-        
-        val messages = listOf(
-            MessageItem("1", MessageType.SYSTEM, "系统通知", "欢迎使用新闻App！", currentTime - 86400000, true),
-            MessageItem("2", MessageType.LIKE, "点赞通知", "用户张三点赞了你的评论", currentTime - 3600000, false),
-            MessageItem("3", MessageType.COMMENT, "评论通知", "用户李四评论了你的文章", currentTime - 7200000, false)
+        saveTopics(topics)
+
+        val channels = listOf(
+            Channel("1", "头条新闻", "https://example.com/channel1.jpg", "最新资讯第一时间送达", 1280, true),
+            Channel("2", "科技频道", "https://example.com/channel2.jpg", "探索科技前沿", 856, false),
+            Channel("3", "财经频道", "https://example.com/channel3.jpg", "深度财经分析", 623, true),
+            Channel("4", "体育频道", "https://example.com/channel4.jpg", "精彩体育赛事", 945, false),
+            Channel("5", "娱乐频道", "https://example.com/channel5.jpg", "明星娱乐资讯", 1567, true)
         )
-        saveMessages(messages)
-        
-        val hotPushes = listOf(
-            HotPushItem("1", "重大新闻：2024科技峰会圆满落幕", "今日在京举办的全球科技峰会圆满落幕，多位行业领袖分享了最新科技成果与未来展望", "https://picsum.photos/seed/tech-summit/240/180", currentTime - 3600000, true, 15680, 2345, 856, "https://example.com/news1"),
-            HotPushItem("2", "人工智能新突破：语言模型再创新高", "最新研究显示，新一代语言模型在多项测试中取得显著进步，性能提升超过30%", "https://picsum.photos/seed/ai-breakthrough/240/180", currentTime - 7200000, false, 12450, 1890, 623, "https://example.com/news2"),
-            HotPushItem("3", "财经观察：股市迎来新一轮上涨", "分析师表示，近期市场信心回升，多家蓝筹股表现强劲，预计未来仍有上涨空间", "https://picsum.photos/seed/stock-market/240/180", currentTime - 10800000, false, 8920, 1456, 421, "https://example.com/news3"),
-            HotPushItem("4", "体育赛事：世界杯预选赛精彩回顾", "昨晚进行的世界杯预选赛中，多支球队展现出色状态，精彩进球不断", "https://picsum.photos/seed/world-cup-match/240/180", currentTime - 14400000, false, 21340, 3456, 1023, "https://example.com/news4"),
-            HotPushItem("5", "生活资讯：健康饮食新指南发布", "最新健康饮食指南建议增加蔬果摄入，减少加工食品，助力全民健康生活", "https://picsum.photos/seed/healthy-food/240/180", currentTime - 18000000, false, 7680, 987, 345, "https://example.com/news5")
+        saveChannels(channels)
+
+        val authors = listOf(
+            Author("1", "张记者", "https://example.com/author1.jpg", "资深财经记者，专注行业分析", 1258, 456, true),
+            Author("2", "李编辑", "https://example.com/author2.jpg", "科技领域专家", 892, 234, false),
+            Author("3", "王评论员", "https://example.com/author3.jpg", "体育评论员", 2345, 678, true),
+            Author("4", "赵作家", "https://example.com/author4.jpg", "文化专栏作家", 567, 123, false)
         )
-        saveHotPushes(hotPushes)
-        
-        val products = listOf(
-            ProductItem("1", "精美水杯", "高品质不锈钢水杯，保温效果好", "https://picsum.photos/seed/water-cup/240/240", 500, 100, "日用品"),
-            ProductItem("2", "蓝牙耳机", "无线蓝牙耳机，音质清晰", "https://picsum.photos/seed/bluetooth-earphone/240/240", 2000, 50, "数码"),
-            ProductItem("3", "笔记本", "精美笔记本，书写流畅", "https://picsum.photos/seed/notebook/240/240", 200, 200, "文具")
-        )
-        saveProducts(products)
-        
-        val exchangeRecords = listOf(
-            ExchangeRecord("1", "1", "精美水杯", "https://picsum.photos/seed/water-cup/200/200", 500, currentTime - 86400000, ExchangeStatus.COMPLETED)
-        )
-        saveExchangeRecords(exchangeRecords)
-        
-        val achievements = listOf(
-            AchievementItem("1", "新手入门", "首次登录App", "🏆", 100, true, currentTime - 86400000, 1, 1),
-            AchievementItem("2", "阅读达人", "累计阅读30篇文章", "📚", 500, false, null, 12, 30),
-            AchievementItem("3", "分享使者", "分享10篇文章", "🔗", 300, false, null, 3, 10),
-            AchievementItem("4", "早起鸟", "连续7天在8点前阅读", "🌅", 400, false, null, 2, 7),
-            AchievementItem("5", "夜猫子", "阅读超过50篇文章", "🦉", 600, false, null, 25, 50),
-            AchievementItem("6", "社交达人", "点赞20次", "👍", 200, false, null, 8, 20),
-            AchievementItem("7", "收藏家", "收藏15篇文章", "⭐", 350, false, null, 5, 15),
-            AchievementItem("8", "评论达人", "发表10条评论", "💬", 250, false, null, 0, 10),
-            AchievementItem("9", "探索者", "浏览全部新闻分类", "🔍", 450, false, null, 3, 6),
-            AchievementItem("10", "成就大师", "解锁5个成就", "👑", 800, false, null, 1, 5)
-        )
-        saveAchievements(achievements)
-        
-        val cashRewardRecords = listOf(
-            CashRewardRecord("1", 0.5, RewardType.READ, "阅读文章奖励", currentTime - 3600000, RewardStatus.SUCCESS),
-            CashRewardRecord("2", 0.3, RewardType.SHARE, "分享文章奖励", currentTime - 7200000, RewardStatus.SUCCESS)
-        )
-        saveCashRewardRecords(cashRewardRecords)
-        saveCashBalance(0.8)
-        
-        val chatGroups = listOf(
-            ChatGroup("1", "新闻讨论群", "https://picsum.photos/seed/news-discussion/96/96", 128, "今天的新闻很精彩", currentTime - 3600000, 3),
-            ChatGroup("2", "科技爱好者", "https://picsum.photos/seed/tech-lovers/96/96", 256, "人工智能发展迅速", currentTime - 7200000, 0)
-        )
-        saveChatGroups(chatGroups)
-        
-        val chatMessages = listOf(
-            ChatMessage("1", "1", "user1", "张三", "https://picsum.photos/seed/user-zhangsan/80/80", "今天的新闻很精彩", ChatMessageType.TEXT, currentTime - 3600000, false)
-        )
-        saveChatMessages(chatMessages)
-        
-        val activities = listOf(
-            ActivityItem("1", "线下见面会", "邀请您参加我们的线下用户见面会，共同探讨新闻行业的发展趋势和未来展望。活动将包含主题分享、互动交流和茶歇时间。", "https://picsum.photos/seed/meetup/800/400", currentTime + 86400000, currentTime + 172800000, "北京市朝阳区", 50, ActivityStatus.UPCOMING, false),
-            ActivityItem("2", "技术分享会", "由资深技术专家分享移动应用开发的前沿技术，包括Kotlin、Android架构、性能优化等主题。", "https://picsum.photos/seed/tech/800/400", currentTime + 259200000, currentTime + 345600000, "上海市浦东新区", 80, ActivityStatus.UPCOMING, false),
-            ActivityItem("3", "产品设计研讨会", "探讨用户体验设计的最新趋势，分享优秀产品案例，学习设计思维方法。", "https://picsum.photos/seed/design/800/400", currentTime - 432000000, currentTime - 345600000, "深圳市南山区", 60, ActivityStatus.ENDED, false),
-            ActivityItem("4", "社区志愿者活动", "参与社区公益活动，传递正能量，让我们一起为社会贡献一份力量。", "https://picsum.photos/seed/volunteer/800/400", currentTime + 432000000, currentTime + 518400000, "广州市天河区", 100, ActivityStatus.UPCOMING, false)
-        )
-        saveActivities(activities)
-        
-        val creations = listOf(
-            CreationItem("1", "我的第一篇文章", "这是我创作的第一篇文章...", emptyList(), "生活", currentTime - 86400000, 100, 10, 2, CreationStatus.PUBLISHED)
-        )
-        saveCreations(creations)
-        
-        val reports = listOf(
-            ReportItem("1", "社区环境问题", "小区附近有垃圾堆积，希望能处理", emptyList(), "某某街道", "环境", currentTime - 86400000, ReportStatus.REVIEWING, null)
-        )
-        saveReports(reports)
-        
+        saveAuthors(authors)
+
+        saveDislikedNews(emptyList())
+
         prefs.edit().putBoolean(KEY_DATA_INITIALIZED, true).apply()
+    }
+
+    fun getAllDataForMigration(): JSONObject {
+        val data = JSONObject()
+        
+        data.put("points", getPoints())
+        data.put("cashBalance", getCashBalance())
+        data.put("nickname", getNickname())
+        data.put("userBio", getUserBio())
+        data.put("avatarPath", getAvatarPath())
+        data.put("lastCheckinDate", getCheckInDate())
+        
+        data.put("browsingHistory", gson.toJson(getBrowsingHistory()))
+        data.put("favorites", gson.toJson(getFavorites()))
+        data.put("comments", gson.toJson(getComments()))
+        data.put("offlineNews", gson.toJson(getOfflineNews()))
+        data.put("achievements", gson.toJson(getAchievements()))
+        data.put("activities", gson.toJson(getActivities()))
+        data.put("creations", gson.toJson(getCreations()))
+        data.put("reports", gson.toJson(getReports()))
+        data.put("messages", gson.toJson(getMessages()))
+        data.put("chatMessages", gson.toJson(getChatMessages()))
+        data.put("chatGroups", gson.toJson(getChatGroups()))
+        data.put("exchangeRecords", gson.toJson(getExchangeRecords()))
+        data.put("cashRewardRecords", gson.toJson(getCashRewardRecords()))
+        data.put("searchHistory", gson.toJson(getSearchHistory()))
+        data.put("userInterests", gson.toJson(getUserInterests()))
+        data.put("subscribedChannels", gson.toJson(getSubscribedChannels()))
+        data.put("followedAuthors", gson.toJson(getFollowedAuthors()))
+        data.put("dislikedNews", gson.toJson(getDislikedNews()))
+        
+        return data
+    }
+
+    fun loadDataFromCloud(data: JSONObject) {
+        if (data.has("points")) {
+            savePoints(data.getInt("points"))
+        }
+        if (data.has("cashBalance")) {
+            saveCashBalance(data.getDouble("cashBalance"))
+        }
+        if (data.has("nickname")) {
+            saveNickname(data.getString("nickname"))
+        }
+        if (data.has("userBio")) {
+            saveUserBio(data.getString("userBio"))
+        }
+        if (data.has("avatarPath")) {
+            saveAvatarPath(data.getString("avatarPath"))
+        }
+        if (data.has("lastCheckinDate")) {
+            saveCheckInDate(data.getString("lastCheckinDate"))
+        }
+        
+        if (data.has("browsingHistory")) {
+            val type = object : TypeToken<List<BrowsingHistoryItem>>() {}.type
+            saveBrowsingHistory(gson.fromJson(data.getString("browsingHistory"), type))
+        }
+        if (data.has("favorites")) {
+            val type = object : TypeToken<List<FavoriteItem>>() {}.type
+            saveFavorites(gson.fromJson(data.getString("favorites"), type))
+        }
+        if (data.has("comments")) {
+            val type = object : TypeToken<List<Comment>>() {}.type
+            saveComments(gson.fromJson(data.getString("comments"), type))
+        }
+        if (data.has("offlineNews")) {
+            val type = object : TypeToken<List<OfflineNewsItem>>() {}.type
+            saveOfflineNewsList(gson.fromJson(data.getString("offlineNews"), type))
+        }
+        if (data.has("achievements")) {
+            val type = object : TypeToken<List<AchievementItem>>() {}.type
+            saveAchievements(gson.fromJson(data.getString("achievements"), type))
+        }
+        if (data.has("activities")) {
+            val type = object : TypeToken<List<ActivityItem>>() {}.type
+            saveActivities(gson.fromJson(data.getString("activities"), type))
+        }
+        if (data.has("creations")) {
+            val type = object : TypeToken<List<CreationItem>>() {}.type
+            saveCreations(gson.fromJson(data.getString("creations"), type))
+        }
+        if (data.has("reports")) {
+            val type = object : TypeToken<List<ReportItem>>() {}.type
+            saveReports(gson.fromJson(data.getString("reports"), type))
+        }
+        if (data.has("messages")) {
+            val type = object : TypeToken<List<MessageItem>>() {}.type
+            saveMessages(gson.fromJson(data.getString("messages"), type))
+        }
+        if (data.has("chatMessages")) {
+            val type = object : TypeToken<List<ChatMessage>>() {}.type
+            saveChatMessages(gson.fromJson(data.getString("chatMessages"), type))
+        }
+        if (data.has("chatGroups")) {
+            val type = object : TypeToken<List<ChatGroup>>() {}.type
+            saveChatGroups(gson.fromJson(data.getString("chatGroups"), type))
+        }
+        if (data.has("exchangeRecords")) {
+            val type = object : TypeToken<List<ExchangeRecord>>() {}.type
+            saveExchangeRecords(gson.fromJson(data.getString("exchangeRecords"), type))
+        }
+        if (data.has("cashRewardRecords")) {
+            val type = object : TypeToken<List<CashRewardRecord>>() {}.type
+            saveCashRewardRecords(gson.fromJson(data.getString("cashRewardRecords"), type))
+        }
+        if (data.has("searchHistory")) {
+            val type = object : TypeToken<List<String>>() {}.type
+            saveSearchHistory(gson.fromJson(data.getString("searchHistory"), type))
+        }
+        if (data.has("userInterests")) {
+            val type = object : TypeToken<List<String>>() {}.type
+            saveUserInterests(gson.fromJson(data.getString("userInterests"), type))
+        }
+        
+        setLastSyncTime(System.currentTimeMillis())
+    }
+
+    fun saveAuthToken(token: String) {
+        prefs.edit().putString(KEY_AUTH_TOKEN, token).apply()
+    }
+
+    fun getAuthToken(): String {
+        return prefs.getString(KEY_AUTH_TOKEN, "") ?: ""
+    }
+
+    fun saveRefreshToken(token: String) {
+        prefs.edit().putString(KEY_REFRESH_TOKEN, token).apply()
+    }
+
+    fun getRefreshToken(): String {
+        return prefs.getString(KEY_REFRESH_TOKEN, "") ?: ""
+    }
+
+    fun hasToken(): Boolean {
+        return getAuthToken().isNotEmpty()
     }
 }

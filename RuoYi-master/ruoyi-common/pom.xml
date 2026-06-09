@@ -96,6 +96,12 @@
             <artifactId>jakarta.servlet-api</artifactId>
         </dependency>
 
+        <!-- BCrypt密码加密 -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

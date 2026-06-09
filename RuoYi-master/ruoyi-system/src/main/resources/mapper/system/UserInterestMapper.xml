@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserInterestMapper">
+    
+    <resultMap type="UserInterest" id="UserInterestResult">
+        <result property="interestId"     column="interest_id"      />
+        <result property="userId"         column="user_id"          />
+        <result property="tagName"        column="tag_name"         />
+        <result property="weight"          column="weight"           />
+        <result property="createBy"       column="create_by"        />
+        <result property="createTime"     column="create_time"      />
+        <result property="updateBy"       column="update_by"        />
+        <result property="updateTime"     column="update_time"      />
+        <result property="remark"         column="remark"           />
+    </resultMap>
+    
+    <sql id="selectUserInterestVo">
+        select interest_id, user_id, tag_name, weight, create_by, create_time, update_by, update_time, remark 
+		from user_interest
+    </sql>
+    
+    <select id="selectInterestById" parameterType="Long" resultMap="UserInterestResult">
+        <include refid="selectUserInterestVo"/>
+        where interest_id = #{interestId}
+    </select>
+    
+    <select id="selectInterestList" parameterType="UserInterest" resultMap="UserInterestResult">
+        <include refid="selectUserInterestVo"/>
+        <where>
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="tagName != null and tagName != ''">
+				AND tag_name = #{tagName}
+			</if>
+		</where>
+		order by weight desc
+    </select>
+    
+    <insert id="insertInterest" parameterType="UserInterest">
+        insert into user_interest (
+			<if test="userId != null">user_id, </if>
+			<if test="tagName != null and tagName != '' ">tag_name, </if>
+			<if test="weight != null">weight, </if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+ 		)values(
+			<if test="userId != null">#{userId}, </if>
+			<if test="tagName != null and tagName != ''">#{tagName}, </if>
+			<if test="weight != null">#{weight}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+	 
+    <update id="updateInterest" parameterType="UserInterest">
+        update user_interest 
+        <set>
+            <if test="userId != null">user_id = #{userId}, </if>
+            <if test="tagName != null">tag_name = #{tagName}, </if>
+            <if test="weight != null">weight = #{weight}, </if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </set>
+        where interest_id = #{interestId}
+    </update>
+	
+    <delete id="deleteInterestByIds" parameterType="String">
+        delete from user_interest where interest_id in 
+        <foreach item="interestId" collection="array" open="(" separator="," close=")">
+            #{interestId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteInterestById" parameterType="Long">
+        delete from user_interest where interest_id = #{interestId}
+    </delete>
+    
+</mapper>

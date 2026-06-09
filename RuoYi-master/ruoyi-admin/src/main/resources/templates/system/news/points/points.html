@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<th:block th:include="include :: header('积分记录列表')" />
+</head>
+<body class="gray-bg">
+    <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="formId">
+					<div class="select-list">
+						<ul>
+							<li>
+								用户ID：<input type="text" name="userId"/>
+							</li>
+							<li>
+								记录类型：<select name="recordType">
+									<option value="">所有</option>
+									<option value="earn">获得</option>
+									<option value="spend">消耗</option>
+									<option value="expire">过期</option>
+									<option value="admin">管理员调整</option>
+								</select>
+							</li>
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+
+	        <div class="btn-group-sm" id="toolbar" role="group">
+		        <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="news:points:remove">
+		            <i class="fa fa-remove"></i> 删除
+		        </a>
+	        </div>
+
+	        <div class="col-sm-12 select-table table-striped">
+	            <table id="bootstrap-table"></table>
+	        </div>
+    	</div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var removeFlag = [[${@permission.hasPermi('news:points:remove')}]];
+        var prefix = ctx + "system/news/points";
+
+        var recordTypeDatas = [{value: 'earn', label: '获得'}, {value: 'spend', label: '消耗'}, {value: 'expire', label: '过期'}, {value: 'admin', label: '管理员调整'}];
+
+        function selectDictLabel(datas, value) {
+        	var actions = [];
+        	$.each(datas, function(index, dict) {
+        		if (dict.value == value) {
+        			actions.push(dict.label);
+        			return false;
+        		}
+        	});
+        	return actions.join('');
+        }
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                removeUrl: prefix + "/remove",
+                modalName: "积分记录",
+                columns: [{
+		            checkbox: true
+		        },
+				{
+					field : 'recordId',
+					title : '记录ID'
+				},
+				{
+					field : 'userId',
+					title : '用户ID'
+				},
+				{
+					field : 'pointsChange',
+					title : '积分变动',
+					align: 'center'
+				},
+				{
+					field : 'pointsBalance',
+					title : '余额',
+					align: 'center'
+				},
+				{
+					field : 'recordType',
+					title : '记录类型',
+					align: 'center',
+					formatter: function(value, row, index) {
+						return selectDictLabel(recordTypeDatas, value);
+					}
+				},
+				{
+		            field: 'description',
+		            title: '描述',
+		            formatter: function(value, row, index) {
+		            	if (value && value.length > 30) {
+		            		return value.substring(0, 30) + '...';
+		            	}
+		            	return value;
+		            }
+		        },
+				{
+		            field: 'createTime',
+		            title: '创建时间',
+		            sortable: true
+		        },
+		        {
+		            title: '操作',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+		            	var actions = [];
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.recordId + '\')"><i class="fa fa-remove"></i>删除</a>');
+						return actions.join('');
+		            }
+		        }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

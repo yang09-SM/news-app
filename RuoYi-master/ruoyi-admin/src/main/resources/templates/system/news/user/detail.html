@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('用户详情')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-user-detail" th:object="${user}">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">用户ID：</label>
+				<div class="col-sm-10">
+					<input id="userId" name="userId" th:field="*{userId}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">昵称：</label>
+				<div class="col-sm-10">
+					<input id="nickName" name="nickName" th:field="*{nickName}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">头像：</label>
+				<div class="col-sm-10">
+					<img th:if="*{avatar}" th:src="*{avatar}" style="max-width:100px;max-height:100px;border-radius:50%;">
+					<span th:if="*{avatar == null or avatar == ''}">暂无头像</span>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">个人简介：</label>
+				<div class="col-sm-10">
+					<textarea id="bio" name="bio" th:field="*{bio}" class="form-control" readonly></textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">积分：</label>
+				<div class="col-sm-10">
+					<input id="points" name="points" th:field="*{points}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">现金余额：</label>
+				<div class="col-sm-10">
+					<input id="cashBalance" name="cashBalance" th:field="*{cashBalance}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">连续签到天数：</label>
+				<div class="col-sm-10">
+					<input id="signInDays" name="signInDays" th:field="*{signInDays}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">关注数：</label>
+				<div class="col-sm-10">
+					<input id="followCount" name="followCount" th:field="*{followCount}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">粉丝数：</label>
+				<div class="col-sm-10">
+					<input id="fansCount" name="fansCount" th:field="*{fansCount}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">好友数：</label>
+				<div class="col-sm-10">
+					<input id="friendCount" name="friendCount" th:field="*{friendCount}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">获赞数：</label>
+				<div class="col-sm-10">
+					<input id="likeCount" name="likeCount" th:field="*{likeCount}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">等级：</label>
+				<div class="col-sm-10">
+					<input id="level" name="level" th:field="*{level}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">VIP等级：</label>
+				<div class="col-sm-10">
+					<input id="vipLevel" name="vipLevel" th:field="*{vipLevel}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">VIP过期时间：</label>
+				<div class="col-sm-10">
+					<input id="vipExpireTime" name="vipExpireTime" th:field="*{vipExpireTime}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+		</form>
+	</div>
+    <th:block th:include="include :: footer" />
+</body>
+</html>

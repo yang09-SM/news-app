@@ -18,10 +18,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateBy"        column="update_by"        />
         <result property="updateTime"      column="update_time"      />
         <result property="remark"          column="remark"           />
+        <result property="authorId"        column="author_id"        />
+        <result property="newsType"        column="news_type"        />
+        <result property="videoUrl"        column="video_url"        />
+        <result property="audioUrl"        column="audio_url"        />
+        <result property="duration"        column="duration"         />
+        <result property="source"          column="source"           />
+        <result property="likeCount"       column="like_count"       />
+        <result property="commentCount"    column="comment_count"    />
+        <result property="delFlag"         column="del_flag"         />
     </resultMap>
     
     <sql id="selectNewsArticleVo">
-        select article_id, title, category_id, cover_image, summary, cast(content as char) as content, status, view_count, create_by, create_time, update_by, update_time, remark 
+        select article_id, title, category_id, cover_image, summary, cast(content as char) as content, status, view_count, author_id, news_type, video_url, audio_url, duration, source, like_count, comment_count, del_flag, create_by, create_time, update_by, update_time, remark
 		from news_article
     </sql>
     
@@ -33,6 +42,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectNewsArticleList" parameterType="NewsArticle" resultMap="NewsArticleResult">
         <include refid="selectNewsArticleVo"/>
         <where>
+			AND del_flag = '0'
 			<if test="title != null and title != ''">
 				AND title like concat('%', #{title}, '%')
 			</if>
@@ -115,5 +125,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="incrementViewCount" parameterType="Long">
         update news_article set view_count = view_count + 1 where article_id = #{articleId}
     </update>
+
+    <select id="selectHotNewsList" resultMap="NewsArticleResult">
+        <include refid="selectNewsArticleVo"/>
+        where status = '1'
+        order by view_count desc, article_id desc
+        limit 20
+    </select>
+
+    <select id="searchNews" parameterType="String" resultMap="NewsArticleResult">
+        <include refid="selectNewsArticleVo"/>
+        where status = '1'
+        and (title like concat('%', #{keyword}, '%')
+        or summary like concat('%', #{keyword}, '%'))
+        order by article_id desc
+    </select>
+
+    <select id="selectRecommendedNews" parameterType="Long" resultMap="NewsArticleResult">
+        <include refid="selectNewsArticleVo"/>
+        where status = '1'
+        order by article_id desc
+        limit 10
+    </select>
+
+    <select id="selectNewsByCategory" parameterType="Long" resultMap="NewsArticleResult">
+        <include refid="selectNewsArticleVo"/>
+        where status = '1'
+        and category_id = #{categoryId}
+        order by article_id desc
+    </select>
     
 </mapper>

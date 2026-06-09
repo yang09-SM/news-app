@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserDislikedNewsMapper">
+    
+    <resultMap type="UserDislikedNews" id="UserDislikedNewsResult">
+        <result property="dislikeId"       column="dislike_id"       />
+        <result property="userId"          column="user_id"          />
+        <result property="articleId"       column="article_id"       />
+        <result property="dislikeTime"     column="dislike_time"     />
+        <result property="createBy"        column="create_by"        />
+        <result property="createTime"      column="create_time"      />
+        <result property="updateBy"        column="update_by"        />
+        <result property="updateTime"      column="update_time"      />
+        <result property="remark"          column="remark"           />
+    </resultMap>
+    
+    <sql id="selectUserDislikedNewsVo">
+        select dislike_id, user_id, article_id, dislike_time, create_by, create_time, update_by, update_time, remark 
+		from user_disliked_news
+    </sql>
+    
+    <select id="selectDislikedNewsById" parameterType="Long" resultMap="UserDislikedNewsResult">
+        <include refid="selectUserDislikedNewsVo"/>
+        where dislike_id = #{dislikeId}
+    </select>
+    
+    <select id="selectDislikedNewsList" parameterType="UserDislikedNews" resultMap="UserDislikedNewsResult">
+        <include refid="selectUserDislikedNewsVo"/>
+        <where>
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="articleId != null">
+				AND article_id = #{articleId}
+			</if>
+		</where>
+		order by dislike_id desc
+    </select>
+
+    <select id="selectLikedNewsByUserAndArticle" resultMap="UserDislikedNewsResult">
+        <include refid="selectUserDislikedNewsVo"/>
+        where user_id = #{userId} and article_id = #{articleId}
+    </select>
+    
+    <insert id="insertDislikedNews" parameterType="UserDislikedNews">
+        insert into user_disliked_news (
+			<if test="userId != null">user_id, </if>
+			<if test="articleId != null">article_id, </if>
+			<if test="dislikeTime != null">dislike_time, </if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+ 		)values(
+			<if test="userId != null">#{userId}, </if>
+			<if test="articleId != null">#{articleId}, </if>
+			<if test="dislikeTime != null">#{dislikeTime}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+	 
+    <update id="updateDislikedNews" parameterType="UserDislikedNews">
+        update user_disliked_news 
+        <set>
+            <if test="userId != null">user_id = #{userId}, </if>
+            <if test="articleId != null">article_id = #{articleId}, </if>
+            <if test="dislikeTime != null">dislike_time = #{dislikeTime}, </if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </set>
+        where dislike_id = #{dislikeId}
+    </update>
+	
+    <delete id="deleteDislikedNewsByIds" parameterType="String">
+        delete from user_disliked_news where dislike_id in 
+        <foreach item="dislikeId" collection="array" open="(" separator="," close=")">
+            #{dislikeId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteLikedNewsByUserAndArticle">
+        delete from user_disliked_news where user_id = #{userId} and article_id = #{articleId}
+    </delete>
+    
+</mapper>

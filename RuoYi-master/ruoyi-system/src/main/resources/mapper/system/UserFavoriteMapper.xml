@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserFavoriteMapper">
+    
+    <resultMap type="UserFavorite" id="UserFavoriteResult">
+        <result property="favoriteId"       column="favorite_id"       />
+        <result property="userId"          column="user_id"          />
+        <result property="articleId"       column="article_id"       />
+        <result property="articleTitle"    column="article_title"    />
+        <result property="articleCover"    column="article_cover"    />
+        <result property="favoriteTime"    column="favorite_time"    />
+        <result property="createBy"        column="create_by"        />
+        <result property="createTime"      column="create_time"      />
+        <result property="updateBy"        column="update_by"        />
+        <result property="updateTime"      column="update_time"      />
+        <result property="remark"          column="remark"           />
+    </resultMap>
+    
+    <sql id="selectUserFavoriteVo">
+        select favorite_id, user_id, article_id, article_title, article_cover, favorite_time, create_by, create_time, update_by, update_time, remark 
+		from user_favorite
+    </sql>
+    
+    <select id="selectFavoriteById" parameterType="Long" resultMap="UserFavoriteResult">
+        <include refid="selectUserFavoriteVo"/>
+        where favorite_id = #{favoriteId}
+    </select>
+    
+    <select id="selectFavoriteList" parameterType="UserFavorite" resultMap="UserFavoriteResult">
+        <include refid="selectUserFavoriteVo"/>
+        <where>
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="articleId != null">
+				AND article_id = #{articleId}
+			</if>
+		</where>
+		order by favorite_id desc
+    </select>
+
+    <select id="selectFavoriteByUserAndArticle" resultMap="UserFavoriteResult">
+        <include refid="selectUserFavoriteVo"/>
+        where user_id = #{userId} and article_id = #{articleId}
+    </select>
+
+    <select id="selectFavoritesByUserId" parameterType="Long" resultMap="UserFavoriteResult">
+        <include refid="selectUserFavoriteVo"/>
+        where user_id = #{userId}
+        order by favorite_time desc
+    </select>
+    
+    <insert id="insertFavorite" parameterType="UserFavorite">
+        insert into user_favorite (
+			<if test="userId != null">user_id, </if>
+			<if test="articleId != null">article_id, </if>
+			<if test="articleTitle != null and articleTitle != '' ">article_title, </if>
+			<if test="articleCover != null and articleCover != '' ">article_cover, </if>
+			<if test="favoriteTime != null">favorite_time, </if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+ 		)values(
+			<if test="userId != null">#{userId}, </if>
+			<if test="articleId != null">#{articleId}, </if>
+			<if test="articleTitle != null and articleTitle != ''">#{articleTitle}, </if>
+			<if test="articleCover != null and articleCover != ''">#{articleCover}, </if>
+			<if test="favoriteTime != null">#{favoriteTime}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+	 
+    <update id="updateFavorite" parameterType="UserFavorite">
+        update user_favorite 
+        <set>
+            <if test="userId != null">user_id = #{userId}, </if>
+            <if test="articleId != null">article_id = #{articleId}, </if>
+            <if test="articleTitle != null">article_title = #{articleTitle}, </if>
+            <if test="articleCover != null">article_cover = #{articleCover}, </if>
+            <if test="favoriteTime != null">favorite_time = #{favoriteTime}, </if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </set>
+        where favorite_id = #{favoriteId}
+    </update>
+	
+    <delete id="deleteFavoriteByIds" parameterType="String">
+        delete from user_favorite where favorite_id in 
+        <foreach item="favoriteId" collection="array" open="(" separator="," close=")">
+            #{favoriteId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteFavoriteByUserAndArticle">
+        delete from user_favorite where user_id = #{userId} and article_id = #{articleId}
+    </delete>
+    
+</mapper>

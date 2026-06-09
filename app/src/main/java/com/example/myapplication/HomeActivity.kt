@@ -18,7 +18,6 @@ class HomeActivity : AppCompatActivity() {
 
     private val homeFragment = HomeNewsFragment()
     private val hotPushFragment = HotPushFragment()
-    private val categoriesFragment = CategoriesFragment()
     private val favoritesFragment = FavoritesFragment()
     private val profileFragment = ProfileFragment()
 
@@ -76,9 +75,10 @@ class HomeActivity : AppCompatActivity() {
                     switchFragment(hotPushFragment)
                     true
                 }
-                R.id.nav_categories -> {
-                    switchFragment(categoriesFragment)
-                    true
+                R.id.nav_subscription -> {
+                    val intent = Intent(this, SubscriptionActivity::class.java)
+                    startActivity(intent)
+                    false
                 }
                 R.id.nav_favorites -> {
                     switchFragment(favoritesFragment)

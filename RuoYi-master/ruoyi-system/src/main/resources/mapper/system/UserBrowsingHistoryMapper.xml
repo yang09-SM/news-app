@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserBrowsingHistoryMapper">
+    
+    <resultMap type="UserBrowsingHistory" id="UserBrowsingHistoryResult">
+        <result property="historyId"      column="history_id"       />
+        <result property="userId"         column="user_id"          />
+        <result property="articleId"      column="article_id"       />
+        <result property="articleTitle"    column="article_title"    />
+        <result property="articleCover"    column="article_cover"    />
+        <result property="browseTime"     column="browse_time"     />
+        <result property="createBy"       column="create_by"        />
+        <result property="createTime"     column="create_time"      />
+        <result property="updateBy"       column="update_by"        />
+        <result property="updateTime"     column="update_time"      />
+        <result property="remark"         column="remark"           />
+    </resultMap>
+    
+    <sql id="selectUserBrowsingHistoryVo">
+        select history_id, user_id, article_id, article_title, article_cover, browse_time, create_by, create_time, update_by, update_time, remark 
+		from user_browsing_history
+    </sql>
+    
+    <select id="selectBrowsingHistoryById" parameterType="Long" resultMap="UserBrowsingHistoryResult">
+        <include refid="selectUserBrowsingHistoryVo"/>
+        where history_id = #{historyId}
+    </select>
+    
+    <select id="selectBrowsingHistoryList" parameterType="UserBrowsingHistory" resultMap="UserBrowsingHistoryResult">
+        <include refid="selectUserBrowsingHistoryVo"/>
+        <where>
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="articleId != null">
+				AND article_id = #{articleId}
+			</if>
+		</where>
+		order by browse_time desc
+    </select>
+    
+    <insert id="insertBrowsingHistory" parameterType="UserBrowsingHistory">
+        insert into user_browsing_history (
+			<if test="userId != null">user_id, </if>
+			<if test="articleId != null">article_id, </if>
+			<if test="articleTitle != null and articleTitle != '' ">article_title, </if>
+			<if test="articleCover != null and articleCover != '' ">article_cover, </if>
+			<if test="browseTime != null">browse_time, </if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+ 		)values(
+			<if test="userId != null">#{userId}, </if>
+			<if test="articleId != null">#{articleId}, </if>
+			<if test="articleTitle != null and articleTitle != ''">#{articleTitle}, </if>
+			<if test="articleCover != null and articleCover != ''">#{articleCover}, </if>
+			<if test="browseTime != null">#{browseTime}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+	 
+    <update id="updateBrowsingHistory" parameterType="UserBrowsingHistory">
+        update user_browsing_history 
+        <set>
+            <if test="userId != null">user_id = #{userId}, </if>
+            <if test="articleId != null">article_id = #{articleId}, </if>
+            <if test="articleTitle != null">article_title = #{articleTitle}, </if>
+            <if test="articleCover != null">article_cover = #{articleCover}, </if>
+            <if test="browseTime != null">browse_time = #{browseTime}, </if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </set>
+        where history_id = #{historyId}
+    </update>
+	
+    <delete id="deleteBrowsingHistoryByIds" parameterType="String">
+        delete from user_browsing_history where history_id in 
+        <foreach item="historyId" collection="array" open="(" separator="," close=")">
+            #{historyId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteBrowsingHistoryByUserId" parameterType="Long">
+        delete from user_browsing_history where user_id = #{userId}
+    </delete>
+    
+</mapper>

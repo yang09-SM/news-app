@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TopicMapper">
+
+    <resultMap type="Topic" id="TopicResult">
+        <result property="topicId"          column="topic_id"          />
+        <result property="topicName"        column="topic_name"        />
+        <result property="topicCode"        column="topic_code"        />
+        <result property="coverImage"       column="cover_image"       />
+        <result property="description"      column="description"       />
+        <result property="newsCount"        column="news_count"        />
+        <result property="discussionCount"  column="discussion_count"  />
+        <result property="orderNum"         column="order_num"         />
+        <result property="status"           column="status"            />
+        <result property="delFlag"          column="del_flag"          />
+        <result property="createBy"         column="create_by"         />
+        <result property="createTime"       column="create_time"       />
+        <result property="updateBy"         column="update_by"         />
+        <result property="updateTime"       column="update_time"       />
+        <result property="remark"           column="remark"            />
+    </resultMap>
+
+    <sql id="selectTopicVo">
+        select topic_id, topic_name, topic_code, cover_image, description, news_count, discussion_count, order_num, status, del_flag, create_by, create_time, update_by, update_time, remark
+		from topic
+    </sql>
+
+    <select id="selectTopicById" parameterType="Long" resultMap="TopicResult">
+        <include refid="selectTopicVo"/>
+        where topic_id = #{topicId}
+    </select>
+
+    <select id="selectTopicList" parameterType="Topic" resultMap="TopicResult">
+        <include refid="selectTopicVo"/>
+        <where>
+			del_flag = '0'
+			<if test="topicName != null and topicName != ''">
+				AND topic_name like concat('%', #{topicName}, '%')
+			</if>
+			<if test="topicCode != null and topicCode != ''">
+				AND topic_code = #{topicCode}
+			</if>
+			<if test="status != null and status != ''">
+				AND status = #{status}
+			</if>
+		</where>
+		order by order_num asc
+    </select>
+
+    <insert id="insertTopic" parameterType="Topic">
+        insert into topic (
+			<if test="topicName != null and topicName != ''">topic_name, </if>
+			<if test="topicCode != null and topicCode != ''">topic_code, </if>
+			<if test="coverImage != null and coverImage != ''">cover_image, </if>
+			<if test="description != null and description != ''">description, </if>
+			<if test="newsCount != null">news_count, </if>
+			<if test="discussionCount != null">discussion_count, </if>
+			<if test="orderNum != null">order_num, </if>
+			<if test="status != null and status != ''">status, </if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+ 		)values(
+			<if test="topicName != null and topicName != ''">#{topicName}, </if>
+			<if test="topicCode != null and topicCode != ''">#{topicCode}, </if>
+			<if test="coverImage != null and coverImage != ''">#{coverImage}, </if>
+			<if test="description != null and description != ''">#{description}, </if>
+			<if test="newsCount != null">#{newsCount}, </if>
+			<if test="discussionCount != null">#{discussionCount}, </if>
+			<if test="orderNum != null">#{orderNum}, </if>
+			<if test="status != null and status != ''">#{status}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+
+    <update id="updateTopic" parameterType="Topic">
+        update topic
+        <set>
+            <if test="topicName != null and topicName != ''">topic_name = #{topicName}, </if>
+            <if test="topicCode != null and topicCode != ''">topic_code = #{topicCode}, </if>
+            <if test="coverImage != null and coverImage != ''">cover_image = #{coverImage}, </if>
+            <if test="description != null and description != ''">description = #{description}, </if>
+            <if test="newsCount != null">news_count = #{newsCount}, </if>
+            <if test="discussionCount != null">discussion_count = #{discussionCount}, </if>
+            <if test="orderNum != null">order_num = #{orderNum}, </if>
+            <if test="status != null and status != ''">status = #{status}, </if>
+            <if test="remark != null">remark = #{remark}, </if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </set>
+        where topic_id = #{topicId}
+    </update>
+
+    <delete id="deleteTopicByIds" parameterType="String">
+        delete from topic where topic_id in
+        <foreach item="topicId" collection="array" open="(" separator="," close=")">
+            #{topicId}
+        </foreach>
+    </delete>
+
+</mapper>

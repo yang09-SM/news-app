@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <!-- 日志存放路径 -->
-	<property name="log.path" value="D:/ruoyi/logs" />
+    <!-- 日志存放路径 - 改为项目内相对路径 -->
+	<property name="log.path" value="./logs" />
     <!-- 日志输出格式 -->
 	<property name="log.pattern" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n" />
 
@@ -12,9 +12,10 @@
 		</encoder>
 	</appender>
 	
-	<!-- 系统日志输出 -->
+	<!-- 系统日志输出 - 增加prudent模式避免并发写入问题 -->
 	<appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
 	    <file>${log.path}/sys-info.log</file>
+        <prudent>true</prudent>
         <!-- 循环政策：基于时间创建日志文件 -->
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 日志文件名格式 -->
@@ -37,6 +38,7 @@
 	
 	<appender name="file_error" class="ch.qos.logback.core.rolling.RollingFileAppender">
 	    <file>${log.path}/sys-error.log</file>
+        <prudent>true</prudent>
         <!-- 循环政策：基于时间创建日志文件 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 日志文件名格式 -->
@@ -60,6 +62,7 @@
 	<!-- 用户访问日志输出  -->
     <appender name="sys-user" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${log.path}/sys-user.log</file>
+        <prudent>true</prudent>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 按天回滚 daily -->
             <fileNamePattern>${log.path}/sys-user.%d{yyyy-MM-dd}.log</fileNamePattern>
@@ -76,21 +79,18 @@
 	<!-- Spring日志级别控制  -->
 	<logger name="org.springframework" level="warn" />
 	<!-- Thymeleaf日志级别控制  -->
-	<Logger name="org.thymeleaf" level="error"/>
+	<logger name="org.thymeleaf" level="error"/>
 	<!-- springdoc日志级别控制  -->
 	<logger name="org.springdoc" level="error" />
 	<!-- BeanPostProcessorChecker日志级别控制 -->
 	<logger name="org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker" level="error" />
 
+	<!-- 单一root配置，避免重复 -->
 	<root level="info">
 		<appender-ref ref="console" />
-	</root>
-	
-	<!--系统操作日志-->
-    <root level="info">
         <appender-ref ref="file_info" />
         <appender-ref ref="file_error" />
-    </root>
+	</root>
 	
 	<!--系统用户操作日志-->
     <logger name="sys-user" level="info">

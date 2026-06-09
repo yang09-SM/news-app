@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.AuthorFollowMapper">
+
+    <resultMap type="AuthorFollow" id="AuthorFollowResult">
+        <result property="followId"    column="follow_id"    />
+        <result property="userId"       column="user_id"       />
+        <result property="authorId"     column="author_id"     />
+        <result property="followTime"   column="follow_time"   />
+        <result property="delFlag"       column="del_flag"      />
+        <result property="createBy"      column="create_by"      />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"      column="update_by"      />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"        column="remark"         />
+    </resultMap>
+
+    <sql id="selectAuthorFollowVo">
+        select follow_id, user_id, author_id, follow_time, del_flag, create_by, create_time, update_by, update_time, remark
+		from author_follow
+    </sql>
+
+    <select id="selectAuthorFollowById" parameterType="Long" resultMap="AuthorFollowResult">
+        <include refid="selectAuthorFollowVo"/>
+        where follow_id = #{followId}
+    </select>
+
+    <select id="selectAuthorFollowList" parameterType="AuthorFollow" resultMap="AuthorFollowResult">
+        <include refid="selectAuthorFollowVo"/>
+        <where>
+			del_flag = '0'
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="authorId != null">
+				AND author_id = #{authorId}
+			</if>
+		</where>
+		order by follow_time desc
+    </select>
+
+    <insert id="insertAuthorFollow" parameterType="AuthorFollow">
+        insert into author_follow (
+			<if test="userId != null">user_id, </if>
+			<if test="authorId != null">author_id, </if>
+			<if test="followTime != null">follow_time, </if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+ 		)values(
+			<if test="userId != null">#{userId}, </if>
+			<if test="authorId != null">#{authorId}, </if>
+			<if test="followTime != null">#{followTime}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+
+    <update id="updateAuthorFollow" parameterType="AuthorFollow">
+        update author_follow
+        <set>
+            <if test="userId != null">user_id = #{userId}, </if>
+            <if test="authorId != null">author_id = #{authorId}, </if>
+            <if test="followTime != null">follow_time = #{followTime}, </if>
+            <if test="remark != null">remark = #{remark}, </if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </set>
+        where follow_id = #{followId}
+    </update>
+
+    <delete id="deleteAuthorFollowByIds" parameterType="String">
+        delete from author_follow where follow_id in
+        <foreach item="followId" collection="array" open="(" separator="," close=")">
+            #{followId}
+        </foreach>
+    </delete>
+
+</mapper>

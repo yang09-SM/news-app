@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PointsRecordMapper">
+
+    <resultMap type="PointsRecord" id="PointsRecordResult">
+        <result property="recordId"       column="record_id"       />
+        <result property="userId"         column="user_id"         />
+        <result property="pointsChange"   column="points_change"   />
+        <result property="pointsBalance"  column="points_balance"  />
+        <result property="recordType"     column="record_type"     />
+        <result property="description"    column="description"     />
+        <result property="relatedId"      column="related_id"      />
+        <result property="delFlag"        column="del_flag"        />
+        <result property="createBy"        column="create_by"        />
+        <result property="createTime"      column="create_time"      />
+        <result property="updateBy"        column="update_by"        />
+        <result property="updateTime"      column="update_time"      />
+        <result property="remark"          column="remark"           />
+    </resultMap>
+
+    <sql id="selectPointsRecordVo">
+        select record_id, user_id, points_change, points_balance, record_type, description, related_id, del_flag, create_by, create_time, update_by, update_time, remark
+		from points_record
+    </sql>
+
+    <select id="selectPointsRecordById" parameterType="Long" resultMap="PointsRecordResult">
+        <include refid="selectPointsRecordVo"/>
+        where record_id = #{recordId}
+    </select>
+
+    <select id="selectPointsRecordList" parameterType="PointsRecord" resultMap="PointsRecordResult">
+        <include refid="selectPointsRecordVo"/>
+        <where>
+			del_flag = '0'
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="recordType != null and recordType != ''">
+				AND record_type = #{recordType}
+			</if>
+		</where>
+		order by create_time desc
+    </select>
+
+    <insert id="insertPointsRecord" parameterType="PointsRecord">
+        insert into points_record (
+			<if test="userId != null">user_id, </if>
+			<if test="pointsChange != null">points_change, </if>
+			<if test="pointsBalance != null">points_balance, </if>
+			<if test="recordType != null and recordType != ''">record_type, </if>
+			<if test="description != null and description != ''">description, </if>
+			<if test="relatedId != null">related_id, </if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+ 		)values(
+			<if test="userId != null">#{userId}, </if>
+			<if test="pointsChange != null">#{pointsChange}, </if>
+			<if test="pointsBalance != null">#{pointsBalance}, </if>
+			<if test="recordType != null and recordType != ''">#{recordType}, </if>
+			<if test="description != null and description != ''">#{description}, </if>
+			<if test="relatedId != null">#{relatedId}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+
+    <update id="updatePointsRecord" parameterType="PointsRecord">
+        update points_record
+        <set>
+            <if test="userId != null">user_id = #{userId}, </if>
+            <if test="pointsChange != null">points_change = #{pointsChange}, </if>
+            <if test="pointsBalance != null">points_balance = #{pointsBalance}, </if>
+            <if test="recordType != null and recordType != ''">record_type = #{recordType}, </if>
+            <if test="description != null and description != ''">description = #{description}, </if>
+            <if test="relatedId != null">related_id = #{relatedId}, </if>
+            <if test="remark != null">remark = #{remark}, </if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </set>
+        where record_id = #{recordId}
+    </update>
+
+    <delete id="deletePointsRecordByIds" parameterType="String">
+        delete from points_record where record_id in
+        <foreach item="recordId" collection="array" open="(" separator="," close=")">
+            #{recordId}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('编辑评论')" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-comment-edit" th:object="${comment}">
+            <input id="commentId" name="commentId" th:field="*{commentId}"  type="hidden">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">评论ID：</label>
+				<div class="col-sm-10">
+					<input id="commentIdShow" th:value="*{commentId}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">文章ID：</label>
+				<div class="col-sm-10">
+					<input id="articleId" name="articleId" th:field="*{articleId}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">用户名：</label>
+				<div class="col-sm-10">
+					<input id="userName" name="userName" th:field="*{userName}" class="form-control" type="text" readonly>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">评论内容：</label>
+				<div class="col-sm-10">
+					<textarea id="content" name="content" th:field="*{content}" class="form-control" readonly></textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label is-required">状态：</label>
+				<div class="col-sm-10">
+					<select id="status" name="status" class="form-control m-b" th:with="type=${@dict.getType('sys_normal_disable')}">
+						<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{status}"></option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label is-required">是否置顶：</label>
+				<div class="col-sm-10">
+					<select id="isTop" name="isTop" class="form-control m-b">
+						<option value="0" th:field="*{isTop}">否</option>
+						<option value="1" th:field="*{isTop}">是</option>
+					</select>
+				</div>
+			</div>
+		</form>
+	</div>
+    <th:block th:include="include :: footer" />
+    <script type="text/javascript">
+        var prefix = ctx + "system/news/comment";
+
+		$("#form-comment-edit").validate({
+			focusCleanup: true
+		});
+
+		function submitHandler() {
+	        if ($.validate.form()) {
+				$.operate.save(prefix + "/edit", $('#form-comment-edit').serialize());
+	        }
+	    }
+	</script>
+</body>
+</html>

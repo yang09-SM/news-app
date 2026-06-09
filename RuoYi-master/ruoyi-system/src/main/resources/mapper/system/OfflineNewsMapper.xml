@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.OfflineNewsMapper">
+
+    <resultMap type="OfflineNews" id="OfflineNewsResult">
+        <result property="offlineId"      column="offline_id"      />
+        <result property="userId"         column="user_id"         />
+        <result property="articleId"      column="article_id"      />
+        <result property="articleTitle"   column="article_title"   />
+        <result property="articleCover"   column="article_cover"   />
+        <result property="articleContent" column="article_content" />
+        <result property="downloadTime"   column="download_time"   />
+        <result property="fileSize"       column="file_size"       />
+        <result property="delFlag"        column="del_flag"        />
+        <result property="createBy"        column="create_by"        />
+        <result property="createTime"      column="create_time"      />
+        <result property="updateBy"        column="update_by"        />
+        <result property="updateTime"      column="update_time"      />
+        <result property="remark"          column="remark"           />
+    </resultMap>
+
+    <sql id="selectOfflineNewsVo">
+        select offline_id, user_id, article_id, article_title, article_cover, article_content, download_time, file_size, del_flag, create_by, create_time, update_by, update_time, remark
+		from offline_news
+    </sql>
+
+    <select id="selectOfflineNewsById" parameterType="Long" resultMap="OfflineNewsResult">
+        <include refid="selectOfflineNewsVo"/>
+        where offline_id = #{offlineId}
+    </select>
+
+    <select id="selectOfflineNewsList" parameterType="OfflineNews" resultMap="OfflineNewsResult">
+        <include refid="selectOfflineNewsVo"/>
+        <where>
+			del_flag = '0'
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="articleTitle != null and articleTitle != ''">
+				AND article_title like concat('%', #{articleTitle}, '%')
+			</if>
+		</where>
+		order by create_time desc
+    </select>
+
+    <insert id="insertOfflineNews" parameterType="OfflineNews">
+        insert into offline_news (
+			<if test="userId != null">user_id, </if>
+			<if test="articleId != null">article_id, </if>
+			<if test="articleTitle != null and articleTitle != ''">article_title, </if>
+			<if test="articleCover != null and articleCover != ''">article_cover, </if>
+			<if test="articleContent != null and articleContent != ''">article_content, </if>
+			<if test="downloadTime != null">download_time, </if>
+			<if test="fileSize != null">file_size, </if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+ 		)values(
+			<if test="userId != null">#{userId}, </if>
+			<if test="articleId != null">#{articleId}, </if>
+			<if test="articleTitle != null and articleTitle != ''">#{articleTitle}, </if>
+			<if test="articleCover != null and articleCover != ''">#{articleCover}, </if>
+			<if test="articleContent != null and articleContent != ''">#{articleContent}, </if>
+			<if test="downloadTime != null">#{downloadTime}, </if>
+			<if test="fileSize != null">#{fileSize}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+
+    <update id="updateOfflineNews" parameterType="OfflineNews">
+        update offline_news
+        <set>
+            <if test="userId != null">user_id = #{userId}, </if>
+            <if test="articleId != null">article_id = #{articleId}, </if>
+            <if test="articleTitle != null and articleTitle != ''">article_title = #{articleTitle}, </if>
+            <if test="articleCover != null and articleCover != ''">article_cover = #{articleCover}, </if>
+            <if test="articleContent != null and articleContent != ''">article_content = #{articleContent}, </if>
+            <if test="downloadTime != null">download_time = #{downloadTime}, </if>
+            <if test="fileSize != null">file_size = #{fileSize}, </if>
+            <if test="remark != null">remark = #{remark}, </if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </set>
+        where offline_id = #{offlineId}
+    </update>
+
+    <delete id="deleteOfflineNewsByIds" parameterType="String">
+        delete from offline_news where offline_id in
+        <foreach item="offlineId" collection="array" open="(" separator="," close=")">
+            #{offlineId}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -25,7 +25,9 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.security.CipherUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.framework.config.properties.PermitAllUrlProperties;
+import com.ruoyi.framework.shiro.jwt.JwtAuthenticationFilter;
 import com.ruoyi.framework.shiro.realm.UserRealm;
+import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.framework.shiro.rememberMe.CustomCookieRememberMeManager;
 import com.ruoyi.framework.shiro.session.OnlineSessionDAO;
 import com.ruoyi.framework.shiro.session.OnlineSessionFactory;
@@ -334,12 +336,13 @@ public class ShiroConfig
         filters.put("captchaValidate", captchaValidateFilter());
         filters.put("csrfValidateFilter", csrfValidateFilter());
         filters.put("kickout", kickoutSessionFilter());
+        filters.put("jwtAuth", jwtAuthenticationFilter());
         // 注销成功，则跳转到指定页面
         filters.put("logout", logoutFilter());
         shiroFilterFactoryBean.setFilters(filters);
 
         // 所有请求需要认证
-        filterChainDefinitionMap.put("/**", "user,kickout,onlineSession,syncOnlineSession,csrfValidateFilter");
+        filterChainDefinitionMap.put("/**", "jwtAuth,user,kickout,onlineSession,syncOnlineSession,csrfValidateFilter");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 
         return shiroFilterFactoryBean;
@@ -406,6 +409,16 @@ public class ShiroConfig
             cookieRememberMeManager.setCipherKey(CipherUtils.generateNewKey(128, "AES").getEncoded());
         }
         return cookieRememberMeManager;
+    }
+
+    /**
+     * JWT认证过滤器
+     */
+    public JwtAuthenticationFilter jwtAuthenticationFilter()
+    {
+        JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter();
+        jwtFilter.setUserService(SpringUtils.getBean(ISysUserService.class));
+        return jwtFilter;
     }
 
     /**

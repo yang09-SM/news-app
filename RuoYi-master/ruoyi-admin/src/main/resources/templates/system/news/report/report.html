@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<th:block th:include="include :: header('举报列表')" />
+</head>
+<body class="gray-bg">
+    <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="report-form">
+					<div class="select-list">
+						<ul>
+							<li>
+								举报类型：<select name="reportType">
+									<option value="">所有</option>
+									<option value="article">新闻</option>
+									<option value="comment">评论</option>
+									<option value="creation">创作</option>
+									<option value="user">用户</option>
+								</select>
+							</li>
+							<li>
+								状态：<select name="status">
+									<option value="">所有</option>
+									<option value="0">待处理</option>
+									<option value="1">处理中</option>
+									<option value="2">已处理</option>
+									<option value="3">已驳回</option>
+								</select>
+							</li>
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+
+	        <div class="btn-group-sm" id="toolbar" role="group">
+		        <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="news:report:remove">
+		            <i class="fa fa-remove"></i> 删除
+		        </a>
+	        </div>
+
+	        <div class="col-sm-12 select-table table-striped">
+	            <table id="bootstrap-table"></table>
+	        </div>
+    	</div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('news:report:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('news:report:remove')}]];
+        var prefix = ctx + "system/news/report";
+
+        var reportTypeDatas = [{value: 'article', label: '新闻'}, {value: 'comment', label: '评论'}, {value: 'creation', label: '创作'}, {value: 'user', label: '用户'}];
+        var statusDatas = [{value: '0', label: '待处理'}, {value: '1', label: '处理中'}, {value: '2', label: '已处理'}, {value: '3', label: '已驳回'}];
+
+        function selectDictLabel(datas, value) {
+        	var actions = [];
+        	$.each(datas, function(index, dict) {
+        		if (dict.value == value) {
+        			actions.push(dict.label);
+        			return false;
+        		}
+        	});
+        	return actions.join('');
+        }
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                modalName: "举报",
+                columns: [{
+		            checkbox: true
+		        },
+				{
+					field : 'reportId',
+					title : '举报ID'
+				},
+				{
+					field : 'reporterId',
+					title : '举报人ID'
+				},
+				{
+					field : 'reportType',
+					title : '举报类型',
+					align: 'center',
+					formatter: function(value, row, index) {
+						return selectDictLabel(reportTypeDatas, value);
+					}
+				},
+				{
+					field : 'targetId',
+					title : '被举报对象ID'
+				},
+				{
+		            field: 'reason',
+		            title: '举报原因',
+		            formatter: function(value, row, index) {
+		            	if (value && value.length > 20) {
+		            		return value.substring(0, 20) + '...';
+		            	}
+		            	return value;
+		            }
+		        },
+				{
+		            field: 'status',
+		            title: '状态',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+		            	return selectDictLabel(statusDatas, value);
+		            }
+		        },
+				{
+		            field: 'handleResult',
+		            title: '处理结果'
+		        },
+				{
+		            field: 'createTime',
+		            title: '创建时间',
+		            sortable: true
+		        },
+		        {
+		            title: '操作',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+		            	var actions = [];
+		            	actions.push('<a class="btn btn-warning btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.editFull(\'' + row.reportId + '\')"><i class="fa fa-edit"></i>处理</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.reportId + '\')"><i class="fa fa-remove"></i>删除</a>');
+						return actions.join('');
+		            }
+		        }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

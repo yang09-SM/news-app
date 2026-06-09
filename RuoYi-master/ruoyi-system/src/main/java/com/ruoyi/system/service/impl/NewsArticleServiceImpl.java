@@ -62,4 +62,28 @@ public class NewsArticleServiceImpl implements INewsArticleService
     {
         return newsArticleMapper.incrementViewCount(articleId);
     }
+
+    @Override
+    public List<NewsArticle> selectHotNewsList()
+    {
+        return newsArticleMapper.selectHotNewsList();
+    }
+
+    @Override
+    public List<NewsArticle> searchNews(String keyword)
+    {
+        return newsArticleMapper.searchNews(keyword);
+    }
+
+    @Override
+    public List<NewsArticle> selectRecommendedNews(Long userId)
+    {
+        return newsArticleMapper.selectRecommendedNews(userId);
+    }
+
+    @Override
+    public List<NewsArticle> selectNewsByCategory(Long categoryId)
+    {
+        return newsArticleMapper.selectNewsByCategory(categoryId);
+    }
 }

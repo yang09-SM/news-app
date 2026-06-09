@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserFollowMapper">
+    
+    <resultMap type="UserFollow" id="UserFollowResult">
+        <result property="followId"       column="follow_id"       />
+        <result property="userId"          column="user_id"          />
+        <result property="followUserId"    column="follow_user_id"   />
+        <result property="followTime"      column="follow_time"      />
+        <result property="createBy"        column="create_by"        />
+        <result property="createTime"      column="create_time"      />
+        <result property="updateBy"        column="update_by"        />
+        <result property="updateTime"      column="update_time"      />
+        <result property="remark"          column="remark"           />
+    </resultMap>
+    
+    <sql id="selectUserFollowVo">
+        select follow_id, user_id, follow_user_id, follow_time, create_by, create_time, update_by, update_time, remark 
+		from user_follow
+    </sql>
+    
+    <select id="selectFollowById" parameterType="Long" resultMap="UserFollowResult">
+        <include refid="selectUserFollowVo"/>
+        where follow_id = #{followId}
+    </select>
+    
+    <select id="selectFollowList" parameterType="UserFollow" resultMap="UserFollowResult">
+        <include refid="selectUserFollowVo"/>
+        <where>
+			<if test="userId != null">
+				AND user_id = #{userId}
+			</if>
+			<if test="followUserId != null">
+				AND follow_user_id = #{followUserId}
+			</if>
+		</where>
+		order by follow_time desc
+    </select>
+
+    <select id="selectFollowByUserAndTarget" resultMap="UserFollowResult">
+        <include refid="selectUserFollowVo"/>
+        where user_id = #{userId} and follow_user_id = #{followUserId}
+    </select>
+
+    <select id="selectFollowersByUserId" parameterType="Long" resultMap="UserFollowResult">
+        <include refid="selectUserFollowVo"/>
+        where follow_user_id = #{userId}
+        order by follow_time desc
+    </select>
+
+    <select id="selectFollowingByUserId" parameterType="Long" resultMap="UserFollowResult">
+        <include refid="selectUserFollowVo"/>
+        where user_id = #{userId}
+        order by follow_time desc
+    </select>
+    
+    <insert id="insertFollow" parameterType="UserFollow">
+        insert into user_follow (
+			<if test="userId != null">user_id, </if>
+			<if test="followUserId != null">follow_user_id, </if>
+			<if test="followTime != null">follow_time, </if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+ 		)values(
+			<if test="userId != null">#{userId}, </if>
+			<if test="followUserId != null">#{followUserId}, </if>
+			<if test="followTime != null">#{followTime}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+	 
+    <update id="updateFollow" parameterType="UserFollow">
+        update user_follow 
+        <set>
+            <if test="userId != null">user_id = #{userId}, </if>
+            <if test="followUserId != null">follow_user_id = #{followUserId}, </if>
+            <if test="followTime != null">follow_time = #{followTime}, </if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </set>
+        where follow_id = #{followId}
+    </update>
+	
+    <delete id="deleteFollowByIds" parameterType="String">
+        delete from user_follow where follow_id in 
+        <foreach item="followId" collection="array" open="(" separator="," close=")">
+            #{followId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteFollowById" parameterType="Long">
+        delete from user_follow where follow_id = #{followId}
+    </delete>
+    
+</mapper>

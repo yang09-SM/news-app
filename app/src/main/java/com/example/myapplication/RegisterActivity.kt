@@ -94,6 +94,14 @@ class RegisterActivity : AppCompatActivity() {
                         val message = jsonObject.optString("message", "")
 
                         if (success) {
+                            val user = jsonObject.optJSONObject("user")
+                            val userId = user?.optString("id", "") ?: ""
+                            val token = jsonObject.optString("token", "")
+                            val refreshToken = jsonObject.optString("refreshToken", "")
+                            val prefManager = PrefManager(this@RegisterActivity)
+                            prefManager.saveLoginState(true, username, userId)
+                            if (token.isNotEmpty()) prefManager.saveAuthToken(token)
+                            if (refreshToken.isNotEmpty()) prefManager.saveRefreshToken(refreshToken)
                             Toast.makeText(this@RegisterActivity, message, Toast.LENGTH_SHORT).show()
                             finish()
                         } else {
