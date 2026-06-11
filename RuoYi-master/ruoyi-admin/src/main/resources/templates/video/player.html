@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频播放器演示 - 新闻APP</title>
+
+    <!-- Bootstrap 3.x CSS -->
+    <link href="/ajax/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Video.js CSS -->
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+            color: #fff;
+            padding: 20px 0;
+        }
+
+        .demo-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px 0;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .page-header p {
+            font-size: 16px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .video-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            margin-bottom: 24px;
+        }
+
+        .video-wrapper {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 深色主题皮肤 */
+        .video-wrapper .video-js {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: #000;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        .video-wrapper .vjs-control-bar {
+            background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.85) 100%);
+        }
+
+        .video-wrapper .vjs-play-progress,
+        .video-wrapper .vjs-volume-level {
+            background-color: #3b82f6;
+        }
+
+        .video-wrapper .vjs-slider {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .controls-panel {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .control-group label {
+            min-width: 80px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .form-control {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        .form-control:focus {
+            background: rgba(255,255,255,0.15);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.25);
+            color: #fff;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            border-radius: 6px;
+            padding: 8px 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59,130,246,0.4);
+        }
+
+        .info-box {
+            background: rgba(59,130,246,0.1);
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 20px;
+        }
+
+        .info-box h4 {
+            color: #3b82f6;
+            margin-top: 0;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        .feature-list li {
+            padding: 6px 0;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .feature-list li i {
+            color: #10b981;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 24px;
+            }
+            .video-wrapper {
+                border-radius: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="demo-container">
+    <div class="page-header">
+        <h1><i class="fa fa-video-camera"></i> 短视频播放器</h1>
+        <p>基于 Video.js 的专业级视频播放解决方案，支持 MP4/HLS 格式</p>
+    </div>
+
+    <div class="video-section">
+        <div class="video-wrapper">
+            <video
+                id="demo-video-player"
+                class="video-js vjs-big-play-centered vjs-default-skin"
+                controls
+                preload="auto"
+                data-setup='{
+                    "fluid": true,
+                    "aspectRatio": "16:9",
+                    "playbackRates": [0.5, 1, 1.5, 2],
+                    "controlBar": {
+                        "children": [
+                            "playToggle",
+                            "volumePanel",
+                            "currentTimeDisplay",
+                            "timeDivider",
+                            "durationDisplay",
+                            "progressControl",
+                            "playbackRateMenuButton",
+                            "fullscreenToggle"
+                        ]
+                    },
+                    "html5": {
+                        "nativeTextTracks": false
+                    },
+                    "poster": ""
+                }'
+                th:poster="${coverImage != null ? coverImage : ''}">
+
+                <source th:src="${videoUrl != null ? videoUrl : ''}" type="video/mp4"/>
+
+                您的浏览器不支持视频播放，请升级浏览器。
+            </video>
+        </div>
+
+        <div class="controls-panel">
+            <h4 style="color:#fff;margin-bottom:15px;"><i class="fa fa-cog"></i> 播放控制面板</h4>
+
+            <div class="control-group">
+                <label for="videoUrlInput">视频地址:</label>
+                <input type="text" id="videoUrlInput" class="form-control"
+                       placeholder="输入视频URL或使用参数?videoUrl=xxx"
+                       th:value="${videoUrl != null ? videoUrl : ''}"
+                       style="flex:1;min-width:200px;">
+                <button type="button" class="btn btn-primary" onclick="loadVideo()">
+                    <i class="fa fa-play"></i> 加载视频
+                </button>
+            </div>
+
+            <div class="control-group">
+                <label for="coverImageInput">封面图片:</label>
+                <input type="text" id="coverImageInput" class="form-control"
+                       placeholder="输入封面图URL（可选）"
+                       th:value="${coverImage != null ? coverImage : ''}"
+                       style="flex:1;min-width:200px;">
+                <button type="button" class="btn btn-primary" onclick="setPoster()">
+                    <i class="fa fa-image"></i> 设置封面
+                </button>
+            </div>
+
+            <div class="control-group">
+                <button type="button" class="btn btn-info" onclick="changeSpeed(0.5)">
+                    <i class="fa fa-tachometer"></i> 0.5x
+                </button>
+                <button type="button" class="btn btn-success" onclick="changeSpeed(1)">
+                    <i class="fa fa-tachometer"></i> 1x
+                </button>
+                <button type="button" class="btn btn-warning" onclick="changeSpeed(1.5)">
+                    <i class="fa fa-tachometer"></i> 1.5x
+                </button>
+                <button type="button" class="btn btn-danger" onclick="changeSpeed(2)">
+                    <i class="fa fa-tachometer"></i> 2x
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h4><i class="fa fa-info-circle"></i> 功能特性</h4>
+        <ul class="feature-list">
+            <li><i class="fa fa-check-circle"></i> 支持 MP4 和 HLS (m3u8) 视频格式</li>
+            <li><i class="fa fa-check-circle"></i> 播放控制栏：播放/暂停、进度条、音量、全屏</li>
+            <li><i class="fa fa-check-circle"></i> 播放速度选择：0.5x / 1x / 1.5x / 2x</li>
+            <li><i class="fa fa-check-circle"></i> 响应式布局，自适应屏幕宽度</li>
+            <li><i class="fa fa-check-circle"></i> 深色主题皮肤，视觉体验优秀</li>
+            <li><i class="fa fa-check-circle"></i> 支持自动播放下一个视频功能</li>
+            <li><i class="fa fa-check-circle"></i> 支持封面图设置和动态加载</li>
+            <li><i class="fa fa-check-circle"></i> 错误处理和友好提示</li>
+        </ul>
+    </div>
+
+    <div style="text-align:center;padding:30px 0;color:rgba(255,255,255,0.5);font-size:14px;">
+        <p>Powered by Video.js 8.x | 阿里云OSS云存储 | 新闻APP</p>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="/ajax/libs/bootstrap/js/bootstrap.min.js"></script>
+<!-- Video.js JS -->
+<script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+<!-- HLS支持 -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js"></script>
+
+<script>
+    // 初始化视频播放器
+    var player = videojs('demo-video-player');
+
+    // 从URL参数加载视频
+    (function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var videoUrl = urlParams.get('videoUrl');
+        var coverImage = urlParams.get('coverImage');
+
+        if (videoUrl) {
+            document.getElementById('videoUrlInput').value = videoUrl;
+            loadVideo();
+        }
+        if (coverImage) {
+            document.getElementById('coverImageInput').value = coverImage;
+            setPoster();
+        }
+    })();
+
+    // 加载视频
+    function loadVideo() {
+        var url = document.getElementById('videoUrlInput').value.trim();
+        if (!url) {
+            alert('请输入视频地址');
+            return;
+        }
+        player.src({type: 'video/mp4', src: url});
+        player.load();
+        player.play().catch(function(e) {
+            console.log('自动播放被阻止:', e);
+        });
+    }
+
+    // 设置封面
+    function setPoster() {
+        var posterUrl = document.getElementById('coverImageInput').value.trim();
+        if (posterUrl) {
+            player.poster(posterUrl);
+        }
+    }
+
+    // 切换播放速度
+    function changeSpeed(rate) {
+        player.playbackRate(rate);
+    }
+
+    // 错误处理
+    player.on('error', function() {
+        console.error('视频播放错误');
+    });
+
+    // 播放结束事件
+    player.on('ended', function() {
+        console.log('视频播放结束');
+    });
+
+    // 获取当前播放时间
+    player.on('timeupdate', function() {
+        // 可以在这里添加进度同步逻辑
+    });
+</script>
+
+</body>
+</html>

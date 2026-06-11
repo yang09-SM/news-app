@@ -35,7 +35,7 @@
             <artifactId>shiro-core</artifactId>
             <classifier>jakarta</classifier>
         </dependency>
-        
+
         <!-- Shiro使用EhCache缓存框架 -->
         <dependency>
             <groupId>org.apache.shiro</groupId>
@@ -100,6 +100,37 @@
         <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
+        </dependency>
+
+        <!-- Spring Data Redis（Redis服务可用后取消注释）
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
+        -->
+
+        <!-- 阿里云OSS SDK -->
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+        </dependency>
+
+        <!-- Elasticsearch Java客户端 -->
+        <dependency>
+            <groupId>co.elastic.clients</groupId>
+            <artifactId>elasticsearch-java</artifactId>
+        </dependency>
+
+        <!-- Elasticsearch REST Client -->
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-client</artifactId>
+            <version>8.9.0</version>
         </dependency>
 
     </dependencies>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PushRecordMapper">
+
+    <resultMap type="PushRecord" id="PushRecordResult">
+        <result property="pushId"       column="push_id"       />
+        <result property="title"        column="title"         />
+        <result property="content"      column="content"       />
+        <result property="pushType"     column="push_type"     />
+        <result property="targetValue"  column="target_value"  />
+        <result property="sendStatus"   column="send_status"   />
+        <result property="sendCount"    column="send_count"    />
+        <result property="arriveCount"  column="arrive_count"  />
+        <result property="clickCount"   column="click_count"   />
+        <result property="sendTime"     column="send_time"     />
+        <result property="delFlag"      column="del_flag"      />
+        <result property="createBy"     column="create_by"      />
+        <result property="createTime"   column="create_time"    />
+        <result property="updateBy"     column="update_by"      />
+        <result property="updateTime"   column="update_time"    />
+        <result property="remark"       column="remark"         />
+    </resultMap>
+
+    <sql id="selectPushRecordVo">
+        select push_id, title, content, push_type, target_value, send_status, send_count, arrive_count, click_count, send_time, del_flag, create_by, create_time, update_by, update_time, remark
+		from push_record
+    </sql>
+
+    <select id="selectPushRecordById" parameterType="Long" resultMap="PushRecordResult">
+        <include refid="selectPushRecordVo"/>
+        where push_id = #{pushId}
+    </select>
+
+    <select id="selectPushRecordList" parameterType="PushRecord" resultMap="PushRecordResult">
+        <include refid="selectPushRecordVo"/>
+        <where>
+			del_flag = '0'
+			<if test="title != null and title != ''">
+				AND title like concat('%', #{title}, '%')
+			</if>
+			<if test="sendStatus != null and sendStatus != ''">
+				AND send_status = #{sendStatus}
+			</if>
+			<if test="pushType != null and pushType != ''">
+				AND push_type = #{pushType}
+			</if>
+		</where>
+		order by create_time desc
+    </select>
+
+    <select id="selectPendingPushes" resultMap="PushRecordResult">
+        <include refid="selectPushRecordVo"/>
+        where del_flag = '0' and send_status = '0'
+        order by create_time asc
+    </select>
+
+    <insert id="insertPushRecord" parameterType="PushRecord" useGeneratedKeys="true" keyProperty="pushId">
+        insert into push_record (
+			<if test="title != null and title != ''">title, </if>
+			<if test="content != null and content != ''">content, </if>
+			<if test="pushType != null and pushType != ''">push_type, </if>
+			<if test="targetValue != null and targetValue != ''">target_value, </if>
+			<if test="sendStatus != null and sendStatus != ''">send_status, </if>
+			<if test="sendCount != null">send_count, </if>
+			<if test="arriveCount != null">arrive_count, </if>
+			<if test="clickCount != null">click_count, </if>
+			<if test="sendTime != null">send_time, </if>
+			<if test="remark != null and remark != ''">remark,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+ 			create_time
+ 		)values(
+			<if test="title != null and title != ''">#{title}, </if>
+			<if test="content != null and content != ''">#{content}, </if>
+			<if test="pushType != null and pushType != ''">#{pushType}, </if>
+			<if test="targetValue != null and targetValue != ''">#{targetValue}, </if>
+			<if test="sendStatus != null and sendStatus != ''">#{sendStatus}, </if>
+			<if test="sendCount != null">#{sendCount}, </if>
+			<if test="arriveCount != null">#{arriveCount}, </if>
+			<if test="clickCount != null">#{clickCount}, </if>
+			<if test="sendTime != null">#{sendTime}, </if>
+			<if test="remark != null and remark != ''">#{remark},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+ 			sysdate()
+		)
+    </insert>
+
+    <update id="updatePushRecord" parameterType="PushRecord">
+        update push_record
+        <set>
+            <if test="title != null and title != ''">title = #{title}, </if>
+            <if test="content != null and content != ''">content = #{content}, </if>
+            <if test="pushType != null and pushType != ''">push_type = #{pushType}, </if>
+            <if test="targetValue != null and targetValue != ''">target_value = #{targetValue}, </if>
+            <if test="sendStatus != null and sendStatus != ''">send_status = #{sendStatus}, </if>
+            <if test="sendCount != null">send_count = #{sendCount}, </if>
+            <if test="arriveCount != null">arrive_count = #{arriveCount}, </if>
+            <if test="clickCount != null">click_count = #{clickCount}, </if>
+            <if test="sendTime != null">send_time = #{sendTime}, </if>
+            <if test="remark != null">remark = #{remark}, </if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 			update_time = sysdate()
+        </set>
+        where push_id = #{pushId}
+    </update>
+
+    <update id="deletePushRecordById" parameterType="Long">
+        update push_record set del_flag = '2' where push_id = #{pushId}
+    </update>
+
+    <update id="deletePushRecordByIds" parameterType="String">
+        update push_record set del_flag = '2' where push_id in
+        <foreach item="pushId" collection="array" open="(" separator="," close=")">
+            #{pushId}
+        </foreach>
+    </update>
+
+</mapper>

@@ -89,7 +89,8 @@ class RecommendationEngine(private val prefManager: PrefManager) {
                                     category = item.optString("categoryId", ""),
                                     pic = item.optString("coverImage", ""),
                                     time = item.optString("createTime", ""),
-                                    content = item.optString("content", "")
+                                    content = item.optString("content", ""),
+                                    src = item.optString("src", "")
                                 ))
                             }
                             callback(newsList)

@@ -48,6 +48,9 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+  # 禁用Spring Cache（避免CacheManager缺失错误）
+  cache:
+    type: none
   # 模板引擎
   thymeleaf:
     mode: HTML
@@ -151,3 +154,32 @@ csrf:
   enabled: false
   # 白名单（多个用逗号分隔）
   whites: /druid
+
+# Elasticsearch配置
+elasticsearch:
+  host: localhost
+  port: 9200
+  username: elastic
+  password: changeme
+  scheme: http
+  enabled: false  # ES不可用时降级为MySQL搜索
+  connect-timeout: 5000
+  socket-timeout: 30000
+  connection-request-timeout: 5000
+
+# 阿里云OSS配置
+aliyun:
+  oss:
+    enabled: false
+    endpoint: oss-cn-hangzhou.aliyuncs.com
+    accessKeyId: your-access-key-id
+    accessKeySecret: your-access-key-secret
+    bucket-name: your-bucket-name
+    cdn-domain:
+
+# 极光推送配置
+jpush:
+  enabled: false
+  appKey: your-app-key
+  master-secret: your-master-secret
+  apns-production: 0

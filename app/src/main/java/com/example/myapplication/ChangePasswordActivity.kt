@@ -85,7 +85,7 @@ class ChangePasswordActivity : AppCompatActivity() {
 
         val username = prefManager.getUsername()
 
-        ApiClient.getInstance().changePassword(username, oldPassword, newPassword, object : ApiClient.ApiCallback {
+        ApiClient.getInstance(this).changePassword(username, oldPassword, newPassword, object : ApiClient.ApiCallback {
             override fun onSuccess(response: String) {
                 runOnUiThread {
                     hideLoadingDialog()

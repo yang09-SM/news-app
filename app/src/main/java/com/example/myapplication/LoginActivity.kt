@@ -77,7 +77,7 @@ class LoginActivity : AppCompatActivity() {
     private fun login(username: String, password: String) {
         showLoadingDialog()
 
-        ApiClient.getInstance().login(username, password, object : ApiClient.ApiCallback {
+        ApiClient.getInstance(this).login(username, password, object : ApiClient.ApiCallback {
             override fun onSuccess(response: String) {
                 runOnUiThread {
                     hideLoadingDialog()
@@ -142,7 +142,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun migrateDataToCloud(userId: String) {
         val data = prefManager.getAllDataForMigration()
-        ApiClient.getInstance().syncDataToCloud(userId.toLong(), data, object : ApiClient.ApiCallback {
+        ApiClient.getInstance(this).syncDataToCloud(userId.toLong(), data, object : ApiClient.ApiCallback {
             override fun onSuccess(response: String) {
                 runOnUiThread {
                     prefManager.setDataMigrated(true)
@@ -163,7 +163,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun syncDataFromCloud(userId: String) {
-        ApiClient.getInstance().syncDataFromCloud(userId.toLong(), object : ApiClient.ApiCallback {
+        ApiClient.getInstance(this).syncDataFromCloud(userId.toLong(), object : ApiClient.ApiCallback {
             override fun onSuccess(response: String) {
                 runOnUiThread {
                     try {

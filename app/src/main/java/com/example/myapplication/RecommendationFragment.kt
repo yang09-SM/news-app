@@ -71,7 +71,7 @@ class RecommendationFragment : Fragment() {
         var completedRequests = 0
 
         for (category in categories) {
-            ApiClient.getInstance().getNews(category, 5, 0, object : ApiClient.ApiCallback {
+            ApiClient.getInstance(requireContext()).getNews(category, 5, 0, object : ApiClient.ApiCallback {
                 override fun onSuccess(response: String) {
                     try {
                         val gson = Gson()

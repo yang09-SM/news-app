@@ -1,53 +1,53 @@
 # Tasks - 新闻APP迭代升级任务清单
 
-## Phase 1: 基础设施加固（P0优先级）
+## Phase 1: 基础设施加固（P0优先级） ✅ COMPLETED
 
-- [ ] Task 1.1: **引入Redis缓存层**
-  - [ ] 1.1.1 添加Spring Data Redis依赖到pom.xml（ruoyi-common模块）
-  - [ ] 1.1.2 创建RedisConfig配置类（连接池、序列化、Key前缀）
-  - [ ] 1.1.3 实现RedisCacheService工具类（set/get/del/expire通用方法）
-  - [ ] 1.1.4 为NewsArticleServiceImpl添加热门新闻列表缓存（TTL 5分钟）
-  - [ ] 1.1.5 为新闻详情接口添加缓存（TTL 10分钟，发布时主动删除缓存key）
-  - [ ] 1.1.6 为RecommendationServiceImpl添加推荐结果缓存（TTL 30分钟，按userId隔离）
-  - [ ] 1.1.7 为基础数据（分类/频道/作者）添加缓存（TTL 1小时）
-  - [ ] 1.1.8 实现缓存击穿保护（Redis分布式锁 + 互斥锁模式）
+- [x] Task 1.1: **引入Redis缓存层** ✅
+  - [x] 1.1.1 添加Spring Data Redis依赖到pom.xml（ruoyi-common模块）
+  - [x] 1.1.2 创建RedisConfig配置类（连接池、序列化、Key前缀）
+  - [x] 1.1.3 实现RedisCacheService工具类（set/get/del/expire通用方法）
+  - [x] 1.1.4 为NewsArticleServiceImpl添加热门新闻列表缓存（TTL 5分钟）
+  - [x] 1.1.5 为新闻详情接口添加缓存（TTL 10分钟，发布时主动删除缓存key）
+  - [x] 1.1.6 为RecommendationServiceImpl添加推荐结果缓存（TTL 30分钟，按userId隔离）
+  - [x] 1.1.7 为基础数据（分类/频道/作者）添加缓存（TTL 1小时）
+  - [x] 1.1.8 实现缓存击穿保护（Redis分布式锁 + 互斥锁模式）
 
-- [ ] Task 1.2: **引入Elasticsearch全文搜索**
-  - [ ] 1.2.1 添加spring-boot-starter-data-elasticsearch依赖
-  - [ ] 1.2.2 创建ElasticsearchConfig配置类（连接ES集群）
-  - [ ] 1.2.3 创建NewsArticleDocument文档类（映射ES索引结构）
-  - [ ] 1.2.4 创建NewsSearchService搜索服务（分词检索、高亮、聚合）
-  - [ ] 1.2.5 创建NewsIndexService索引同步服务（发布/编辑时同步ES）
-  - [ ] 1.2.6 改造NewsApiController的搜索接口（从MySQL LIKE切换到ES）
-  - [ ] 1.2.7 新增搜索联想API（GET /api/news/search/suggest?keyword=xxx）
-  - [ ] 1.2.8 新增搜索热词榜API（GET /api/news/search/hot-words）
-  - [ ] 1.2.9 后台管理页：搜索热词管理页面
+- [x] Task 1.2: **引入Elasticsearch全文搜索** ✅
+  - [x] 1.2.1 添加spring-boot-starter-data-elasticsearch依赖
+  - [x] 1.2.2 创建ElasticsearchConfig配置类（连接ES集群）
+  - [x] 1.2.3 创建NewsArticleDocument文档类（映射ES索引结构）
+  - [x] 1.2.4 创建NewsSearchService搜索服务（分词检索、高亮、聚合）
+  - [x] 1.2.5 创建NewsIndexService索引同步服务（发布/编辑时同步ES）
+  - [x] 1.2.6 改造NewsApiController的搜索接口（从MySQL LIKE切换到ES）
+  - [x] 1.2.7 新增搜索联想API（GET /api/news/search/suggest?keyword=xxx）
+  - [x] 1.2.8 新增搜索热词榜API（GET /api/news/search/hot-words）
+  - [x] 1.2.9 后台管理页：搜索热词管理页面
 
-- [ ] Task 1.3: **接入阿里云OSS云存储**
-  - [ ] 1.3.1 添加aliyun-oss-spring-boot-starter依赖
-  - [ ] 1.3.2 创建OssService服务类（上传/下载/删除/生成签名URL）
-  - [ ] 1.3.3 创建OssConfig配置类（Bucket/Endpoint/AccessKey）
-  - [ ] 1.3.4 改造文件上传Controller（支持OSS上传 + 本地fallback）
-  - [ ] 1.3.5 图片上传自动压缩和缩略图生成
-  - [ ] 1.3.6 配置CDN域名映射（返回可访问的URL）
+- [x] Task 1.3: **接入阿里云OSS云存储** ✅
+  - [x] 1.3.1 添加aliyun-oss-spring-boot-starter依赖
+  - [x] 1.3.2 创建OssService服务类（上传/下载/删除/生成签名URL）
+  - [x] 1.3.3 创建OssConfig配置类（Bucket/Endpoint/AccessKey）
+  - [x] 1.3.4 改造文件上传Controller（支持OSS上传 + 本地fallback）
+  - [x] 1.3.5 图片上传自动压缩和缩略图生成
+  - [x] 1.3.6 配置CDN域名映射（返回可访问的URL）
 
-- [ ] Task 1.4: **集成Push消息推送**
-  - [ ] 1.4.1 添加极光推送SDK依赖（或个推SDK）
-  - [ ] 1.4.2 创建JPushService推送服务类（别名/标签/全部推送）
-  - [ ] 1.4.3 创建PushConfig配置类（AppKey/MasterSecret）
-  - [ ] 1.4.4 创建PushMessage实体类（标题/内容/类型/附加数据）
-  - [ ] 1.4.5 在UserMessageService中集成推送（新消息时触发Push）
-  - [ ] 1.4.6 在NewsArticleService中集成推送（发布重要新闻时触发Push）
-  - [ ] 1.4.7 创建PushRecordController + HTML模板（推送记录管理后台）
-  - [ ] 1.4.8 数据库新增push_record表 + Mapper
+- [x] Task 1.4: **集成Push消息推送** ✅
+  - [x] 1.4.1 添加极光推送SDK依赖（或个推SDK）
+  - [x] 1.4.2 创建JPushService推送服务类（别名/标签/全部推送）
+  - [x] 1.4.3 创建PushConfig配置类（AppKey/MasterSecret）
+  - [x] 1.4.4 创建PushMessage实体类（标题/内容/类型/附加数据）
+  - [x] 1.4.5 在UserMessageService中集成推送（新消息时触发Push）
+  - [x] 1.4.6 在NewsArticleService中集成推送（发布重要新闻时触发Push）
+  - [x] 1.4.7 创建PushRecordController + HTML模板（推送记录管理后台）
+  - [x] 1.4.8 数据库新增push_record表 + Mapper
 
-- [ ] Task 1.5: **短视频播放器实现**
-  - [ ] 1.5.1 前端引入video.js播放器库（或DPlayer）
-  - [ ] 1.5.2 创建视频播放组件HTML模板（播放控制栏/清晰度切换/全屏）
-  - [ ] 1.5.3 改造新闻详情页（检测newsType=video时渲染播放器）
-  - [ ] 1.5.4 实现HLS/m3u8流媒体格式支持
-  - [ ] 1.5.5 实现播放速度调节(0.5x/1x/1.5x/2x)
-  - [ ] 1.5.6 列表页视频自动连续播放逻辑
+- [x] Task 1.5: **短视频播放器实现** ✅
+  - [x] 1.5.1 前端引入video.js播放器库（或DPlayer）
+  - [x] 1.5.2 创建视频播放组件HTML模板（播放控制栏/清晰度切换/全屏）
+  - [x] 1.5.3 改造新闻详情页（检测newsType=video时渲染播放器）
+  - [x] 1.5.4 实现HLS/m3u8流媒体格式支持
+  - [x] 1.5.5 实现播放速度调节(0.5x/1x/1.5x/2x)
+  - [x] 1.5.6 列表页视频自动连续播放逻辑
 
 ## Phase 2: 核心能力增强（P1优先级）
 

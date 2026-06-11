@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+    <!-- Video.js CSS -->
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet">
+    <style>
+        /* 视频播放器容器样式 */
+        .video-player-wrapper {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .video-player-wrapper .video-js {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 16 / 9;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        /* 深色主题皮肤 */
+        .video-player-wrapper .video-js {
+            background-color: #000;
+        }
+
+        .video-player-wrapper .vjs-control-bar {
+            background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.85) 100%);
+        }
+
+        .video-player-wrapper .vjs-play-progress,
+        .video-player-wrapper .vjs-volume-level {
+            background-color: #3b82f6;
+        }
+
+        .video-player-wrapper .vjs-slider {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        /* 播放速度选择按钮 */
+        .video-player-wrapper .vjs-menu-button-popup .vjs-menu {
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 40px;
+        }
+
+        /* 清晰度切换按钮样式 */
+        .quality-btn {
+            color: #fff;
+            font-size: 12px;
+            padding: 4px 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quality-btn:hover {
+            color: #3b82f6;
+        }
+
+        /* 自动播放下一个提示 */
+        .next-video-tip {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 100;
+            display: none;
+            animation: fadeInOut 3s ease forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+            15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            75% { opacity: 1; }
+            100% { opacity: 0; display: none; }
+        }
+
+        /* 响应式布局 */
+        @media (max-width: 768px) {
+            .video-player-wrapper {
+                max-width: 100%;
+                border-radius: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 视频播放器组件 Fragment -->
+<div th:fragment="player(videoUrl, coverImage, nextVideoUrl)" class="video-player-wrapper"
+     data-next-video-url="${nextVideoUrl != null ? nextVideoUrl : ''}">
+
+    <video
+        id="news-video-player"
+        class="video-js vjs-big-play-centered vjs-default-skin"
+        controls
+        preload="auto"
+        data-setup='{
+            "fluid": true,
+            "aspectRatio": "16:9",
+            "playbackRates": [0.5, 1, 1.5, 2],
+            "controlBar": {
+                "children": [
+                    "playToggle",
+                    "volumePanel",
+                    "currentTimeDisplay",
+                    "timeDivider",
+                    "durationDisplay",
+                    "progressControl",
+                    "playbackRateMenuButton",
+                    "qualitySelector",
+                    "fullscreenToggle"
+                ]
+            },
+            "html5": {
+                "nativeTextTracks": false,
+                "hls": {
+                    "enableLowInitialPlaylist": true,
+                    "smoothQualityChange": true,
+                    "overrideNative": true
+                }
+            },
+            "poster": "${coverImage != null ? coverImage : ''}"
+        }'
+        th:src="${videoUrl}">
+
+        <source th:src="${videoUrl}" type="video/mp4"/>
+
+        您的浏览器不支持视频播放，请升级浏览器。
+    </video>
+
+    <div class="next-video-tip" id="next-video-tip">
+        <i class="fa fa-forward"></i> 即将播放下一个视频...
+    </div>
+
+</div>
+
+<!-- Video.js JS -->
+<script src="https://vjs.zencdn.net/8.10.0/video.min.js" th:fragment="script"></script>
+<!-- HLS支持 -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js" th:fragment="hls-script"></script>
+
+<script th:fragment="init-script">
+    (function() {
+        // 初始化视频播放器
+        document.addEventListener('DOMContentLoaded', function() {
+            var player = videojs('news-video-player');
+
+            // 清晰度切换功能（模拟）
+            if (player.controlBar && player.controlBar.qualitySelector) {
+                // 如果有清晰度切换插件则使用
+            } else {
+                // 手动添加清晰度切换按钮
+                var qualityBtn = document.createElement('button');
+                qualityBtn.className = 'quality-btn vjs-control';
+                qualityBtn.innerHTML = '<span class="vjs-icon-placeholder">720p</span>';
+                qualityBtn.onclick = function() {
+                    alert('清晰度切换功能需要配置多码率源');
+                };
+            }
+
+            // 自动播放下一个视频
+            var wrapper = document.querySelector('.video-player-wrapper');
+            if (wrapper) {
+                var nextVideoUrl = wrapper.getAttribute('data-next-video-url');
+                if (nextVideoUrl) {
+                    player.on('ended', function() {
+                        var tip = document.getElementById('next-video-tip');
+                        if (tip) {
+                            tip.style.display = 'block';
+                            setTimeout(function() {
+                                window.location.href = nextVideoUrl;
+                            }, 3000);
+                        }
+                    });
+                }
+            }
+
+            // 错误处理
+            player.on('error', function() {
+                var error = player.error();
+                console.error('视频播放错误:', error);
+                // 显示友好错误信息
+                var errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;text-align:center;padding:20px;';
+                errorDiv.innerHTML = '<i class="fa fa-exclamation-triangle" style="font-size:48px;margin-bottom:12px;"></i><br>视频加载失败<br><small style="color:#aaa;">请检查网络连接或视频地址</small>';
+                player.el().appendChild(errorDiv);
+            });
+        });
+    })();
+</script>
+
+</body>
+</html>

@@ -71,7 +71,7 @@ class HeadlineFragment : Fragment() {
 
     private fun loadNews() {
         isLoading = true
-        ApiClient.getInstance().getNews("头条", pageSize, currentStart, object : ApiClient.ApiCallback {
+        ApiClient.getInstance(requireContext()).getNews("头条", pageSize, currentStart, object : ApiClient.ApiCallback {
             override fun onSuccess(response: String) {
                 activity?.runOnUiThread {
                     try {

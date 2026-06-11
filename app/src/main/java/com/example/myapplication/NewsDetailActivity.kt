@@ -104,7 +104,7 @@ class NewsDetailActivity : AppCompatActivity() {
 
         // 缓存策略 - 优先使用缓存提升加载速度
         settings.cacheMode = WebSettings.LOAD_DEFAULT
-        settings.setAppCacheEnabled(true)
+        // 注: setAppCacheEnabled/setAppCachePath 在 API 35+ 已移除，不再需要
 
         // 夜间模式支持
         val nightMode = prefManager.getNightMode()

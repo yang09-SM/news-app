@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.ruoyi.common.core.redis.RedisCacheService;
 import com.ruoyi.system.domain.NewsArticle;
 import com.ruoyi.system.domain.UserBrowsingHistory;
 import com.ruoyi.system.domain.UserFavorite;
@@ -39,6 +40,12 @@ public class RecommendationServiceImpl implements IRecommendationService
 
     @Autowired
     private UserInterestMapper userInterestMapper;
+
+    @Autowired
+    private RedisCacheService redisCacheService;
+
+    /** 推荐结果缓存Key前缀 */
+    private static final String CACHE_RECOMMEND_PREFIX = "recommend:";
 
     @Override
     public List<NewsArticle> recommendByUserCollaborative(Long userId, int limit)
@@ -183,6 +190,40 @@ public class RecommendationServiceImpl implements IRecommendationService
 
     @Override
     public List<NewsArticle> recommendCombined(Long userId, int limit)
+    {
+        // 构建缓存Key，userId为null时使用"anonymous"
+        String cacheKey = CACHE_RECOMMEND_PREFIX + (userId != null ? userId.toString() : "anonymous");
+
+        // 先查Redis缓存
+        try
+        {
+            List<NewsArticle> cached = redisCacheService.get(cacheKey, List.class);
+            if (cached != null && !cached.isEmpty())
+            {
+                return cached;
+            }
+        }
+        catch (Exception e)
+        {
+            // Redis异常降级为直连DB执行推荐算法
+        }
+
+        // 缓存未命中，执行推荐算法
+        List<NewsArticle> result = doRecommendCombined(userId, limit);
+
+        // 写入Redis缓存（TTL=30分钟）
+        if (result != null && !result.isEmpty())
+        {
+            redisCacheService.set(cacheKey, result, 1800);
+        }
+
+        return result;
+    }
+
+    /**
+     * 执行组合推荐算法（内部方法，不含缓存逻辑）
+     */
+    private List<NewsArticle> doRecommendCombined(Long userId, int limit)
     {
         if (userId == null)
         {

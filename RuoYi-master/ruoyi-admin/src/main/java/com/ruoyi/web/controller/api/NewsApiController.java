@@ -27,6 +27,7 @@ import com.ruoyi.system.service.IUserFavoriteService;
 import com.ruoyi.system.service.IUserCommentService;
 import com.ruoyi.system.service.IUserDislikedNewsService;
 import com.ruoyi.system.service.IRecommendationService;
+import com.ruoyi.system.service.INewsSearchService;
 
 @Controller
 @RequestMapping("/api/news")
@@ -47,6 +48,9 @@ public class NewsApiController extends BaseController
 
     @Autowired
     private IRecommendationService recommendationService;
+
+    @Autowired
+    private INewsSearchService newsSearchService;
 
     @GetMapping("/list")
     @ResponseBody
@@ -310,11 +314,70 @@ public class NewsApiController extends BaseController
 
     @GetMapping("/search")
     @ResponseBody
-    public TableDataInfo searchNews(@RequestParam("keyword") String keyword)
+    public TableDataInfo searchNews(@RequestParam("keyword") String keyword,
+                                     @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+                                     @RequestParam(value = "pageSize", defaultValue = "10") int pageSize)
     {
+        // 优先使用Elasticsearch搜索
+        if (newsSearchService.isAvailable())
+        {
+            Map<String, Object> esResult = newsSearchService.search(keyword, pageNum, pageSize);
+            List<?> list = (List<?>) esResult.get("list");
+
+            // 如果ES返回了结果，直接使用ES结果
+            if (list != null && !list.isEmpty())
+            {
+                TableDataInfo rspData = new TableDataInfo();
+                rspData.setCode(200);
+                rspData.setMsg("查询成功");
+                rspData.setTotal(((Number) esResult.get("total")).longValue());
+                rspData.setRows(list);
+                return rspData;
+            }
+            else
+            {
+                // ES结果为空，降级到MySQL搜索
+                logger.info("ES搜索无结果或失败，降级为MySQL搜索: keyword={}", keyword);
+            }
+        }
+
+        // 降级方案：使用MySQL LIKE搜索
         startPage();
         List<NewsArticle> list = newsArticleService.searchNews(keyword);
         return getDataTable(list);
+    }
+
+    /**
+     * 搜索联想建议（基于Elasticsearch）
+     */
+    @GetMapping("/search/suggest")
+    @ResponseBody
+    public AjaxResult searchSuggest(@RequestParam("keyword") String keyword,
+                                     @RequestParam(value = "count", defaultValue = "10") int count)
+    {
+        if (!newsSearchService.isAvailable())
+        {
+            return AjaxResult.error("Elasticsearch未启用");
+        }
+
+        List<String> suggestions = newsSearchService.suggest(keyword, count);
+        return AjaxResult.success(suggestions);
+    }
+
+    /**
+     * 搜索热词榜（基于Elasticsearch）
+     */
+    @GetMapping("/search/hot-words")
+    @ResponseBody
+    public AjaxResult getHotWords(@RequestParam(value = "count", defaultValue = "20") int count)
+    {
+        if (!newsSearchService.isAvailable())
+        {
+            return AjaxResult.error("Elasticsearch未启用");
+        }
+
+        List<Map<String, Object>> hotWords = newsSearchService.getHotKeywords(count);
+        return AjaxResult.success(hotWords);
     }
 
     @GetMapping("/recommended")

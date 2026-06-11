@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<th:block th:include="include :: header('推送记录列表')" />
+</head>
+<body class="gray-bg">
+    <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="push-form">
+					<div class="select-list">
+						<ul>
+							<li>
+								标题：<input type="text" name="title"/>
+							</li>
+							<li>
+								发送状态：<select name="sendStatus">
+									<option value="">所有</option>
+									<option value="0">待发送</option>
+									<option value="1">已发送</option>
+									<option value="2">发送失败</option>
+								</select>
+							</li>
+							<li>
+								推送类型：<select name="pushType">
+									<option value="">所有</option>
+									<option value="all">全量推送</option>
+									<option value="tag">按标签推送</option>
+									<option value="alias">按别名推送</option>
+									<option value="single">单设备推送</option>
+								</select>
+							</li>
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+
+	        <div class="btn-group-sm" id="toolbar" role="group">
+		        <a class="btn btn-success" onclick="$.operate.addFull()" shiro:hasPermission="news:push:add">
+		            <i class="fa fa-plus"></i> 新增
+		        </a>
+		        <a class="btn btn-primary single disabled" onclick="$.operate.editFull()" shiro:hasPermission="news:push:edit">
+		            <i class="fa fa-edit"></i> 修改
+		        </a>
+		        <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="news:push:remove">
+		            <i class="fa fa-remove"></i> 删除
+		        </a>
+		        <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="news:push:export">
+		            <i class="fa fa-download"></i> 导出
+		        </a>
+	        </div>
+
+	        <div class="col-sm-12 select-table table-striped">
+	            <table id="bootstrap-table"></table>
+	        </div>
+    	</div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('news:push:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('news:push:remove')}]];
+        var sendFlag = [[${@permission.hasPermi('news:push:edit')}]];
+        var prefix = ctx + "system/news/push";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "推送记录",
+                columns: [{
+		            checkbox: true
+		        },
+				{
+					field : 'pushId',
+					title : '推送ID'
+				},
+				{
+		            field: 'title',
+		            title: '标题'
+		        },
+				{
+					field : 'content',
+					title : '内容',
+					formatter: function(value, row, index) {
+						if (value && value.length > 30) {
+							return value.substring(0, 30) + '...';
+						}
+						return value;
+					}
+				},
+				{
+					field : 'pushType',
+					title : '推送类型',
+					align: 'center',
+					formatter: function(value, row, index) {
+						if (value == 'all') {
+							return '<span class="badge badge-primary">全量推送</span>';
+						} else if (value == 'tag') {
+							return '<span class="badge badge-info">按标签</span>';
+						} else if (value == 'alias') {
+							return '<span class="badge badge-success">按别名</span>';
+						} else if (value == 'single') {
+							return '<span class="badge badge-warning">单设备</span>';
+						}
+						return value;
+					}
+				},
+				{
+					field : 'targetValue',
+					title : '目标值'
+				},
+				{
+					field : 'sendStatus',
+					title : '状态',
+					align: 'center',
+					formatter: function(value, row, index) {
+						if (value == '0') {
+							return '<span class="badge badge-warning">待发送</span>';
+						} else if (value == '1') {
+							return '<span class="badge badge-success">已发送</span>';
+						} else if (value == '2') {
+							return '<span class="badge badge-danger">失败</span>';
+						}
+						return value;
+					}
+				},
+				{
+		            field: 'sendTime',
+		            title: '发送时间',
+		            sortable: true
+		        },
+		        {
+		            title: '操作',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+		            	var actions = [];
+		            	if (row.sendStatus == '0') {
+		            		actions.push('<a class="btn btn-primary btn-xs ' + sendFlag + '" href="javascript:void(0)" onclick="sendPush(\'' + row.pushId + '\')"><i class="fa fa-send"></i>发送</a> ');
+		            	}
+		            	actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.editFull(\'' + row.pushId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.pushId + '\')"><i class="fa fa-remove"></i>删除</a>');
+						return actions.join('');
+		            }
+		        }]
+            };
+            $.table.init(options);
+        });
+
+        /* 发送推送 */
+        function sendPush(pushId) {
+        	$.modal.confirm("确认要发送该推送吗？", function() {
+	        	var url = prefix + '/send/' + pushId;
+	        	var config = {
+	        		url: url,
+	        		type: "post",
+	        		dataType: "json",
+	        		beforeSend: function () {
+	        			$.modal.loading("正在处理中，请稍后...");
+	        			success: function(result) {
+	        				$.operate.successCallback(result);
+	        		},
+	        		error: function() {
+	        			$.modal.alertError("系统错误");
+	        		}
+	        	};
+	        	$.ajax(config);
+        	});
+        }
+    </script>
+</body>
+</html>

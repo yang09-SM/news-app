@@ -210,7 +210,7 @@ class SearchActivity : AppCompatActivity() {
         var completedRequests = 0
 
         for (category in categories) {
-            ApiClient.getInstance().getNews(category, 10, 0, object : ApiClient.ApiCallback {
+            ApiClient.getInstance(this).getNews(category, 10, 0, object : ApiClient.ApiCallback {
                 override fun onSuccess(response: String) {
                     try {
                         val gson = Gson()

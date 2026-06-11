@@ -84,7 +84,7 @@ class RegisterActivity : AppCompatActivity() {
     private fun register(username: String, password: String) {
         showLoadingDialog()
 
-        ApiClient.getInstance().register(username, password, object : ApiClient.ApiCallback {
+        ApiClient.getInstance(this).register(username, password, object : ApiClient.ApiCallback {
             override fun onSuccess(response: String) {
                 runOnUiThread {
                     hideLoadingDialog()

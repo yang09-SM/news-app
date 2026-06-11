@@ -2,6 +2,9 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:include="include :: header('新闻详情')" />
+    <!-- Video.js CSS（仅在视频类型时加载） -->
+    <link th:if="${newsArticle.newsType == 'video' and not #strings.isEmpty(newsArticle.videoUrl)}"
+          href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet"/>
     <style>body.white-bg{background:#f5f6f8;font-family:'PingFang SC','Microsoft YaHei','Helvetica Neue',sans-serif;}.news-page{max-width:760px;margin:0 auto;padding:32px 24px 60px;animation:fadeUp .35s ease both}@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}.news-type-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:2px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}.type-draft{background:#f3f4f6;color:#6b7280;border-left:3px solid #9ca3af}.type-published{background:#dbeafe;color:#1e40af;border-left:3px solid #3b82f6}.type-offline{background:#fee2e2;color:#991b1b;border-left:3px solid #ef4444}.news-title{font-size:22px;font-weight:700;color:#1a202c;line-height:1.45;margin:0 0 16px;letter-spacing:-0.2px}.news-meta{display:flex;align-items:center;flex-wrap:wrap;gap:16px;padding:12px 0;border-top:1px solid #e9ecef;border-bottom:1px solid #e9ecef;margin-bottom:28px}.meta-item{display:flex;align-items:center;gap:5px;font-size:12px;color:#718096}.meta-item i{font-size:12px;color:#a0aec0}.news-divider{display:flex;align-items:center;gap:12px;margin-bottom:24px}.news-divider::before,.news-divider::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,#dee2e6,transparent)}.news-divider-dot{width:6px;height:6px;border-radius:50%;background:#cbd5e0}.news-body{background:#fff;border-radius:6px;padding:28px 32px;box-shadow:0 1px 4px rgba(0,0,0,0.06),0 0 0 1px rgba(0,0,0,0.04);min-height:160px}.news-content{font-size:14px;line-height:1.85;color:#2d3748;word-break:break-word}.news-content p{margin:0 0 1em}.news-content h1,.news-content h2,.news-content h3{font-weight:700;color:#1a202c;margin:1.4em 0 .6em}.news-content h1{font-size:18px}.news-content h2{font-size:16px}.news-content h3{font-size:14px}.news-content a{color:#2563eb;text-decoration:none}.news-content a:hover{text-decoration:underline}.news-content img{max-width:100%;height:auto;margin:1em 0;border-radius:4px}.news-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:#a0aec0}.news-empty i{font-size:48px;margin-bottom:12px}.cover-image{width:100%;max-height:300px;object-fit:cover;border-radius:6px;margin-bottom:20px}.summary-box{background:#f8fafc;border-left:4px solid #3b82f6;padding:16px;border-radius:0 4px 4px 0;margin-bottom:20px}.summary-label{font-size:12px;font-weight:600;color:#475569;margin-bottom:8px}.summary-text{font-size:14px;color:#334155;line-height:1.6}</style>
 </head>
 <body class="white-bg">
@@ -53,6 +56,19 @@
         <img class="cover-image" th:src="${newsArticle.coverImage}" alt="封面图片">
     </div>
 
+    <!-- 视频类型新闻：显示视频播放器 -->
+    <div th:if="${newsArticle.newsType == 'video' and not #strings.isEmpty(newsArticle.videoUrl)}" class="video-section">
+        <th:block th:include="components/video-player :: player(${newsArticle.videoUrl}, ${newsArticle.coverImage}, '')"/>
+    </div>
+
+    <!-- 音频类型新闻：显示音频播放器 -->
+    <div th:if="${newsArticle.newsType == 'audio' and not #strings.isEmpty(newsArticle.audioUrl)}" class="audio-section">
+        <audio controls style="width:100%;margin-bottom:20px;" preload="metadata">
+            <source th:src="${newsArticle.audioUrl}" type="audio/mpeg"/>
+            您的浏览器不支持音频播放
+        </audio>
+    </div>
+
     <div th:if="${not #strings.isEmpty(newsArticle.summary)}" class="summary-box">
         <div class="summary-label"><i class="fa fa-quote-left"></i> 摘要</div>
         <div class="summary-text" th:text="${newsArticle.summary}"></div>
@@ -69,6 +85,12 @@
     </div>
 
 </div>
+<!-- Video.js JS（仅在视频类型时加载） -->
+<script th:if="${newsArticle.newsType == 'video' and not #strings.isEmpty(newsArticle.videoUrl)}"
+        src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+<!-- HLS支持（可选） -->
+<script th:if="${newsArticle.newsType == 'video' and not #strings.isEmpty(newsArticle.videoUrl)}"
+        src="https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js"></script>
 <th:block th:include="include :: footer" />
 </body>
 </html>

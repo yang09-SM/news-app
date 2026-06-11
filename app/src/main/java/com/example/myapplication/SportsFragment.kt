@@ -71,7 +71,7 @@ class SportsFragment : Fragment() {
 
     private fun loadNews() {
         isLoading = true
-        ApiClient.getInstance().getNews("体育", pageSize, currentStart, object : ApiClient.ApiCallback {
+        ApiClient.getInstance(requireContext()).getNews("体育", pageSize, currentStart, object : ApiClient.ApiCallback {
             override fun onSuccess(response: String) {
                 activity?.runOnUiThread {
                     try {

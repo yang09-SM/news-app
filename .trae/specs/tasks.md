@@ -128,7 +128,7 @@
   - `human-judgment` TR-10.1: 富媒体内容正常展示
   - `human-judgment` TR-10.2: 阅读体验流畅
 
-### [x] Task 11: 社交功能完善
+### [ ] Task 11: 社交功能完善
 - **Priority**: P1
 - **Depends On**: Task 3
 - **Description**: 

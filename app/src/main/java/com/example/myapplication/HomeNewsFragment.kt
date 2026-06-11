@@ -199,7 +199,7 @@ class HomeNewsFragment : Fragment() {
         isLoading = true
         swipeRefreshLayout.isRefreshing = true
         
-        ApiClient.getInstance().getNews("头条", pageSize, currentStart, object : ApiClient.ApiCallback {
+        ApiClient.getInstance(requireContext()).getNews("头条", pageSize, currentStart, object : ApiClient.ApiCallback {
             override fun onSuccess(response: String) {
                 activity?.runOnUiThread {
                     try {
@@ -269,7 +269,7 @@ class HomeNewsFragment : Fragment() {
         isLoading = true
         val channel = channelMap[currentCategory] ?: "头条"
         
-        ApiClient.getInstance().getNews(channel, pageSize, currentStart, object : ApiClient.ApiCallback {
+        ApiClient.getInstance(requireContext()).getNews(channel, pageSize, currentStart, object : ApiClient.ApiCallback {
             override fun onSuccess(response: String) {
                 activity?.runOnUiThread {
                     try {
@@ -305,7 +305,7 @@ class HomeNewsFragment : Fragment() {
         var completedRequests = 0
 
         for (category in categories) {
-            ApiClient.getInstance().getNews(category, 5, 0, object : ApiClient.ApiCallback {
+            ApiClient.getInstance(requireContext()).getNews(category, 5, 0, object : ApiClient.ApiCallback {
                 override fun onSuccess(response: String) {
                     try {
                         val gson = Gson()

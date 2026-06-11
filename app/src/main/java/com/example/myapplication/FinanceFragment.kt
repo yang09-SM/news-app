@@ -71,7 +71,7 @@ class FinanceFragment : Fragment() {
 
     private fun loadNews() {
         isLoading = true
-        ApiClient.getInstance().getNews("财经", pageSize, currentStart, object : ApiClient.ApiCallback {
+        ApiClient.getInstance(requireContext()).getNews("财经", pageSize, currentStart, object : ApiClient.ApiCallback {
             override fun onSuccess(response: String) {
                 activity?.runOnUiThread {
                     try {

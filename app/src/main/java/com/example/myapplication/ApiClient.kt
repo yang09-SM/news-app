@@ -13,7 +13,7 @@ class ApiClient private constructor(private val context: Context) {
     private val client: OkHttpClient
 
     private val JSON = "application/json; charset=utf-8".toMediaType()
-    private val BASE_URL = "http://10.0.2.2:8080"
+    private val BASE_URL = "http://10.0.2.2:80"
 
     interface ApiCallback {
         fun onSuccess(response: String)
@@ -524,8 +524,12 @@ class ApiClient private constructor(private val context: Context) {
         private var instance: ApiClient? = null
 
         fun getInstance(context: Context? = null): ApiClient {
-            return instance ?: synchronized(this) {
-                instance ?: ApiClient(context!!).also { instance = it }
+            // 已有实例直接返回
+            instance?.let { return it }
+            // 首次创建必须有 context
+            val ctx = context ?: throw IllegalStateException("ApiClient未初始化，首次调用必须传入Context")
+            return synchronized(this) {
+                instance ?: ApiClient(ctx).also { instance = it }
             }
         }
     }
